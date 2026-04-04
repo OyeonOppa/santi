@@ -769,6 +769,11 @@ function renderTeams(state) {
   return `
   ${stageNav(state)}
   <main class="max-w-6xl mx-auto px-6 py-10 pb-32">
+    <div class="mb-6">
+      <button data-action="go-lobby" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-sm">
+        ${icon('arrow_back','text-sm')} กลับหน้าห้อง
+      </button>
+    </div>
     <header class="text-center mb-10">
       <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">จับคู่แบ่งทีม (Random Assignment)</h1>
       <p class="text-on-surface-variant text-lg mt-3 max-w-2xl mx-auto">ผู้เข้าร่วมทั้งหมด ${state.players.length} ท่านเข้าสู่ระบบแล้ว ระบบสุ่มแบ่งฝ่ายเพื่อเริ่มต้นกระบวนการสันติวิธี</p>
@@ -830,6 +835,11 @@ function renderCategory(state) {
   return `
   ${stageNav(state)}
   <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <div class="mb-6">
+      <button data-action="go-teams" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-sm">
+        ${icon('arrow_back','text-sm')} กลับหน้าทีม
+      </button>
+    </div>
     <header class="mb-10">
       <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">STEP 1 · CATEGORY SELECTION</p>
       <h1 class="text-4xl font-extrabold text-primary tracking-tight">เลือกหมวดหมู่สถานการณ์</h1>
@@ -988,6 +998,11 @@ function renderDiscussion(state) {
   return `
   ${stageNav(state)}
   <main class="max-w-6xl mx-auto px-6 py-8 pb-24">
+    <div class="mb-4">
+      <button data-action="go-detail" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-sm">
+        ${icon('arrow_back','text-sm')} กลับหน้ากรณีศึกษา
+      </button>
+    </div>
     ${card ? `
     <!-- Scenario image banner -->
     <div class="rounded-3xl overflow-hidden relative mb-6 shadow-md" style="height:200px">
@@ -1161,9 +1176,14 @@ function renderSummary(state) {
         <p class="text-sm text-on-surface-variant mt-1">ความรู้สึกที่ส่ง</p>
       </div>
     </div>
-    <button data-action="reset-game" class="mt-10 bg-surface-container hover:bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold transition-all flex items-center gap-3 mx-auto">
-      ${icon('refresh')} เริ่มเซสชันใหม่
-    </button>
+    <div class="mt-10 flex gap-4 justify-center flex-wrap">
+      <button data-action="new-round" class="bg-primary text-on-primary px-8 py-4 rounded-full font-bold transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
+        ${icon('replay')} เล่นรอบใหม่ (ทีมเดิม)
+      </button>
+      <button data-action="reset-game" class="bg-surface-container hover:bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold transition-all flex items-center gap-3">
+        ${icon('refresh')} เริ่มเซสชันใหม่
+      </button>
+    </div>
   </main>`;
 }
 
@@ -1614,8 +1634,12 @@ function handleAction(action, param, el, e) {
       break;
     }
 
+    case 'go-lobby':    SFX.click(); patchState({ phase:'lobby' }); break;
+    case 'go-teams':    SFX.click(); patchState({ phase:'teams' }); break;
     case 'go-category': SFX.chime(); patchState({ phase:'category' }); break;
-    case 'go-cards': SFX.click(); patchState({ phase:'cards' }); break;
+    case 'go-cards':    SFX.click(); patchState({ phase:'cards' }); break;
+    case 'go-detail':   SFX.click(); stopTimer(); patchState({ phase:'detail', timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false }); break;
+    case 'new-round':   SFX.chime(); patchState({ phase:'category', catId:null, cardId:null, timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false, emotions:[] }); break;
 
     case 'select-cat': {
       patchState({ catId: param, cardId:null, phase:'cards' });
