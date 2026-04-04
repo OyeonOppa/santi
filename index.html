@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SANTI HARMONY</title>
+<title>SANTI</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
@@ -209,6 +209,27 @@ const CATEGORIES = [
   }
 ];
 
+/* ============================================================
+   IMAGES  —  Unsplash photo IDs per category & card
+   ============================================================ */
+const IMGS = {
+  // Category cover images
+  natural:   'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=400&fit=crop&q=80',
+  policy:    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=400&fit=crop&q=80',
+  social:    'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&h=400&fit=crop&q=80',
+  community: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=400&fit=crop&q=80',
+  urban:     'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&h=400&fit=crop&q=80',
+  rights:    'https://images.unsplash.com/photo-1521618755572-156ae0cdd74d?w=800&h=400&fit=crop&q=80',
+  // Card scenario images
+  nat_1: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=900&h=500&fit=crop&q=80',
+  nat_2: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=900&h=500&fit=crop&q=80',
+  pol_1: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=900&h=500&fit=crop&q=80',
+  soc_1: 'https://images.unsplash.com/photo-1516841273335-e39b37888115?w=900&h=500&fit=crop&q=80',
+  com_1: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=900&h=500&fit=crop&q=80',
+  urb_1: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=900&h=500&fit=crop&q=80',
+  rig_1: 'https://images.unsplash.com/photo-1573497019236-17f8177b81e8?w=900&h=500&fit=crop&q=80',
+};
+
 const QUICK_EMOTIONS = [
   {text:'เข้าใจ', cls:'bg-secondary-container text-on-secondary-container'},
   {text:'กังวล', cls:'bg-tertiary-fixed text-on-tertiary-fixed-variant'},
@@ -247,7 +268,7 @@ function defaultState() {
   const n = Math.floor(Math.random()*90+10);
   return {
     phase: 'lobby',
-    roomCode: 'Harmony-' + n,
+    roomCode: 'SANTI-' + n,
     players: [],
     catId: null,
     cardId: null,
@@ -364,7 +385,7 @@ function stageNav(state) {
   return `
   <nav class="sticky top-0 z-50 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 py-3">
     <div class="flex items-center gap-3">
-      <span class="text-xl font-bold text-primary font-headline">Santi Harmony</span>
+      <span class="text-xl font-bold text-primary font-headline">SANTI</span>
       ${cat ? `<span class="text-xs bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full font-bold uppercase tracking-wide">${cat.subtitle}</span>` : ''}
     </div>
     <div class="flex items-center gap-2">
@@ -422,7 +443,7 @@ function renderLobby(state) {
       <!-- Left: workshop info -->
       <div class="lg:col-span-3 space-y-8">
         <div>
-          <span class="text-xs font-bold uppercase tracking-widest text-secondary px-3 py-1 bg-secondary-container rounded-full">SANTI HARMONY WORKSHOP</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-secondary px-3 py-1 bg-secondary-container rounded-full">SANTI WORKSHOP</span>
           <h1 class="text-5xl font-extrabold text-on-background leading-tight mt-4 mb-3">การสื่อสารเพื่อ<br>ความเข้าใจในความ<br>ขัดแย้งพื้นที่</h1>
           <p class="text-on-surface-variant text-lg leading-relaxed">พื้นที่แห่งการเรียนรู้และแลกเปลี่ยนผ่านการจำลองความขัดแย้ง ด้วยหัวใจที่เปิดกว้าง มาร่วมสร้างสรรค์กระบวนการแก้ไขปัญหาสันติวิธีร่วมกัน</p>
         </div>
@@ -576,16 +597,24 @@ function renderCategory(state) {
     </header>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       ${CATEGORIES.map((cat, i) => `
-        <button data-action="select-cat:${cat.id}" class="card-hover text-left bg-surface-container-lowest rounded-3xl p-7 shadow-sm hover:shadow-lg group cursor-pointer block w-full">
-          <div class="w-12 h-12 rounded-2xl ${cat.iconBg} flex items-center justify-center text-on-primary mb-5">
-            ${icon(cat.icon,'text-2xl')}
+        <button data-action="select-cat:${cat.id}" class="card-hover text-left bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg group cursor-pointer block w-full">
+          <div class="h-40 relative overflow-hidden bg-surface-container-high">
+            <img src="${IMGS[cat.id]}" alt="${cat.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/55 to-black/5"></div>
+            <div class="absolute bottom-3 left-4">
+              <div class="w-10 h-10 rounded-xl ${cat.iconBg} flex items-center justify-center text-on-primary shadow-lg">
+                ${icon(cat.icon,'text-xl')}
+              </div>
+            </div>
           </div>
-          <h3 class="font-headline font-bold text-xl text-on-surface mb-1">${cat.title}</h3>
-          <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">${cat.subtitle}</p>
-          <p class="text-sm text-on-surface-variant leading-relaxed mb-5">${cat.desc}</p>
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-on-surface-variant">${cat.cards.length} สถานการณ์</span>
-            <span class="bg-primary text-on-primary px-4 py-2 rounded-full text-sm font-bold group-hover:bg-primary-container transition-colors">${icon('arrow_forward','text-sm align-middle')} เลือก</span>
+          <div class="p-6">
+            <h3 class="font-headline font-bold text-xl text-on-surface mb-1">${cat.title}</h3>
+            <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">${cat.subtitle}</p>
+            <p class="text-sm text-on-surface-variant leading-relaxed mb-5">${cat.desc}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-on-surface-variant">${cat.cards.length} สถานการณ์</span>
+              <span class="bg-primary text-on-primary px-4 py-2 rounded-full text-sm font-bold group-hover:bg-primary-container transition-colors">${icon('arrow_forward','text-sm align-middle')} เลือก</span>
+            </div>
           </div>
         </button>`).join('')}
     </div>
@@ -614,8 +643,13 @@ function renderCards(state) {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       ${cat.cards.map(card => `
         <button data-action="select-card:${card.id}" class="card-hover text-left rounded-3xl overflow-hidden group cursor-pointer block w-full shadow-md">
-          <div class="bg-gradient-to-br ${card.from} ${card.to} h-40 flex items-end p-5">
-            <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">ACTIVE SCENARIO</span>
+          <div class="h-44 relative overflow-hidden bg-surface-container-high">
+            <img src="${IMGS[card.id]}" alt="${card.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-br ${card.from} ${card.to} opacity-40"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-4 left-5">
+              <span class="bg-white/20 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">ACTIVE SCENARIO</span>
+            </div>
           </div>
           <div class="bg-surface-container-lowest p-6">
             <h3 class="font-headline font-bold text-lg text-on-surface mb-2 leading-snug">${card.title}</h3>
@@ -642,9 +676,11 @@ function renderCardDetail(state) {
     </button>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
       <!-- Image + Label -->
-      <div class="rounded-3xl overflow-hidden bg-gradient-to-br ${card.from} ${card.to} h-72 lg:h-full min-h-64 flex items-end p-8 relative">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <div class="relative">
+      <div class="rounded-3xl overflow-hidden h-72 lg:h-full min-h-64 relative bg-surface-container-high">
+        <img src="${IMGS[card.id]}" alt="${card.title}" class="w-full h-full object-cover absolute inset-0">
+        <div class="absolute inset-0 bg-gradient-to-br ${card.from} ${card.to} opacity-30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent"></div>
+        <div class="absolute bottom-0 left-0 p-8">
           <span class="bg-white/20 backdrop-blur text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide">ACTIVE SCENARIO</span>
           <h2 class="text-white font-headline font-bold text-2xl mt-2 leading-snug">${card.title}</h2>
         </div>
@@ -712,10 +748,21 @@ function renderDiscussion(state) {
   return `
   ${stageNav(state)}
   <main class="max-w-6xl mx-auto px-6 py-8 pb-24">
-    <header class="mb-6">
-      <h1 class="text-3xl font-extrabold text-primary tracking-tight">เฟสการสนทนาและสะท้อนคิด</h1>
-      <p class="text-on-surface-variant">(Discussion &amp; Reflection)</p>
-    </header>
+    ${card ? `
+    <!-- Scenario image banner -->
+    <div class="rounded-3xl overflow-hidden relative mb-6 shadow-md" style="height:200px">
+      <img src="${IMGS[card.id]||''}" alt="${card.title}" class="w-full h-full object-cover absolute inset-0">
+      <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+      <div class="absolute inset-0 flex items-center px-8">
+        <div>
+          <p class="text-white/70 text-xs font-bold uppercase tracking-widest mb-2">กรณีศึกษา</p>
+          <h2 class="text-white font-headline font-bold text-2xl leading-snug mb-3 max-w-xl">${card.title}</h2>
+          <div class="flex flex-wrap gap-2">
+            ${(card.tags||[]).map(t=>`<span class="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-medium">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>` : ''}
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left: Timer + Roles -->
       <div class="lg:col-span-5 space-y-5">
@@ -732,12 +779,10 @@ function renderDiscussion(state) {
             <h2 class="text-2xl font-bold ${accentClass}">${speakerName}</h2>
             <p class="text-on-surface-variant text-sm mb-6">${speakerSub} · กำลังพูด</p>
             <div id="timer-num" class="text-8xl font-black font-headline tabular-nums ${accentClass} tracking-tighter leading-none mb-4">${formatTime(state.timerSec)}</div>
-            <!-- Progress bar -->
             <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden mt-2">
               <div id="timer-bar" class="timer-bar bg-gradient-to-r from-primary to-primary-container h-full rounded-full" style="width:${pct}%"></div>
             </div>
           </div>
-          <!-- Timer controls -->
           <div class="flex items-center justify-center gap-4 mt-6">
             <button data-action="timer-minus" class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center" title="-1 นาที">
               ${icon('remove','text-on-surface-variant')}
@@ -787,27 +832,17 @@ function renderDiscussion(state) {
         </div>` : ''}
       </div>
       <!-- Right: Empathy Wave -->
-      <div class="lg:col-span-7 space-y-5">
-        <!-- Reflection input (facilitator note) -->
-        <section class="bg-surface-container-lowest rounded-3xl p-7 shadow-sm">
-          <div class="flex items-center gap-2 mb-4">
-            ${icon('edit_note','text-tertiary')}
-            <h2 class="font-bold text-on-surface">บันทึกความรู้สึกของคุณ</h2>
-          </div>
-          <div class="relative">
-            <textarea id="facilitator-note" class="w-full min-h-32 bg-surface-variant rounded-xl p-4 text-on-surface placeholder:text-outline resize-none border-none focus:ring-2 focus:ring-primary/20 transition-all leading-relaxed" placeholder="บันทึกสังเกตการณ์ประเด็นสำคัญจากการเสวนา..."></textarea>
-          </div>
-        </section>
-        <!-- Empathy Wave -->
-        <section class="bg-surface-container rounded-3xl p-7 relative overflow-hidden min-h-48">
+      <div class="lg:col-span-7 flex flex-col gap-5">
+        <!-- Empathy Wave (main focus) -->
+        <section class="bg-surface-container rounded-3xl p-7 relative overflow-hidden flex-1" style="min-height:280px">
           <div class="flex items-center justify-between mb-5">
             <div>
-              <h2 class="font-bold text-on-surface">คลื่นความรู้สึก (Empathy Wave)</h2>
+              <h2 class="font-bold text-on-surface text-lg">คลื่นความรู้สึก (Empathy Wave)</h2>
               <p class="text-sm text-on-surface-variant">เสียงสะท้อนจากผู้เข้าร่วม · ${state.emotions.length} ความรู้สึก</p>
             </div>
-            ${fillIcon('waves','text-primary opacity-30 text-3xl')}
+            ${fillIcon('waves','text-primary opacity-30 text-4xl')}
           </div>
-          <div class="flex flex-wrap gap-3 items-center justify-center min-h-24">
+          <div class="flex flex-wrap gap-3 items-center justify-center" style="min-height:180px">
             ${chips || `<p class="text-on-surface-variant/50 italic text-sm">รอผู้เล่นส่งความรู้สึก...</p>`}
           </div>
           <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-surface-container/30"></div>
@@ -937,7 +972,7 @@ function renderMobileJoin(state) {
   <div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col">
     <div class="flex-1 flex flex-col items-center justify-center px-6 py-10">
       <div class="mb-6">${fillIcon('spa','text-6xl text-white opacity-80')}</div>
-      <h1 class="text-3xl font-extrabold text-white font-headline mb-2">Santi Harmony</h1>
+      <h1 class="text-3xl font-extrabold text-white font-headline mb-2">SANTI</h1>
       <p class="text-white/70 mb-8 text-center">เข้าร่วมเซสชัน</p>
 
       ${roomMismatch ? `
@@ -969,7 +1004,7 @@ function renderMobileJoin(state) {
 
 function renderMobileWaiting(state, player) {
   return `
-  ${mobileTopBar('Santi Harmony')}
+  ${mobileTopBar('SANTI')}
   <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
     <div class="text-5xl mb-4">${player.avatar}</div>
     <h2 class="text-2xl font-bold text-on-surface mb-1">สวัสดี, ${player.name}!</h2>
@@ -1028,7 +1063,7 @@ function renderMobileTeamRole(state, player) {
 function renderMobileWaitingGame(state, player) {
   const phase = state.phase === 'category' ? 'วิทยากรกำลังเลือกหมวดหมู่' : state.phase === 'cards' ? 'วิทยากรกำลังเลือกสถานการณ์' : 'กำลังอ่านสถานการณ์';
   return `
-  ${mobileTopBar('Santi Harmony')}
+  ${mobileTopBar('SANTI')}
   <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
     <div class="animate-pulse">${fillIcon('hourglass_top','text-5xl text-primary mb-4 block')}</div>
     <h2 class="text-xl font-bold text-on-surface mb-2">${phase}</h2>
