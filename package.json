@@ -1,0 +1,12 @@
+{
+  "name": "santi",
+  "version": "1.0.0",
+  "description": "SANTI - Conflict Resolution Seminar Game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
