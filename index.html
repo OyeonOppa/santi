@@ -299,7 +299,10 @@ function getState() {
 
 // Write state to localStorage AND push to server (non-blocking)
 // Both stage AND mobile can write (mobile writes when joining / sending emotions)
+let _lastSaveTs = 0;
+
 function saveState(s) {
+  _lastSaveTs = Date.now();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
   // Broadcast to same-browser tabs
   try { BC && BC.postMessage({ type:'SYNC', state:s }); } catch(e){}
@@ -1526,6 +1529,8 @@ async function init() {
   render();
   const s = getState();
   if (s && s.phase === 'discussion' && s.timerRunning) startTimer();
+  // Stage also subscribes to SSE so it receives updates when players join from mobile
+  if (IS_SERVER) connectSSE();
 }
 
 // Mobile-specific init: wait for server state, never create own state
@@ -1615,16 +1620,17 @@ function pollMobileState(urlRoom, attempt) {
   }, 2000);
 }
 
-// Server-Sent Events — real-time push from server.js to mobile clients
+// Server-Sent Events — real-time push from server to all clients (stage + mobile)
 function connectSSE() {
   const evtSource = new EventSource('/api/events');
   evtSource.onmessage = (e) => {
     try {
       const serverState = JSON.parse(e.data);
-      if (serverState && serverState.roomCode) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
-        render();
-      }
+      if (!serverState || !serverState.roomCode) return;
+      // Ignore SSE that bounced back from our own recent save (within 1 sec)
+      if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+      render();
     } catch(ex) {}
   };
   evtSource.onerror = () => {
@@ -1635,6 +1641,8 @@ function connectSSE() {
         const res = await fetch('/api/state');
         const s = await res.json();
         if (s && s.roomCode) {
+          // Same bounce-guard for stage polling
+          if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000) return;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
           render();
         }
