@@ -267,17 +267,18 @@ function getState() {
 }
 
 // Write state to localStorage AND push to server (non-blocking)
+// Both stage AND mobile can write (mobile writes when joining / sending emotions)
 function saveState(s) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
   // Broadcast to same-browser tabs
   try { BC && BC.postMessage({ type:'SYNC', state:s }); } catch(e){}
-  // Push to server for cross-device sync (stage is the writer)
-  if (IS_SERVER && getMode() !== 'mobile') {
+  // Push to server — all clients push, server holds latest truth
+  if (IS_SERVER) {
     fetch('/api/state', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(s)
-    }).catch(() => {}); // silent fail if no server
+    }).catch(() => {}); // silent fail if no server.js running
   }
 }
 
@@ -315,8 +316,8 @@ function startTimer() {
       stopTimer();
       const ns = getState();
       if (ns.speakingTeam === 'A') {
-        saveState({ ...ns, timerSec: ns.settings.teamBTime, timerRunning: true, speakingTeam:'B', teamADone:true, phase:'discussion' });
-        startTimer();
+        // Hold after Team A — wait for facilitator to manually switch to Team B
+        saveState({ ...ns, timerSec: 0, timerRunning: false, teamADone: true });
       } else {
         saveState({ ...ns, timerRunning:false, teamBDone:true, phase:'summary' });
       }
@@ -768,17 +769,15 @@ function renderDiscussion(state) {
               </div>
             </div>
           </div>
-          ${state.teamADone ? `
           <div class="mt-4 pt-4 border-t border-outline-variant/20">
+            ${state.speakingTeam === 'B' ? `
+            <button data-action="go-next-team" class="w-full bg-primary text-on-primary py-3 rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+              ${icon('swap_horiz')} สลับให้ทีม A พูด
+            </button>` : `
             <button data-action="go-next-team" class="w-full bg-tertiary text-on-tertiary py-3 rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
               ${icon('swap_horiz')} สลับให้ทีม B พูด
-            </button>
-          </div>` : `
-          <div class="mt-4 pt-4 border-t border-outline-variant/20">
-            <button data-action="go-next-team" class="w-full bg-surface-container text-on-surface-variant py-3 rounded-full font-medium hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 text-sm">
-              ${icon('skip_next','text-sm')} ข้ามไปทีม B ก่อนเวลา
-            </button>
-          </div>`}
+            </button>`}
+          </div>
         </section>
         ${state.teamADone && state.speakingTeam === 'B' ? `
         <div class="text-center">
@@ -1360,7 +1359,8 @@ function handleAction(action, param, el, e) {
       if (ns.speakingTeam === 'A') {
         patchState({ speakingTeam:'B', timerSec: ns.settings.teamBTime, timerRunning:false, teamADone:true });
       } else {
-        patchState({ teamBDone:true, timerRunning:false, phase:'summary' });
+        // Switch back to Team A
+        patchState({ speakingTeam:'A', timerSec: ns.settings.teamATime, timerRunning:false, teamADone:false });
       }
       break;
     }
@@ -1463,49 +1463,127 @@ function handleAction(action, param, el, e) {
    ============================================================ */
 async function init() {
   const mode = getMode();
+  const urlRoom = new URLSearchParams(location.search).get('room') || '';
 
+  if (mode === 'mobile') {
+    // MOBILE: never create own state — always pull from server or stage
+    await initMobile(urlRoom);
+    return;
+  }
+
+  // STAGE / SETTINGS: create state if needed, push to server
   if (IS_SERVER) {
-    // ── Running from server.js ──────────────────────────────
-    // Fetch authoritative state from server
     try {
       const res = await fetch('/api/state');
+      if (!res.ok) throw new Error('no-api');
       const serverState = await res.json();
       if (serverState && serverState.roomCode) {
-        // Server has a live game — use it
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
-      } else if (!localStorage.getItem(STORAGE_KEY)) {
-        // No state anywhere — stage creates the initial state
-        if (mode !== 'mobile') saveState(defaultState());
+      } else {
+        if (!localStorage.getItem(STORAGE_KEY)) saveState(defaultState());
+        else saveState(getState()); // push existing state to server
       }
     } catch(e) {
-      // Server not running or no /api/state — fall back to localStorage
+      // No server.js API — static server fallback
       if (!localStorage.getItem(STORAGE_KEY)) saveState(defaultState());
     }
-
-    // ── Mobile: subscribe to SSE for real-time game updates ──
-    if (mode === 'mobile') {
-      connectSSE();
-    }
-
   } else {
-    // ── File:// mode — same device only ─────────────────────
     if (!localStorage.getItem(STORAGE_KEY)) saveState(defaultState());
-    if (mode === 'mobile' && !BC) {
-      // Fallback polling for same-device file:// mode
-      setInterval(() => render(), 1500);
-    }
   }
 
   render();
-
-  // Restore timer if discussion was in progress
   const s = getState();
-  if (s.phase === 'discussion' && s.timerRunning && mode !== 'mobile') {
-    startTimer();
+  if (s && s.phase === 'discussion' && s.timerRunning) startTimer();
+}
+
+// Mobile-specific init: wait for server state, never create own state
+async function initMobile(urlRoom) {
+  if (IS_SERVER) {
+    try {
+      const res = await fetch('/api/state');
+      if (!res.ok) throw new Error('no-api');
+      const serverState = await res.json();
+      if (serverState && serverState.roomCode) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+        connectSSE();
+        render();
+        return;
+      }
+      // Server online but no game yet — wait for stage to start
+      showConnecting(urlRoom, 'waiting');
+      pollMobileState(urlRoom);
+    } catch(e) {
+      // No /api/state (running npx serve, not node server.js)
+      if (localStorage.getItem(STORAGE_KEY)) {
+        render(); // same device — already have state from stage tab
+      } else {
+        showConnecting(urlRoom, 'no-api');
+        // Keep checking localStorage in case stage opens on same device
+        const poll = setInterval(() => {
+          if (localStorage.getItem(STORAGE_KEY)) { clearInterval(poll); render(); }
+        }, 1000);
+      }
+    }
+  } else {
+    // file:// — same device only
+    if (localStorage.getItem(STORAGE_KEY)) render();
+    else {
+      showConnecting(urlRoom, 'no-api');
+      const poll = setInterval(() => {
+        if (localStorage.getItem(STORAGE_KEY)) { clearInterval(poll); render(); }
+      }, 1000);
+    }
   }
 }
 
-// Server-Sent Events connection for mobile (receives state pushes from stage)
+function showConnecting(urlRoom, reason) {
+  const app = document.getElementById('app');
+  if (!app) return;
+  const isNoApi = reason === 'no-api';
+  app.innerHTML = `
+  <div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col items-center justify-center px-6 text-center">
+    <div class="mb-6 ${isNoApi ? '' : 'animate-pulse'}">${fillIcon('spa','text-6xl text-white opacity-80')}</div>
+    <h1 class="text-3xl font-extrabold text-white font-headline mb-3">
+      ${isNoApi ? 'เชื่อมต่อไม่สำเร็จ' : 'กำลังเชื่อมต่อ...'}
+    </h1>
+    ${urlRoom ? `<p class="text-white/70 mb-5">ห้อง: <span class="font-bold text-white">${urlRoom}</span></p>` : ''}
+    <div class="bg-white/15 backdrop-blur rounded-3xl p-6 max-w-xs w-full">
+      ${isNoApi ? `
+        <p class="text-white font-bold text-sm mb-2">ต้องรัน server.js ก่อน</p>
+        <p class="text-white/80 text-sm leading-relaxed mb-3">เปิด Terminal บนคอมพิวเตอร์วิทยากรแล้วพิมพ์:</p>
+        <code class="block bg-black/30 text-white/90 text-xs px-4 py-3 rounded-xl font-mono mb-4">node server.js</code>
+        <p class="text-white/60 text-xs">จากนั้นสแกน QR ใหม่</p>
+      ` : `
+        <div class="flex items-center justify-center gap-3 text-white/80 text-sm mb-3">
+          <span class="w-2.5 h-2.5 bg-white rounded-full animate-ping flex-shrink-0"></span>
+          รอวิทยากรเปิดเซสชัน...
+        </div>
+        <p class="text-white/50 text-xs">หน้านี้จะอัปเดตเองเมื่อเซสชันเริ่ม</p>
+      `}
+    </div>
+  </div>`;
+}
+
+function pollMobileState(urlRoom, attempt) {
+  attempt = attempt || 0;
+  if (attempt > 90) return; // give up after 3 min
+  setTimeout(async () => {
+    try {
+      const res = await fetch('/api/state');
+      if (!res.ok) throw new Error('no-api');
+      const serverState = await res.json();
+      if (serverState && serverState.roomCode) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+        connectSSE();
+        render();
+        return;
+      }
+    } catch(e) {}
+    pollMobileState(urlRoom, attempt + 1);
+  }, 2000);
+}
+
+// Server-Sent Events — real-time push from server.js to mobile clients
 function connectSSE() {
   const evtSource = new EventSource('/api/events');
   evtSource.onmessage = (e) => {
@@ -1518,8 +1596,8 @@ function connectSSE() {
     } catch(ex) {}
   };
   evtSource.onerror = () => {
-    // SSE disconnected — fall back to polling
     evtSource.close();
+    // Fall back to polling every 2 seconds
     setInterval(async () => {
       try {
         const res = await fetch('/api/state');
