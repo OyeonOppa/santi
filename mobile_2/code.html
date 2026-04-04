@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html class="light" lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Sarabun:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#48626e",
+                    "on-tertiary-container": "#ffbd9c",
+                    "outline-variant": "#bec8c9",
+                    "surface": "#fbf9f9",
+                    "on-primary-fixed": "#002021",
+                    "outline": "#6f7979",
+                    "surface-bright": "#fbf9f9",
+                    "secondary-container": "#cbe7f5",
+                    "on-surface": "#1b1c1c",
+                    "primary-fixed-dim": "#8ad3d7",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#303031",
+                    "primary": "#00464a",
+                    "on-background": "#1b1c1c",
+                    "on-secondary-container": "#4e6874",
+                    "surface-tint": "#14696d",
+                    "surface-dim": "#dbdad9",
+                    "on-secondary-fixed": "#021f29",
+                    "error-container": "#ffdad6",
+                    "on-primary-container": "#8fd8dc",
+                    "on-error": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb691",
+                    "background": "#fbf9f9",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-container": "#814626",
+                    "tertiary": "#653011",
+                    "primary-container": "#006064",
+                    "on-tertiary-fixed-variant": "#6f3818",
+                    "on-secondary-fixed-variant": "#304a55",
+                    "on-primary-fixed-variant": "#004f53",
+                    "secondary-fixed": "#cbe7f5",
+                    "surface-container-highest": "#e3e2e2",
+                    "surface-variant": "#e3e2e2",
+                    "on-surface-variant": "#3f4949",
+                    "surface-container": "#efeded",
+                    "tertiary-fixed": "#ffdbcb",
+                    "surface-container-low": "#f5f3f3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e9e8e7",
+                    "secondary-fixed-dim": "#afcbd8",
+                    "primary-fixed": "#a6eff3",
+                    "inverse-primary": "#8ad3d7",
+                    "on-error-container": "#93000a",
+                    "inverse-on-surface": "#f2f0f0",
+                    "on-tertiary-fixed": "#341100",
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "Sarabun"],
+                    "body": ["Be Vietnam Pro", "Sarabun"],
+                    "label": ["Manrope", "Sarabun"]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+      body {
+        font-family: 'Be Vietnam Pro', 'Sarabun', sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .glass-panel {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<nav class="fixed top-0 w-full z-50 bg-cyan-950/80 dark:bg-cyan-950/90 backdrop-blur-xl shadow-2xl shadow-cyan-950/10 flex items-center justify-between px-6 h-16 w-full max-w-none">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-cyan-600 dark:text-cyan-400" data-icon="spa">spa</span>
+<span class="text-xl font-bold text-cyan-50 dark:text-cyan-100 font-['Manrope'] tracking-tight">Santi Harmony</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden md:flex items-center gap-6">
+<span class="font-['Manrope'] tracking-tight text-cyan-200/70 hover:opacity-80 transition-opacity cursor-pointer">Dialogue</span>
+<span class="font-['Manrope'] tracking-tight text-cyan-50 hover:opacity-80 transition-opacity cursor-pointer">Emotions</span>
+<span class="font-['Manrope'] tracking-tight text-cyan-200/70 hover:opacity-80 transition-opacity cursor-pointer">Needs</span>
+</div>
+<span class="material-symbols-outlined text-cyan-200/70 hover:opacity-80 transition-opacity cursor-pointer" data-icon="settings">settings</span>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Breadcrumb / Phase Indicator -->
+<div class="mb-8 flex items-center gap-2 opacity-60">
+<span class="material-symbols-outlined text-sm" data-icon="motion_photos_on">motion_photos_on</span>
+<span class="text-xs font-bold uppercase tracking-widest font-label">Phase 2: Dialogue</span>
+</div>
+<!-- Header Section -->
+<header class="mb-10">
+<h1 class="text-4xl font-extrabold text-on-surface mb-2 font-headline tracking-tight">ส่งความรู้สึก</h1>
+<p class="text-on-surface-variant font-body">ร่วมสร้างคลื่นความรู้สึกเพื่อสร้างความเข้าใจในการสนทนา</p>
+</header>
+<!-- Prominent Input Area -->
+<section class="mb-12">
+<div class="bg-surface-container-low rounded-[2rem] p-8 transition-all hover:bg-surface-container-lowest">
+<label class="block text-2xl font-bold mb-6 font-headline text-primary">คุณกำลังรู้สึกอย่างไร?</label>
+<!-- Quick Emotions Word Cloud -->
+<div class="flex flex-wrap gap-3 mb-8">
+<button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        เข้าใจ
+                    </button>
+<button class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        กังวล
+                    </button>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        มีความหวัง
+                    </button>
+<button class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        สับสน
+                    </button>
+<button class="bg-secondary-container text-on-secondary-container px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        ได้รับการรับฟัง
+                    </button>
+<button class="bg-tertiary-fixed text-on-tertiary-fixed-variant px-6 py-3 rounded-full text-sm font-semibold hover:scale-105 transition-transform duration-200">
+                        สงบ
+                    </button>
+</div>
+<!-- Custom Input -->
+<div class="relative group">
+<textarea class="w-full bg-surface-variant border-none rounded-xl p-4 text-on-surface placeholder:text-outline focus:ring-2 focus:ring-primary/20 transition-all resize-none" placeholder="พิมพ์ความรู้สึกหรือคีย์เวิร์ด..." rows="3"></textarea>
+<button class="absolute bottom-4 right-4 bg-primary text-on-primary p-3 rounded-full shadow-lg hover:scale-110 transition-transform active:scale-95 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Instructional & Visual Support -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+<div class="flex flex-col items-center justify-center p-8 bg-surface-container-high rounded-3xl text-center">
+<div class="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="waves" style="font-variation-settings: 'FILL' 1;">waves</span>
+</div>
+<p class="text-sm leading-relaxed text-on-surface-variant">
+                    คำตอบของคุณจะถูกนำไปรวมเป็นคลื่นความรู้สึกบนหน้าจอหลัก
+                </p>
+</div>
+<div class="relative rounded-3xl overflow-hidden h-48 md:h-full min-h-[12rem] bg-stone-200 shadow-inner">
+<img alt="Empathy wave visualization" class="w-full h-full object-cover mix-blend-multiply opacity-80" data-alt="abstract ethereal waves of soft blue and orange light flowing in a dark peaceful space with subtle grain texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4k3em1tjsKSvcBdHZPKW8Wq5EOqxaw1WgYyD6IpKlRtwki5zYks8LlmpUH3FJejbIBO7NoP1IUVGws-TXQsM_z8RjBsG5Q1nxfo2UnjVf-9YetKkPFH34f5EXNfzOsH2j1OSJBWVLq6GmH1Mte1kFFm3QTE0l2DFM1qFX1EjoNZrSTg73Uo8XAyQ6NufIrNZwhqNEwVvDclsGhHxqrEqVzDFt9p27jt3EAPdTW2wAPJYVO1bBeMR09efrjjD_HOtqoouRgng4u0lY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-cyan-950/40 to-transparent"></div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-stone-50 dark:bg-stone-900 rounded-t-[32px] shadow-[0_-8px_32px_rgba(27,28,28,0.06)] flex justify-around items-center px-4 pt-3 pb-8">
+<!-- Dialogue Tab -->
+<button class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-6 py-2 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-['Manrope'] text-[11px] font-semibold uppercase tracking-wider">Dialogue</span>
+</button>
+<!-- Emotions Tab (Active) -->
+<button class="flex flex-col items-center justify-center bg-cyan-100/50 dark:bg-cyan-900/30 text-cyan-900 dark:text-cyan-100 rounded-3xl px-6 py-2 transition-all scale-105 duration-200 cubic-bezier(0.4,0,0.2,1)">
+<span class="material-symbols-outlined mb-1" data-icon="favorite" style="font-variation-settings: 'FILL' 1;">favorite</span>
+<span class="font-['Manrope'] text-[11px] font-semibold uppercase tracking-wider">Emotions</span>
+</button>
+<!-- Needs Tab -->
+<button class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-6 py-2 hover:bg-stone-200/50 dark:hover:bg-stone-800/50 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="psychology">psychology</span>
+<span class="font-['Manrope'] text-[11px] font-semibold uppercase tracking-wider">Needs</span>
+</button>
+</nav>
+<!-- Contextual FAB (Hidden on this screen as per suppression rules in identity) -->
+<!-- The prompt requires sending emotions which is handled by the primary card input, hence FAB is not needed for a secondary action here. -->
+</body></html>

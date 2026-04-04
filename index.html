@@ -1,0 +1,1434 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SANTI HARMONY</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'primary': '#00464a','on-primary': '#ffffff','primary-container': '#006064',
+        'on-primary-container': '#8fd8dc','primary-fixed': '#a6eff3','primary-fixed-dim': '#8ad3d7',
+        'on-primary-fixed': '#002021','on-primary-fixed-variant': '#004f53',
+        'secondary': '#48626e','on-secondary': '#ffffff','secondary-container': '#cbe7f5',
+        'on-secondary-container': '#4e6874','secondary-fixed': '#cbe7f5','secondary-fixed-dim': '#afcbd8',
+        'on-secondary-fixed': '#021f29','on-secondary-fixed-variant': '#304a55',
+        'tertiary': '#653011','on-tertiary': '#ffffff','tertiary-container': '#814626',
+        'on-tertiary-container': '#ffbd9c','tertiary-fixed': '#ffdbcb','tertiary-fixed-dim': '#ffb691',
+        'on-tertiary-fixed': '#341100','on-tertiary-fixed-variant': '#6f3818',
+        'surface': '#fbf9f9','surface-dim': '#dbdad9','surface-bright': '#fbf9f9',
+        'surface-variant': '#e3e2e2','on-surface': '#1b1c1c','on-surface-variant': '#3f4949',
+        'surface-container-lowest': '#ffffff','surface-container-low': '#f5f3f3',
+        'surface-container': '#efeded','surface-container-high': '#e9e8e7',
+        'surface-container-highest': '#e3e2e2','background': '#fbf9f9','on-background': '#1b1c1c',
+        'outline': '#6f7979','outline-variant': '#bec8c9',
+        'error': '#ba1a1a','error-container': '#ffdad6','on-error': '#ffffff','on-error-container': '#93000a',
+        'inverse-surface': '#303031','inverse-on-surface': '#f2f0f0','inverse-primary': '#8ad3d7',
+      },
+      fontFamily: {
+        'headline': ['Manrope','Sarabun','sans-serif'],
+        'body': ['Be Vietnam Pro','Sarabun','sans-serif'],
+      }
+    }
+  }
+};
+</script>
+<style>
+.material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+.icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
+body{font-family:'Be Vietnam Pro','Sarabun',sans-serif;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.font-headline{font-family:'Manrope','Sarabun',sans-serif}
+@keyframes floatIn{from{opacity:0;transform:translateY(16px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes pulseRing{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.emotion-chip{animation:floatIn .45s ease-out forwards}
+.live-dot{animation:pulseRing 2s ease-in-out infinite}
+.fade-in{animation:fadeIn .4s ease-out forwards}
+.slide-up{animation:slideUp .5s ease-out forwards}
+.timer-bar{transition:width 1s linear}
+.card-hover{transition:transform .2s ease,box-shadow .2s ease}
+.card-hover:hover{transform:scale(1.03)}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#bec8c9;border-radius:2px}
+.glass{background:rgba(251,249,249,.85);backdrop-filter:blur(12px)}
+</style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<div id="app"></div>
+
+<script>
+/* ============================================================
+   GAME DATA
+   ============================================================ */
+const CATEGORIES = [
+  {
+    id:'natural', icon:'park',
+    title:'ทรัพยากรธรรมชาติ', subtitle:'Natural Resources',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับการจัดการที่ดิน น้ำ และทรัพยากรธรรมชาติ',
+    bg:'bg-primary/10', iconBg:'bg-primary',
+    cards:[
+      {
+        id:'nat_1',
+        title:'กรณีพิพาทที่ดิน: อุทยานแห่งชาติ vs ชุมชนดั้งเดิม',
+        from:'from-emerald-800',to:'to-teal-700',
+        shortDesc:'ชาวบ้านที่อาศัยอยู่มาหลายชั่วอายุคน กับกฎหมายอุทยานที่ประกาศพื้นที่ทำกินเป็นเขตหวงห้าม',
+        fullDesc:'ชาวบ้านอาศัยอยู่ในพื้นที่มาหลายชั่วอายุคน แต่กฎหมายประกาศให้ที่ดินเหล่านี้เป็นเขตอุทยาน ทำให้การทำกิน การเก็บผลผลิตจากป่า และการใช้ทรัพยากรกลายเป็นเรื่องผิดกฎหมาย ทั้งสองฝ่ายต่างมีเหตุผลที่น่าฟังในมุมมองของตนเอง',
+        tags:['#ที่ดิน','#กฎหมาย','#ชุมชนดั้งเดิม'],
+        teamARoleName:'ตัวแทนชาวบ้าน', teamARoleSub:'The Villagers', teamARoleIcon:'groups',
+        teamARoleDesc:'คุณเป็นตัวแทนชาวบ้านที่อาศัยอยู่ในพื้นที่มาหลายชั่วอายุคน มีวิถีชีวิตและวัฒนธรรมผูกพันกับผืนป่า บทบาทของคุณคือสื่อสารความต้องการของชุมชนด้วยความเคารพ และแสดงให้เห็นว่าชุมชนเป็นส่วนหนึ่งของระบบนิเวศ ไม่ใช่ภัยคุกคาม',
+        teamBRoleName:'เจ้าหน้าที่อุทยาน', teamBRoleSub:'The Authorities', teamBRoleIcon:'account_balance',
+        teamBRoleDesc:'คุณเป็นเจ้าหน้าที่ที่มีหน้าที่ดูแลและปกป้องทรัพยากรธรรมชาติตามกฎหมาย เพื่อประโยชน์ของชาติในระยะยาว บทบาทของคุณคือรักษาสมดุลระหว่างการบังคับใช้กฎหมายและการเข้าใจความทุกข์ของชุมชน',
+        question:'"หากคุณเป็นหัวหน้าอุทยานแห่งชาติ ที่ต้องรักษากฎหมาย และเป็นลูกหลานของชาวบ้านที่ต้องรักษาที่ดินของบรรพบุรุษ คุณจะมองเห็นทางออกที่ดีทั้ง \'ป่า\' และ \'คน\' ได้อย่างไร?"'
+      },
+      {
+        id:'nat_2',
+        title:'การบริหารน้ำ: เขื่อนใหม่ vs ชุมชนปลายน้ำ',
+        from:'from-blue-800',to:'to-cyan-700',
+        shortDesc:'โครงการเขื่อนขนาดใหญ่เพื่อแก้ภัยแล้ง กับชุมชนชาวประมงปลายน้ำที่พึ่งพาแม่น้ำ',
+        fullDesc:'โครงการเขื่อนขนาดใหญ่จะช่วยแก้ปัญหาภัยแล้งและผลิตกระแสไฟฟ้า แต่จะส่งผลกระทบต่อระบบนิเวศและชุมชนชาวประมงปลายน้ำที่พึ่งพาแม่น้ำเพื่อการดำรงชีพมาหลายชั่วอายุคน',
+        tags:['#น้ำ','#พลังงาน','#ชาวประมง'],
+        teamARoleName:'ฝ่ายพัฒนาพลังงาน', teamARoleSub:'Energy Developers', teamARoleIcon:'bolt',
+        teamARoleDesc:'คุณเป็นตัวแทนหน่วยงานพัฒนาพลังงานที่มองเห็นความจำเป็นในการแก้ปัญหาภัยแล้งและความต้องการพลังงานของประเทศ บทบาทคือนำเสนอประโยชน์ระยะยาวที่จะเกิดขึ้น',
+        teamBRoleName:'ชุมชนชาวประมง', teamBRoleSub:'Fishing Communities', teamBRoleIcon:'sailing',
+        teamBRoleDesc:'คุณเป็นตัวแทนชาวประมงที่ดำรงชีวิตพึ่งพาแม่น้ำมาหลายชั่วคน เกรงว่าเขื่อนจะทำลายแหล่งปลาและวิถีชีวิตที่สืบทอดกันมา บทบาทคือสื่อสารผลกระทบที่จะเกิดขึ้นกับชุมชน',
+        question:'"หากคุณต้องตัดสินใจในฐานะผู้นำที่รับผิดชอบต่อทั้งการพัฒนาประเทศและชีวิตของชุมชนปลายน้ำ คุณจะออกแบบกระบวนการตัดสินใจที่ยุติธรรมต่อทุกฝ่ายอย่างไร?"'
+      }
+    ]
+  },
+  {
+    id:'policy', icon:'gavel',
+    title:'นโยบายรัฐบาล', subtitle:'Government Policy',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับนโยบายสาธารณะและผลกระทบต่อประชาชน',
+    bg:'bg-secondary/10', iconBg:'bg-secondary',
+    cards:[
+      {
+        id:'pol_1',
+        title:'ค่าแรงขั้นต่ำ: ลูกจ้าง vs ผู้ประกอบการขนาดย่อม',
+        from:'from-indigo-800',to:'to-violet-700',
+        shortDesc:'การขึ้นค่าแรงขั้นต่ำเพื่อคุณภาพชีวิตแรงงาน กับต้นทุนที่สูงขึ้นของ SME',
+        fullDesc:'การขึ้นค่าแรงขั้นต่ำช่วยให้แรงงานมีคุณภาพชีวิตที่ดีขึ้น แต่ผู้ประกอบการ SME กลัวว่าต้นทุนที่สูงขึ้นจะบีบให้ต้องปลดพนักงานหรือปิดกิจการ ซึ่งจะกระทบแรงงานในที่สุดเช่นกัน',
+        tags:['#แรงงาน','#SME','#เศรษฐกิจ'],
+        teamARoleName:'ตัวแทนแรงงาน', teamARoleSub:'Labor Representatives', teamARoleIcon:'engineering',
+        teamARoleDesc:'คุณเป็นตัวแทนกลุ่มแรงงานที่ต้องการค่าจ้างที่เพียงพอต่อการดำรงชีพและพัฒนาคุณภาพชีวิตครอบครัว บทบาทคือสื่อสารความเป็นจริงของชีวิตแรงงานและความต้องการที่ยุติธรรม',
+        teamBRoleName:'เจ้าของธุรกิจขนาดเล็ก', teamBRoleSub:'Small Business Owners', teamBRoleIcon:'store',
+        teamBRoleDesc:'คุณเป็นเจ้าของธุรกิจขนาดเล็กที่กำลังต่อสู้กับต้นทุนที่สูงขึ้น กลัวว่าการขึ้นค่าแรงจะบีบให้ต้องลดพนักงานหรือปิดกิจการ บทบาทคือสะท้อนความท้าทายของผู้ประกอบการรายย่อย',
+        question:'"หากคุณเป็นผู้กำหนดนโยบายที่ต้องการทั้งความยุติธรรมต่อแรงงานและความอยู่รอดของธุรกิจขนาดย่อม คุณจะออกแบบมาตรการการเปลี่ยนผ่านที่เป็นธรรมต่อทุกฝ่ายอย่างไร?"'
+      }
+    ]
+  },
+  {
+    id:'social', icon:'local_hospital',
+    title:'สาธารณสุข/สังคม', subtitle:'Social Welfare',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับสุขภาพ การศึกษา และสวัสดิการสังคม',
+    bg:'bg-tertiary/10', iconBg:'bg-tertiary',
+    cards:[
+      {
+        id:'soc_1',
+        title:'ทรัพยากรโรงพยาบาล: ผู้ป่วยเรื้อรัง vs การรักษาฉุกเฉิน',
+        from:'from-rose-800',to:'to-pink-700',
+        shortDesc:'จัดสรรทรัพยากรโรงพยาบาลที่จำกัดให้ยุติธรรมระหว่างผู้ป่วยเรื้อรังและฉุกเฉิน',
+        fullDesc:'โรงพยาบาลรัฐขาดแคลนบุคลากรและเตียง ต้องเลือกระหว่างการดูแลผู้ป่วยเรื้อรังระยะยาวกับการรับมือผู้ป่วยฉุกเฉินที่ต้องการความช่วยเหลือทันที ทุกการตัดสินใจมีผลต่อชีวิตผู้คน',
+        tags:['#สุขภาพ','#ทรัพยากร','#ความเท่าเทียม'],
+        teamARoleName:'กลุ่มผู้ป่วยเรื้อรัง', teamARoleSub:'Chronic Patients', teamARoleIcon:'favorite',
+        teamARoleDesc:'คุณเป็นตัวแทนผู้ป่วยโรคเรื้อรังที่ต้องการการดูแลอย่างต่อเนื่อง กลัวว่าจะถูกลดความสำคัญเมื่อเผชิญกับเคสฉุกเฉิน บทบาทคือสะท้อนให้เห็นความต้องการการดูแลที่มีความต่อเนื่องและสม่ำเสมอ',
+        teamBRoleName:'ทีมแพทย์ฉุกเฉิน', teamBRoleSub:'Emergency Medical Team', teamBRoleIcon:'emergency',
+        teamBRoleDesc:'คุณเป็นแพทย์ที่ต้องจัดสรรทรัพยากรในภาวะวิกฤต ต้องตัดสินใจโดยยึดหลักการทางการแพทย์ แต่ก็เข้าใจถึงความทุกข์ของผู้ป่วยทุกกลุ่ม บทบาทคือสื่อสารข้อจำกัดอย่างมีความเมตตา',
+        question:'"หากคุณต้องออกแบบระบบการจัดสรรทรัพยากรสุขภาพที่มีจำกัด ที่เป็นธรรมต่อทั้งผู้ป่วยเรื้อรังและฉุกเฉิน หลักการใดที่คุณจะยึดมั่นและทำไม?"'
+      }
+    ]
+  },
+  {
+    id:'community', icon:'holiday_village',
+    title:'ชุมชนและความเชื่อ', subtitle:'Community & Beliefs',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับความขัดแย้งระหว่างการพัฒนาและวัฒนธรรม',
+    bg:'bg-primary/10', iconBg:'bg-primary',
+    cards:[
+      {
+        id:'com_1',
+        title:'ก่อสร้างห้างสรรพสินค้า vs ชุมชนดั้งเดิม',
+        from:'from-amber-800',to:'to-orange-700',
+        shortDesc:'โครงการพัฒนาที่สร้างงานและเศรษฐกิจ กับการทำลายชุมชนดั้งเดิมและพื้นที่ทางวัฒนธรรม',
+        fullDesc:'โครงการพัฒนาพื้นที่ขนาดใหญ่จะสร้างงานและกระตุ้นเศรษฐกิจ แต่จะทำลายชุมชนดั้งเดิมและพื้นที่ทางวัฒนธรรมที่มีคุณค่าทางประวัติศาสตร์มาหลายชั่วอายุคน',
+        tags:['#ชุมชน','#วัฒนธรรม','#การพัฒนา'],
+        teamARoleName:'นักพัฒนาอสังหาริมทรัพย์', teamARoleSub:'Real Estate Developer', teamARoleIcon:'business',
+        teamARoleDesc:'คุณเป็นตัวแทนบริษัทพัฒนาที่มองเห็นโอกาสทางธุรกิจและการสร้างงาน โครงการของคุณจะนำรายได้มาสู่ท้องถิ่น บทบาทคือนำเสนอประโยชน์ที่จับต้องได้และแผนการพัฒนาที่รับผิดชอบ',
+        teamBRoleName:'ชุมชนเก่าแก่', teamBRoleSub:'Traditional Community', teamBRoleIcon:'groups',
+        teamBRoleDesc:'คุณเป็นตัวแทนชุมชนที่อยู่อาศัยในพื้นที่มาหลายชั่วอายุคน มีรากเหง้าและความทรงจำที่ผูกพันกับสถานที่ บทบาทคือสะท้อนคุณค่าที่ไม่สามารถตีราคาได้และสิ่งที่จะสูญเสียไป',
+        question:'"ในฐานะที่ปรึกษาอิสระที่ไม่มีส่วนได้ส่วนเสียกับทั้งสองฝ่าย คุณจะแนะนำกระบวนการหารือและการตัดสินใจอย่างไรที่จะให้เกียรติทั้งการพัฒนาและอัตลักษณ์ชุมชน?"'
+      }
+    ]
+  },
+  {
+    id:'urban', icon:'location_city',
+    title:'การจัดการผังเมือง', subtitle:'Urban Planning',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับการพัฒนาเมืองและผลกระทบต่อชุมชน',
+    bg:'bg-secondary/10', iconBg:'bg-secondary',
+    cards:[
+      {
+        id:'urb_1',
+        title:'รถไฟฟ้าสายใหม่: การเชื่อมต่อเมือง vs การย้ายถิ่นชุมชน',
+        from:'from-sky-800',to:'to-blue-700',
+        shortDesc:'โครงการรถไฟฟ้าแก้ปัญหาจราจร แต่ต้องการพื้นที่ที่มีชุมชนขนาดใหญ่อาศัยอยู่',
+        fullDesc:'โครงการรถไฟฟ้าจะแก้ปัญหาการจราจรและลดมลพิษ แต่ต้องการพื้นที่ที่มีชุมชนขนาดใหญ่อาศัยอยู่มาหลายสิบปี การย้ายถิ่นโดยบังคับสร้างบาดแผลที่ลึกกว่าที่คาดคิด',
+        tags:['#ขนส่ง','#ที่อยู่อาศัย','#การย้ายถิ่น'],
+        teamARoleName:'การรถไฟและผังเมือง', teamARoleSub:'Transit Authority', teamARoleIcon:'train',
+        teamARoleDesc:'คุณเป็นตัวแทนหน่วยงานรถไฟที่มองเห็นความจำเป็นในการพัฒนาระบบขนส่งสาธารณะ เพื่อแก้ปัญหาการจราจรและลดการปล่อยคาร์บอน บทบาทคือสื่อสารวิสัยทัศน์ระยะยาวของเมือง',
+        teamBRoleName:'ชุมชนริมทาง', teamBRoleSub:'Affected Community', teamBRoleIcon:'home',
+        teamBRoleDesc:'คุณเป็นตัวแทนชาวบ้านที่ต้องเผชิญกับการย้ายถิ่นโดยไม่สมัครใจ บ้านและธุรกิจที่สร้างมาทั้งชีวิตกำลังจะถูกรื้อถอน บทบาทคือสะท้อนค่าใช้จ่ายมนุษย์ที่ซ่อนอยู่เบื้องหลังตัวเลข',
+        question:'"หากคุณต้องออกแบบกระบวนการชดเชยและย้ายถิ่นที่ไม่เพียงแต่ยุติธรรมทางการเงิน แต่ยังให้เกียรติและรักษาความสัมพันธ์ของชุมชน คุณจะเริ่มต้นจากจุดใด?"'
+      }
+    ]
+  },
+  {
+    id:'rights', icon:'balance',
+    title:'สิทธิมนุษยชน', subtitle:'Human Rights',
+    desc:'สถานการณ์ที่เกี่ยวข้องกับสิทธิ ความเท่าเทียม และความยุติธรรม',
+    bg:'bg-tertiary/10', iconBg:'bg-tertiary',
+    cards:[
+      {
+        id:'rig_1',
+        title:'สิทธิผู้พิการ: การเข้าถึงพื้นที่สาธารณะ vs งบประมาณจำกัด',
+        from:'from-purple-800',to:'to-violet-700',
+        shortDesc:'ผู้พิการต้องการโครงสร้างพื้นฐานที่เข้าถึงได้ กับข้อจำกัดงบประมาณของหน่วยงานท้องถิ่น',
+        fullDesc:'ผู้พิการต้องการโครงสร้างพื้นฐานที่เข้าถึงได้เพื่อสิทธิขั้นพื้นฐานในการดำรงชีวิต แต่หน่วยงานท้องถิ่นอ้างว่างบประมาณไม่เพียงพอสำหรับการปรับปรุงพื้นที่ทุกแห่งในเวลาเดียวกัน',
+        tags:['#ผู้พิการ','#ความเท่าเทียม','#โครงสร้างพื้นฐาน'],
+        teamARoleName:'กลุ่มสิทธิผู้พิการ', teamARoleSub:'Disability Rights Group', teamARoleIcon:'accessibility',
+        teamARoleDesc:'คุณเป็นตัวแทนกลุ่มผู้พิการที่ต้องการสิทธิในการเข้าถึงพื้นที่สาธารณะอย่างเท่าเทียม การขาดการเข้าถึงไม่ใช่แค่ความไม่สะดวก แต่คือการละเมิดสิทธิขั้นพื้นฐาน บทบาทคือให้เห็นชีวิตประจำวันที่ถูกจำกัด',
+        teamBRoleName:'หน่วยงานท้องถิ่น', teamBRoleSub:'Local Authority', teamBRoleIcon:'account_balance',
+        teamBRoleDesc:'คุณเป็นเจ้าหน้าที่ท้องถิ่นที่ต้องจัดการงบประมาณจำกัดให้ครอบคลุมความต้องการหลายด้าน เข้าใจและเห็นด้วยกับสิทธิผู้พิการ แต่ต้องตัดสินใจภายใต้ข้อจำกัดที่แท้จริง',
+        question:'"หากคุณเชื่อว่าสิทธิมนุษยชนไม่มีราคา แต่ต้องดำเนินการภายใต้งบประมาณจำกัด คุณจะสร้างกรอบการตัดสินใจที่รักษาทั้งความน่าเชื่อถือทางสิทธิและความเป็นจริงทางการเงินได้อย่างไร?"'
+      }
+    ]
+  }
+];
+
+const QUICK_EMOTIONS = [
+  {text:'เข้าใจ', cls:'bg-secondary-container text-on-secondary-container'},
+  {text:'กังวล', cls:'bg-tertiary-fixed text-on-tertiary-fixed-variant'},
+  {text:'มีความหวัง', cls:'bg-primary-fixed text-on-primary-fixed'},
+  {text:'สับสน', cls:'bg-surface-container text-on-surface-variant'},
+  {text:'ได้รับการรับฟัง', cls:'bg-secondary-container text-on-secondary-container'},
+  {text:'สงบ', cls:'bg-tertiary-fixed text-on-tertiary-fixed-variant'},
+  {text:'โกรธ', cls:'bg-error-container text-on-error-container'},
+  {text:'เห็นด้วย', cls:'bg-primary-fixed text-on-primary-fixed'},
+];
+
+const WAVE_COLORS = [
+  'bg-tertiary-fixed text-on-tertiary-fixed-variant',
+  'bg-secondary-container text-on-secondary-container',
+  'bg-primary-fixed text-on-primary-fixed',
+  'bg-surface-container-lowest text-on-surface',
+  'bg-tertiary-container text-on-tertiary-container',
+  'bg-secondary-fixed text-on-secondary-fixed',
+  'bg-primary text-on-primary',
+  'bg-primary-container text-on-primary-container',
+];
+
+const DEMO_NAMES = ['นรินทร์ธร','กิตติพงษ์','มลฤดี','ศักดิ์ชัย','วรรณิศา','ประวิทย์','อภิชาติ','พรทิพย์','ชัยวุฒิ','จิราพร','ธนพล','รุ่งโรจน์'];
+const AVATARS = ['🧑','👩','👨','🧕','👩‍💼','👨‍💼','🧑‍🏫','👩‍🔬','👨‍🎓','🧑‍💻','👩‍🍳','👨‍🎨'];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const STORAGE_KEY = 'santi_harmony_v2';
+
+function defaultState() {
+  const n = Math.floor(Math.random()*90+10);
+  return {
+    phase: 'lobby',
+    roomCode: 'Harmony-' + n,
+    players: [],
+    catId: null,
+    cardId: null,
+    speakingTeam: 'A',
+    timerRunning: false,
+    timerSec: 180,
+    teamADone: false,
+    teamBDone: false,
+    emotions: [],
+    settings: { teamATime: 180, teamBTime: 180 }
+  };
+}
+
+function getState() {
+  try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : defaultState(); }
+  catch(e) { return defaultState(); }
+}
+function saveState(s) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  try { BC && BC.postMessage({ type:'SYNC', state:s }); } catch(e){}
+}
+function patchState(patch) {
+  const s = { ...getState(), ...patch };
+  saveState(s);
+  render();
+}
+
+let BC = null;
+try { BC = new BroadcastChannel('santi-harmony'); } catch(e){}
+if (BC) BC.onmessage = (e) => {
+  if (e.data.type === 'SYNC') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(e.data.state));
+    render();
+  }
+};
+window.addEventListener('storage', (e) => {
+  if (e.key === STORAGE_KEY) render();
+});
+
+/* ============================================================
+   TIMER
+   ============================================================ */
+let _timer = null;
+
+function startTimer() {
+  stopTimer();
+  _timer = setInterval(() => {
+    const s = getState();
+    if (!s.timerRunning) { stopTimer(); return; }
+    const rem = s.timerSec - 1;
+    if (rem <= 0) {
+      stopTimer();
+      const ns = getState();
+      if (ns.speakingTeam === 'A') {
+        saveState({ ...ns, timerSec: ns.settings.teamBTime, timerRunning: true, speakingTeam:'B', teamADone:true, phase:'discussion' });
+        startTimer();
+      } else {
+        saveState({ ...ns, timerRunning:false, teamBDone:true, phase:'summary' });
+      }
+      render();
+      return;
+    }
+    const ns2 = getState();
+    ns2.timerSec = rem;
+    saveState(ns2);
+    updateTimerUI(ns2);
+  }, 1000);
+}
+function stopTimer() { clearInterval(_timer); _timer = null; }
+function formatTime(s) {
+  return String(Math.floor(s/60)).padStart(2,'0') + ':' + String(s%60).padStart(2,'0');
+}
+function updateTimerUI(state) {
+  const el = document.getElementById('timer-num');
+  if (el) el.textContent = formatTime(state.timerSec);
+  const bar = document.getElementById('timer-bar');
+  if (bar) {
+    const total = state.speakingTeam==='A' ? state.settings.teamATime : state.settings.teamBTime;
+    const pct = Math.max(0, (state.timerSec/total)*100);
+    bar.style.width = pct + '%';
+    if (pct < 25) { bar.className = bar.className.replace(/from-\S+/g,'from-tertiary').replace(/to-\S+/g,'to-tertiary-container'); }
+  }
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function getCategory(id) { return CATEGORIES.find(c=>c.id===id); }
+function getCard(catId, cardId) { return getCategory(catId)?.cards.find(c=>c.id===cardId); }
+function getMode() { return new URLSearchParams(location.search).get('view') || 'stage'; }
+function isMobile() { return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent); }
+function icon(name, extra='') { return `<span class="material-symbols-outlined ${extra}">${name}</span>`; }
+function fillIcon(name, extra='') { return `<span class="material-symbols-outlined icon-fill ${extra}">${name}</span>`; }
+
+/* ============================================================
+   NAV COMPONENTS
+   ============================================================ */
+function stageNav(state) {
+  const cat = state.catId ? getCategory(state.catId) : null;
+  return `
+  <nav class="sticky top-0 z-50 bg-surface-container-low/90 backdrop-blur-md border-b border-outline-variant/20 flex items-center justify-between px-6 py-3">
+    <div class="flex items-center gap-3">
+      <span class="text-xl font-bold text-primary font-headline">Santi Harmony</span>
+      ${cat ? `<span class="text-xs bg-primary-fixed text-on-primary-fixed px-3 py-1 rounded-full font-bold uppercase tracking-wide">${cat.subtitle}</span>` : ''}
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="bg-surface-container-highest px-4 py-2 rounded-full flex items-center gap-2 text-sm">
+        ${fillIcon('meeting_room','text-primary text-sm')}
+        <span class="font-bold text-primary">${state.roomCode}</span>
+        <span class="text-on-surface-variant ml-1">${state.players.length} คน</span>
+      </div>
+      <button data-action="open-settings" class="p-2 rounded-full hover:bg-surface-container transition-colors" title="ตั้งค่า">
+        ${icon('settings','text-on-surface-variant')}
+      </button>
+    </div>
+  </nav>`;
+}
+
+function bottomNav(active='') {
+  const items = [
+    {id:'lobby', icon:'meeting_room', label:'ห้อง'},
+    {id:'discussion', icon:'forum', label:'เสวนา'},
+    {id:'summary', icon:'task_alt', label:'สรุปผล'},
+  ];
+  return `
+  <nav class="fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest/95 backdrop-blur-xl border-t border-outline-variant/20 flex justify-around items-center py-2 px-4 rounded-t-3xl">
+    ${items.map(it => `
+      <div class="flex flex-col items-center px-4 py-2 rounded-2xl transition-all ${active===it.id ? 'bg-secondary-container text-on-secondary-container' : 'text-on-surface-variant'}">
+        ${it.id===active ? fillIcon(it.icon,'text-lg') : icon(it.icon,'text-lg')}
+        <span class="text-[11px] font-bold mt-0.5">${it.label}</span>
+      </div>`).join('')}
+  </nav>`;
+}
+
+/* ============================================================
+   STAGE SCREENS
+   ============================================================ */
+
+/* --- LOBBY --- */
+function renderLobby(state) {
+  const url = `${location.protocol}//${location.host}${location.pathname}?view=mobile&room=${state.roomCode}`;
+  const playerGrid = state.players.length === 0
+    ? `<div class="col-span-3 text-center text-on-surface-variant py-8 italic">รอผู้เล่นเข้าร่วม...</div>`
+    : state.players.map(p => `
+        <div class="bg-surface-container-lowest rounded-2xl p-3 flex items-center gap-3 slide-up">
+          <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-lg">${p.avatar}</div>
+          <span class="font-medium truncate">${p.name}</span>
+        </div>`).join('');
+
+  return `
+  ${stageNav(state)}
+  <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden">
+    <div class="absolute -top-20 -left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl"></div>
+  </div>
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
+      <!-- Left: workshop info -->
+      <div class="lg:col-span-3 space-y-8">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-secondary px-3 py-1 bg-secondary-container rounded-full">SANTI HARMONY WORKSHOP</span>
+          <h1 class="text-5xl font-extrabold text-on-background leading-tight mt-4 mb-3">การสื่อสารเพื่อ<br>ความเข้าใจในความ<br>ขัดแย้งพื้นที่</h1>
+          <p class="text-on-surface-variant text-lg leading-relaxed">พื้นที่แห่งการเรียนรู้และแลกเปลี่ยนผ่านการจำลองความขัดแย้ง ด้วยหัวใจที่เปิดกว้าง มาร่วมสร้างสรรค์กระบวนการแก้ไขปัญหาสันติวิธีร่วมกัน</p>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="flex -space-x-2">
+            ${state.players.slice(0,5).map(p=>`<div class="w-9 h-9 rounded-full bg-primary-fixed border-2 border-background flex items-center justify-center text-sm">${p.avatar}</div>`).join('')}
+            ${state.players.length > 5 ? `<div class="w-9 h-9 rounded-full bg-secondary-container border-2 border-background flex items-center justify-center text-xs font-bold text-on-secondary-container">+${state.players.length-5}</div>` : ''}
+          </div>
+          <span class="text-on-surface-variant font-medium">ผู้ร่วมทาง <span class="font-bold text-on-surface">${state.players.length}</span> ท่าน ${state.players.length>0?'กำลังรออยู่':'ยังไม่มีผู้เข้าร่วม'}</span>
+        </div>
+        <!-- Room Code -->
+        <div class="bg-surface-container-low rounded-3xl p-6">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">ROOM CODE</p>
+          <div class="flex items-center gap-4">
+            <h2 class="text-5xl font-black text-primary font-headline tracking-tight">${state.roomCode}</h2>
+            <button data-action="copy-room" class="p-2 rounded-xl bg-surface-container hover:bg-surface-container-high transition-colors" title="คัดลอก">
+              ${icon('content_copy','text-on-surface-variant')}
+            </button>
+          </div>
+        </div>
+        <!-- Players grid -->
+        <div>
+          <h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">ผู้เข้าร่วม</h3>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto pr-1">${playerGrid}</div>
+          <div class="mt-4 flex gap-3">
+            <button data-action="add-demo-players" class="text-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full transition-colors flex items-center gap-2">
+              ${icon('person_add','text-sm')} เพิ่มผู้เล่นสาธิต (12 คน)
+            </button>
+            ${state.players.length>0?`<button data-action="clear-players" class="text-sm bg-error-container/30 hover:bg-error-container text-on-error-container px-4 py-2 rounded-full transition-colors flex items-center gap-2">${icon('clear_all','text-sm')} ล้างทั้งหมด</button>`:''}
+          </div>
+        </div>
+      </div>
+      <!-- Right: QR + join info -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-surface-container-lowest rounded-3xl p-8 text-center shadow-[0_8px_40px_rgba(0,70,74,0.08)]">
+          <h3 class="font-headline font-bold text-xl mb-1">เข้าร่วมห้องประชุม</h3>
+          <p class="text-sm text-on-surface-variant mb-6">สแกน QR หรือพิมพ์รหัสห้องในมือถือ</p>
+          <div class="flex justify-center mb-6">
+            <div id="qr-code" class="p-3 bg-white rounded-2xl shadow-sm"></div>
+          </div>
+          <div class="bg-surface-container-low rounded-2xl p-4">
+            <p class="text-xs text-on-surface-variant mb-1">หรือเปิดลิงก์</p>
+            <p class="text-xs font-mono text-primary break-all">${url}</p>
+          </div>
+        </div>
+        <div class="flex gap-2 items-center text-sm text-on-surface-variant">
+          ${icon('info','text-sm')} <span>ผู้เล่นต้องเชื่อมต่อเครือข่ายเดียวกัน</span>
+        </div>
+      </div>
+    </div>
+    <!-- Action button -->
+    <div class="mt-12 text-center">
+      <button data-action="assign-teams" class="${state.players.length<2?'opacity-50 cursor-not-allowed':''} bg-gradient-to-br from-primary to-primary-container text-on-primary px-12 py-5 rounded-full text-xl font-bold shadow-[0_12px_40px_-8px_rgba(0,70,74,0.4)] hover:shadow-[0_16px_48px_-8px_rgba(0,70,74,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto" ${state.players.length<2?'disabled':''}>
+        ${icon('shuffle','text-2xl')} แบ่งกลุ่มผู้เล่น
+      </button>
+      ${state.players.length < 2 ? `<p class="mt-3 text-sm text-on-surface-variant">ต้องมีผู้เล่นอย่างน้อย 2 คนเพื่อเริ่ม</p>` : ''}
+    </div>
+  </main>`;
+}
+
+/* --- TEAMS --- */
+function renderTeams(state) {
+  const half = Math.ceil(state.players.length/2);
+  const teamA = state.players.slice(0, half);
+  const teamB = state.players.slice(half);
+  const card = state.cardId ? getCard(state.catId, state.cardId) : null;
+
+  function teamCard(player) {
+    return `<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+      <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-lg">${player.avatar}</div>
+      <span class="font-medium">${player.name}</span>
+    </div>`;
+  }
+
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-32">
+    <header class="text-center mb-10">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">จับคู่แบ่งทีม (Random Assignment)</h1>
+      <p class="text-on-surface-variant text-lg mt-3 max-w-2xl mx-auto">ผู้เข้าร่วมทั้งหมด ${state.players.length} ท่านเข้าสู่ระบบแล้ว ระบบสุ่มแบ่งฝ่ายเพื่อเริ่มต้นกระบวนการสันติวิธี</p>
+    </header>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- Team A -->
+      <section class="lg:col-span-5 bg-primary/5 rounded-[2rem] p-8 relative overflow-hidden">
+        <div class="absolute -top-10 -right-10 w-28 h-28 bg-primary/10 rounded-full blur-3xl"></div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-lg">
+              ${fillIcon('spa')}
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-primary">ทีม A</h2>
+              <span class="text-xs font-bold tracking-widest text-primary/60 uppercase">${card ? card.teamARoleSub : 'The Listeners'}</span>
+            </div>
+          </div>
+          <span class="px-4 py-1 bg-primary text-on-primary rounded-full text-sm font-bold">${teamA.length} คน</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${teamA.map(teamCard).join('')}</div>
+      </section>
+      <!-- VS -->
+      <div class="lg:col-span-2 flex lg:flex-col items-center justify-center gap-3 py-4">
+        <div class="h-px lg:h-24 w-full lg:w-px bg-gradient-to-b from-primary/5 to-tertiary/20"></div>
+        <div class="w-14 h-14 rounded-full bg-surface-container-highest border-4 border-background flex items-center justify-center shadow-xl">
+          <span class="font-black text-lg text-on-surface-variant">VS</span>
+        </div>
+        <div class="h-px lg:h-24 w-full lg:w-px bg-gradient-to-b from-tertiary/5 to-primary/20"></div>
+      </div>
+      <!-- Team B -->
+      <section class="lg:col-span-5 bg-tertiary-fixed/30 rounded-[2rem] p-8 relative overflow-hidden">
+        <div class="absolute -bottom-10 -left-10 w-28 h-28 bg-tertiary/10 rounded-full blur-3xl"></div>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-2xl bg-tertiary flex items-center justify-center text-on-tertiary shadow-lg">
+              ${fillIcon('volunteer_activism')}
+            </div>
+            <div>
+              <h2 class="text-2xl font-bold text-tertiary">ทีม B</h2>
+              <span class="text-xs font-bold tracking-widest text-tertiary/60 uppercase">${card ? card.teamBRoleSub : 'The Empaths'}</span>
+            </div>
+          </div>
+          <span class="px-4 py-1 bg-tertiary text-on-tertiary rounded-full text-sm font-bold">${teamB.length} คน</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${teamB.map(teamCard).join('')}</div>
+      </section>
+    </div>
+    <div class="mt-12 text-center">
+      <button data-action="go-category" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-12 py-5 rounded-full text-xl font-bold shadow-[0_12px_40px_-8px_rgba(0,70,74,0.4)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto">
+        ${icon('style','text-2xl')} เริ่มเลือกหมวดหมู่การ์ด
+      </button>
+      <p class="mt-4 text-on-surface-variant text-sm">${icon('info','text-sm align-middle')} วิทยากรสามารถเปลี่ยนสมาชิกทีมได้โดยการกดปุ่มสุ่มใหม่</p>
+    </div>
+  </main>`;
+}
+
+/* --- CATEGORY SELECTION --- */
+function renderCategory(state) {
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <header class="mb-10">
+      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">STEP 1 · CATEGORY SELECTION</p>
+      <h1 class="text-4xl font-extrabold text-primary tracking-tight">เลือกหมวดหมู่สถานการณ์</h1>
+      <p class="text-on-surface-variant text-lg mt-2 max-w-2xl">เลือกหมวดหมู่ที่ต้องการเพื่อนำไปสู่กรณีศึกษา ที่จะช่วยฝึกฝนความเข้าใจและการสื่อสารในสถานการณ์จริง</p>
+    </header>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      ${CATEGORIES.map((cat, i) => `
+        <button data-action="select-cat:${cat.id}" class="card-hover text-left bg-surface-container-lowest rounded-3xl p-7 shadow-sm hover:shadow-lg group cursor-pointer block w-full">
+          <div class="w-12 h-12 rounded-2xl ${cat.iconBg} flex items-center justify-center text-on-primary mb-5">
+            ${icon(cat.icon,'text-2xl')}
+          </div>
+          <h3 class="font-headline font-bold text-xl text-on-surface mb-1">${cat.title}</h3>
+          <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">${cat.subtitle}</p>
+          <p class="text-sm text-on-surface-variant leading-relaxed mb-5">${cat.desc}</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-on-surface-variant">${cat.cards.length} สถานการณ์</span>
+            <span class="bg-primary text-on-primary px-4 py-2 rounded-full text-sm font-bold group-hover:bg-primary-container transition-colors">${icon('arrow_forward','text-sm align-middle')} เลือก</span>
+          </div>
+        </button>`).join('')}
+    </div>
+  </main>`;
+}
+
+/* --- CARD BOARD --- */
+function renderCards(state) {
+  const cat = getCategory(state.catId);
+  if (!cat) return renderCategory(state);
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <header class="mb-8 flex items-start justify-between">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <button data-action="go-category" class="text-on-surface-variant hover:text-primary transition-colors text-sm flex items-center gap-1">
+            ${icon('arrow_back','text-sm')} เลือกหมวดหมู่ใหม่
+          </button>
+        </div>
+        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">STEP 2 · SCENARIO BOARD</p>
+        <h1 class="text-4xl font-extrabold text-primary tracking-tight">กระดานเลือกกรณีศึกษา</h1>
+        <p class="text-on-surface-variant mt-2">หมวด: <span class="font-bold text-on-surface">${cat.title}</span></p>
+      </div>
+    </header>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      ${cat.cards.map(card => `
+        <button data-action="select-card:${card.id}" class="card-hover text-left rounded-3xl overflow-hidden group cursor-pointer block w-full shadow-md">
+          <div class="bg-gradient-to-br ${card.from} ${card.to} h-40 flex items-end p-5">
+            <span class="bg-white/20 text-white text-xs px-2 py-1 rounded-full font-bold uppercase tracking-wide">ACTIVE SCENARIO</span>
+          </div>
+          <div class="bg-surface-container-lowest p-6">
+            <h3 class="font-headline font-bold text-lg text-on-surface mb-2 leading-snug">${card.title}</h3>
+            <p class="text-sm text-on-surface-variant leading-relaxed mb-4">${card.shortDesc}</p>
+            <div class="flex flex-wrap gap-2">
+              ${card.tags.map(t=>`<span class="bg-secondary-container text-on-secondary-container text-xs px-2 py-0.5 rounded-full">${t}</span>`).join('')}
+            </div>
+          </div>
+        </button>`).join('')}
+    </div>
+  </main>`;
+}
+
+/* --- CARD DETAIL --- */
+function renderCardDetail(state) {
+  const cat = getCategory(state.catId);
+  const card = getCard(state.catId, state.cardId);
+  if (!card) return renderCards(state);
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <button data-action="go-cards" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors mb-6 text-sm">
+      ${icon('arrow_back','text-sm')} กลับ
+    </button>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <!-- Image + Label -->
+      <div class="rounded-3xl overflow-hidden bg-gradient-to-br ${card.from} ${card.to} h-72 lg:h-full min-h-64 flex items-end p-8 relative">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div class="relative">
+          <span class="bg-white/20 backdrop-blur text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wide">ACTIVE SCENARIO</span>
+          <h2 class="text-white font-headline font-bold text-2xl mt-2 leading-snug">${card.title}</h2>
+        </div>
+      </div>
+      <!-- Detail -->
+      <div class="bg-surface-container-lowest rounded-3xl p-8 shadow-sm space-y-6">
+        <div>
+          <p class="text-on-surface leading-relaxed text-base">${card.fullDesc}</p>
+          <div class="flex flex-wrap gap-2 mt-4">
+            ${card.tags.map(t=>`<span class="bg-secondary-container text-on-secondary-container text-xs px-3 py-1 rounded-full">${t}</span>`).join('')}
+          </div>
+        </div>
+        <!-- Teams -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-primary/5 rounded-2xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              ${icon(card.teamARoleIcon,'text-primary text-sm')}
+              <span class="text-xs font-bold text-primary uppercase tracking-wide">ทีม A</span>
+            </div>
+            <p class="font-bold text-on-surface">${card.teamARoleName}</p>
+            <p class="text-xs text-on-surface-variant">${card.teamARoleSub}</p>
+          </div>
+          <div class="bg-tertiary-fixed/40 rounded-2xl p-4">
+            <div class="flex items-center gap-2 mb-2">
+              ${icon(card.teamBRoleIcon,'text-tertiary text-sm')}
+              <span class="text-xs font-bold text-tertiary uppercase tracking-wide">ทีม B</span>
+            </div>
+            <p class="font-bold text-on-surface">${card.teamBRoleName}</p>
+            <p class="text-xs text-on-surface-variant">${card.teamBRoleSub}</p>
+          </div>
+        </div>
+        <!-- Deep Empathy Question -->
+        <div class="bg-tertiary-fixed/30 rounded-2xl p-5">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-tertiary-fixed-variant mb-3">DEEP EMPATHY QUESTION</p>
+          <p class="text-on-surface font-medium leading-relaxed italic">${card.question}</p>
+        </div>
+        <button data-action="start-discussion" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3">
+          ${icon('play_circle','text-2xl')} เริ่มการเสวนา
+        </button>
+      </div>
+    </div>
+  </main>`;
+}
+
+/* --- DISCUSSION --- */
+function renderDiscussion(state) {
+  const card = getCard(state.catId, state.cardId);
+  const isA = state.speakingTeam === 'A';
+  const speakerName = isA ? (card?.teamARoleName||'ทีม A') : (card?.teamBRoleName||'ทีม B');
+  const speakerSub = isA ? (card?.teamARoleSub||'Team A') : (card?.teamBRoleSub||'Team B');
+  const bgClass = isA ? 'bg-primary/5' : 'bg-tertiary-fixed/20';
+  const accentClass = isA ? 'text-primary' : 'text-tertiary';
+  const totalTime = isA ? state.settings.teamATime : state.settings.teamBTime;
+  const pct = Math.max(0, (state.timerSec/totalTime)*100);
+
+  // Wave chips
+  const chips = state.emotions.slice(-20).map((e,i) => {
+    const cls = WAVE_COLORS[i % WAVE_COLORS.length];
+    const sizes = ['text-sm','text-base','text-lg','text-xl'];
+    const sz = sizes[Math.floor(Math.random()*sizes.length)];
+    const rot = ['rotate-0','-rotate-1','rotate-1','-rotate-2','rotate-2'][i%5];
+    return `<span class="emotion-chip ${cls} px-4 py-2 rounded-full font-medium shadow-sm ${sz} ${rot}" style="animation-delay:${i*0.05}s">${e.text}</span>`;
+  }).join('');
+
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-8 pb-24">
+    <header class="mb-6">
+      <h1 class="text-3xl font-extrabold text-primary tracking-tight">เฟสการสนทนาและสะท้อนคิด</h1>
+      <p class="text-on-surface-variant">(Discussion &amp; Reflection)</p>
+    </header>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left: Timer + Roles -->
+      <div class="lg:col-span-5 space-y-5">
+        <!-- Active Speaker Card -->
+        <section class="${bgClass} rounded-3xl p-8 relative">
+          <div class="absolute top-5 right-5">
+            <span class="flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full ${isA?'bg-primary':'bg-tertiary'} opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 ${isA?'bg-primary':'bg-tertiary'}"></span>
+            </span>
+          </div>
+          <div class="flex flex-col items-center text-center">
+            <span class="bg-surface-container-lowest text-on-surface px-4 py-1 rounded-full text-xs font-bold tracking-wider mb-4">LIVE SESSION</span>
+            <h2 class="text-2xl font-bold ${accentClass}">${speakerName}</h2>
+            <p class="text-on-surface-variant text-sm mb-6">${speakerSub} · กำลังพูด</p>
+            <div id="timer-num" class="text-8xl font-black font-headline tabular-nums ${accentClass} tracking-tighter leading-none mb-4">${formatTime(state.timerSec)}</div>
+            <!-- Progress bar -->
+            <div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden mt-2">
+              <div id="timer-bar" class="timer-bar bg-gradient-to-r from-primary to-primary-container h-full rounded-full" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <!-- Timer controls -->
+          <div class="flex items-center justify-center gap-4 mt-6">
+            <button data-action="timer-minus" class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center" title="-1 นาที">
+              ${icon('remove','text-on-surface-variant')}
+            </button>
+            <button data-action="toggle-timer" class="w-16 h-16 rounded-full ${isA?'bg-primary':'bg-tertiary'} text-on-primary flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-all">
+              ${state.timerRunning ? fillIcon('pause','text-3xl') : fillIcon('play_arrow','text-3xl')}
+            </button>
+            <button data-action="timer-plus" class="w-10 h-10 rounded-full bg-surface-container hover:bg-surface-container-high transition-colors flex items-center justify-center" title="+1 นาที">
+              ${icon('add','text-on-surface-variant')}
+            </button>
+          </div>
+        </section>
+        <!-- Team roles summary -->
+        <section class="bg-surface-container-low rounded-3xl p-6">
+          <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">ผู้เข้าร่วมการเสวนา</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-3 ${isA?'ring-2 ring-primary/30':''}">
+              ${icon(card?.teamARoleIcon||'groups',`${isA?'text-primary':'text-on-surface-variant'}`)}
+              <div>
+                <p class="text-xs font-bold ${isA?'text-primary':'text-on-surface-variant'}">ทีม A ${isA?'· กำลังพูด':''}</p>
+                <p class="text-sm font-semibold leading-tight">${card?.teamARoleName||'ทีม A'}</p>
+              </div>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-3 ${!isA?'ring-2 ring-tertiary/30':''}">
+              ${icon(card?.teamBRoleIcon||'groups',`${!isA?'text-tertiary':'text-on-surface-variant'}`)}
+              <div>
+                <p class="text-xs font-bold ${!isA?'text-tertiary':'text-on-surface-variant'}">ทีม B ${!isA?'· กำลังพูด':''}</p>
+                <p class="text-sm font-semibold leading-tight">${card?.teamBRoleName||'ทีม B'}</p>
+              </div>
+            </div>
+          </div>
+          ${state.teamADone ? `
+          <div class="mt-4 pt-4 border-t border-outline-variant/20">
+            <button data-action="go-next-team" class="w-full bg-tertiary text-on-tertiary py-3 rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2">
+              ${icon('swap_horiz')} สลับให้ทีม B พูด
+            </button>
+          </div>` : `
+          <div class="mt-4 pt-4 border-t border-outline-variant/20">
+            <button data-action="go-next-team" class="w-full bg-surface-container text-on-surface-variant py-3 rounded-full font-medium hover:bg-surface-container-high transition-colors flex items-center justify-center gap-2 text-sm">
+              ${icon('skip_next','text-sm')} ข้ามไปทีม B ก่อนเวลา
+            </button>
+          </div>`}
+        </section>
+        ${state.teamADone && state.speakingTeam === 'B' ? `
+        <div class="text-center">
+          <button data-action="go-summary" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-full font-bold hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-3 mx-auto">
+            ${icon('task_alt')} สรุปผลการเสวนา
+          </button>
+        </div>` : ''}
+      </div>
+      <!-- Right: Empathy Wave -->
+      <div class="lg:col-span-7 space-y-5">
+        <!-- Reflection input (facilitator note) -->
+        <section class="bg-surface-container-lowest rounded-3xl p-7 shadow-sm">
+          <div class="flex items-center gap-2 mb-4">
+            ${icon('edit_note','text-tertiary')}
+            <h2 class="font-bold text-on-surface">บันทึกความรู้สึกของคุณ</h2>
+          </div>
+          <div class="relative">
+            <textarea id="facilitator-note" class="w-full min-h-32 bg-surface-variant rounded-xl p-4 text-on-surface placeholder:text-outline resize-none border-none focus:ring-2 focus:ring-primary/20 transition-all leading-relaxed" placeholder="บันทึกสังเกตการณ์ประเด็นสำคัญจากการเสวนา..."></textarea>
+          </div>
+        </section>
+        <!-- Empathy Wave -->
+        <section class="bg-surface-container rounded-3xl p-7 relative overflow-hidden min-h-48">
+          <div class="flex items-center justify-between mb-5">
+            <div>
+              <h2 class="font-bold text-on-surface">คลื่นความรู้สึก (Empathy Wave)</h2>
+              <p class="text-sm text-on-surface-variant">เสียงสะท้อนจากผู้เข้าร่วม · ${state.emotions.length} ความรู้สึก</p>
+            </div>
+            ${fillIcon('waves','text-primary opacity-30 text-3xl')}
+          </div>
+          <div class="flex flex-wrap gap-3 items-center justify-center min-h-24">
+            ${chips || `<p class="text-on-surface-variant/50 italic text-sm">รอผู้เล่นส่งความรู้สึก...</p>`}
+          </div>
+          <div class="absolute inset-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-surface-container/30"></div>
+        </section>
+        <!-- Progress indicators -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-${isA ? 'primary/5' : 'surface-container-low'} rounded-2xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full ${state.teamADone ? 'bg-primary' : 'bg-surface-container'} flex items-center justify-center">
+              ${state.teamADone ? fillIcon('check','text-on-primary text-sm') : icon('schedule','text-on-surface-variant text-sm')}
+            </div>
+            <div>
+              <p class="text-xs text-on-surface-variant">ทีม A</p>
+              <p class="text-sm font-bold ${state.teamADone?'text-primary':'text-on-surface'}">${state.teamADone ? 'พูดแล้ว' : (isA ? 'กำลังพูด...' : 'รอคิว')}</p>
+            </div>
+          </div>
+          <div class="bg-${!isA ? 'tertiary-fixed/30' : 'surface-container-low'} rounded-2xl p-4 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full ${state.teamBDone ? 'bg-tertiary' : 'bg-surface-container'} flex items-center justify-center">
+              ${state.teamBDone ? fillIcon('check','text-on-tertiary text-sm') : icon('schedule','text-on-surface-variant text-sm')}
+            </div>
+            <div>
+              <p class="text-xs text-on-surface-variant">ทีม B</p>
+              <p class="text-sm font-bold ${state.teamBDone?'text-tertiary':(!isA?'text-tertiary':'text-on-surface')}">${state.teamBDone ? 'พูดแล้ว' : (!isA ? 'กำลังพูด...' : 'รอคิว')}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>`;
+}
+
+/* --- SUMMARY --- */
+function renderSummary(state) {
+  const card = getCard(state.catId, state.cardId);
+  const topEmotions = {};
+  state.emotions.forEach(e => topEmotions[e.text] = (topEmotions[e.text]||0)+1);
+  const sorted = Object.entries(topEmotions).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  return `
+  ${stageNav(state)}
+  <main class="max-w-5xl mx-auto px-6 py-12 text-center">
+    <div class="mb-8 inline-block">
+      ${fillIcon('spa','text-6xl text-primary')}
+    </div>
+    <h1 class="text-5xl font-extrabold text-primary mb-4">สรุปผลการเสวนา</h1>
+    <p class="text-on-surface-variant text-xl mb-10">ขอบคุณทุกท่านที่ร่วมสร้างพื้นที่แห่งความเข้าใจในวันนี้</p>
+    ${card ? `
+    <div class="bg-surface-container-low rounded-3xl p-8 mb-8 text-left">
+      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">สถานการณ์ที่ใช้</p>
+      <h2 class="text-2xl font-bold text-on-surface mb-3">${card.title}</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-surface-container-lowest rounded-2xl p-4">
+          <p class="text-xs text-primary font-bold mb-1">ทีม A · ${card.teamARoleName}</p>
+          <p class="text-sm text-on-surface-variant">${card.teamARoleSub}</p>
+        </div>
+        <div class="bg-surface-container-lowest rounded-2xl p-4">
+          <p class="text-xs text-tertiary font-bold mb-1">ทีม B · ${card.teamBRoleName}</p>
+          <p class="text-sm text-on-surface-variant">${card.teamBRoleSub}</p>
+        </div>
+      </div>
+    </div>` : ''}
+    <div class="bg-surface-container-lowest rounded-3xl p-8 mb-8">
+      <h3 class="font-bold text-xl mb-6 flex items-center justify-center gap-2">${fillIcon('waves','text-primary')} คลื่นความรู้สึกจากผู้เข้าร่วม (${state.emotions.length} ความรู้สึก)</h3>
+      <div class="flex flex-wrap gap-3 justify-center">
+        ${sorted.map(([text,count],i) => {
+          const cls = WAVE_COLORS[i%WAVE_COLORS.length];
+          return `<span class="${cls} px-5 py-3 rounded-full font-bold text-lg">${text} <span class="opacity-60 text-sm font-normal ml-1">×${count}</span></span>`;
+        }).join('') || '<p class="text-on-surface-variant italic">ไม่มีการส่งความรู้สึก</p>'}
+      </div>
+    </div>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <div class="bg-surface-container-low rounded-2xl px-8 py-5 text-center">
+        <p class="text-3xl font-black text-primary">${state.players.length}</p>
+        <p class="text-sm text-on-surface-variant mt-1">ผู้เข้าร่วม</p>
+      </div>
+      <div class="bg-surface-container-low rounded-2xl px-8 py-5 text-center">
+        <p class="text-3xl font-black text-tertiary">${state.emotions.length}</p>
+        <p class="text-sm text-on-surface-variant mt-1">ความรู้สึกที่ส่ง</p>
+      </div>
+    </div>
+    <button data-action="reset-game" class="mt-10 bg-surface-container hover:bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold transition-all flex items-center gap-3 mx-auto">
+      ${icon('refresh')} เริ่มเซสชันใหม่
+    </button>
+  </main>`;
+}
+
+/* ============================================================
+   MOBILE SCREENS
+   ============================================================ */
+function renderMobile(state) {
+  const pid = getMobilePid();
+  const player = state.players.find(p=>p.id===pid);
+
+  if (!player) return renderMobileJoin(state);
+  switch(state.phase) {
+    case 'lobby': return renderMobileWaiting(state, player);
+    case 'teams': return renderMobileTeamRole(state, player);
+    case 'category': case 'cards': case 'detail': return renderMobileWaitingGame(state, player);
+    case 'discussion': return renderMobileEmotions(state, player);
+    case 'summary': return renderMobileSummary(state, player);
+    default: return renderMobileWaiting(state, player);
+  }
+}
+
+function getMobilePid() {
+  let id = sessionStorage.getItem('sh_pid');
+  if (!id) { id = 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2,9); sessionStorage.setItem('sh_pid',id); }
+  return id;
+}
+
+function mobileTopBar(title, phase='') {
+  const state = getState();
+  return `
+  <nav class="fixed top-0 w-full z-50 bg-primary/90 backdrop-blur-xl h-14 flex items-center justify-between px-5">
+    <span class="text-sm font-bold text-on-primary font-headline">${title}</span>
+    <span class="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">${state.roomCode}</span>
+  </nav>`;
+}
+
+function renderMobileJoin(state) {
+  const pid = getMobilePid();
+  const avatarIdx = Math.floor(Math.random()*AVATARS.length);
+  return `
+  <div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col">
+    <div class="flex-1 flex flex-col items-center justify-center px-6 py-10">
+      <div class="text-6xl mb-6">${fillIcon('spa','text-6xl text-white opacity-80')}</div>
+      <h1 class="text-3xl font-extrabold text-white font-headline mb-2">Santi Harmony</h1>
+      <p class="text-white/70 mb-10 text-center">เข้าร่วมเซสชัน · ห้อง: <span class="font-bold text-white">${state.roomCode}</span></p>
+      <div class="w-full max-w-sm bg-white/10 backdrop-blur rounded-3xl p-8 space-y-5">
+        <h2 class="text-white font-bold text-xl text-center">ชื่อเล่น (Nickname)</h2>
+        <input id="mobile-name" type="text" maxlength="20" placeholder="ชื่อเล่นของคุณ..." class="w-full bg-white/20 text-white placeholder:text-white/50 border-none rounded-2xl px-5 py-4 text-lg focus:ring-2 focus:ring-white/30 outline-none">
+        <button data-action="mobile-join" data-pid="${pid}" data-avatar="${avatarIdx}" class="w-full bg-white text-primary font-bold py-4 rounded-2xl text-lg hover:scale-[1.02] active:scale-95 transition-all">
+          เข้าร่วมทันที
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderMobileWaiting(state, player) {
+  return `
+  ${mobileTopBar('Santi Harmony')}
+  <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
+    <div class="text-5xl mb-4">${player.avatar}</div>
+    <h2 class="text-2xl font-bold text-on-surface mb-1">สวัสดี, ${player.name}!</h2>
+    <p class="text-on-surface-variant mb-8">รอวิทยากรเริ่มเกม...</p>
+    <div class="bg-surface-container-low rounded-3xl p-8 w-full max-w-sm">
+      <div class="animate-pulse flex flex-col items-center gap-4">
+        ${fillIcon('groups','text-4xl text-primary')}
+        <p class="font-bold text-on-surface">ห้อง: ${state.roomCode}</p>
+        <p class="text-sm text-on-surface-variant">ผู้เข้าร่วม ${state.players.length} คน</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderMobileTeamRole(state, player) {
+  const isA = player.teamId === 'A';
+  const card = state.cardId ? getCard(state.catId, state.cardId) : null;
+  const roleName = isA ? (card?.teamARoleName||'ทีม A') : (card?.teamBRoleName||'ทีม B');
+  const roleSub = isA ? (card?.teamARoleSub||'The Listeners') : (card?.teamBRoleSub||'The Empaths');
+  const roleDesc = isA ? (card?.teamARoleDesc||'บทบาทของคุณในการเสวนา') : (card?.teamBRoleDesc||'บทบาทของคุณในการเสวนา');
+  const accentBg = isA ? 'bg-primary' : 'bg-tertiary';
+  const accentText = isA ? 'text-primary' : 'text-tertiary';
+  const accentLight = isA ? 'bg-primary/5' : 'bg-tertiary-fixed/30';
+
+  return `
+  ${mobileTopBar('Phase 1: Setting the Stage')}
+  <div class="min-h-screen bg-background pt-14 pb-24">
+    <div class="h-40 bg-gradient-to-br ${isA?'from-primary to-primary-container':'from-tertiary to-tertiary-container'} flex items-center justify-center">
+      <div class="text-center text-white">
+        <p class="text-xs font-bold uppercase tracking-widest opacity-70 mb-1">คุณอยู่ในทีม</p>
+        <p class="text-4xl font-black">${isA ? 'A' : 'B'}</p>
+      </div>
+    </div>
+    <div class="px-6 py-8 space-y-6">
+      <div class="text-center">
+        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">บทบาทของคุณคือ</p>
+        <h1 class="text-3xl font-extrabold ${accentText} font-headline">${roleName}</h1>
+        <p class="text-on-surface-variant mt-1">${roleSub}</p>
+      </div>
+      <div class="${accentLight} rounded-3xl p-6">
+        ${icon(isA ? (card?.teamARoleIcon||'groups') : (card?.teamBRoleIcon||'groups'), `${accentText} text-3xl mb-3 block`)}
+        <h3 class="font-bold text-on-surface mb-2">บทบาทของคุณ</h3>
+        <p class="text-on-surface-variant leading-relaxed">${roleDesc}</p>
+      </div>
+      ${card ? `
+      <div class="bg-surface-container-low rounded-3xl p-6">
+        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">สถานการณ์</p>
+        <p class="text-on-surface leading-relaxed">${card.shortDesc}</p>
+      </div>` : ''}
+      <p class="text-center text-sm text-on-surface-variant italic">★ กำลังรอเริ่มการเสวนา...</p>
+    </div>
+  </div>
+  ${bottomNav('teams')}`;
+}
+
+function renderMobileWaitingGame(state, player) {
+  const phase = state.phase === 'category' ? 'วิทยากรกำลังเลือกหมวดหมู่' : state.phase === 'cards' ? 'วิทยากรกำลังเลือกสถานการณ์' : 'กำลังอ่านสถานการณ์';
+  return `
+  ${mobileTopBar('Santi Harmony')}
+  <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
+    <div class="animate-pulse">${fillIcon('hourglass_top','text-5xl text-primary mb-4 block')}</div>
+    <h2 class="text-xl font-bold text-on-surface mb-2">${phase}</h2>
+    <p class="text-on-surface-variant text-sm">รอการแจ้งเตือนเริ่มการเสวนา</p>
+  </div>`;
+}
+
+function renderMobileEmotions(state, player) {
+  const isA = player.teamId === 'A';
+  const card = state.cardId ? getCard(state.catId, state.cardId) : null;
+  const speakingTeam = state.speakingTeam;
+  const myTurn = speakingTeam === player.teamId;
+
+  return `
+  ${mobileTopBar('Phase 2: Dialogue', 'emotions')}
+  <div class="min-h-screen bg-background pt-14 pb-28 px-5">
+    <div class="pt-8 pb-4">
+      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">PHASE 2 · DIALOGUE</p>
+      <h1 class="text-3xl font-extrabold text-on-surface font-headline">ส่งความรู้สึก</h1>
+      <p class="text-on-surface-variant mt-1">ร่วมสร้างคลื่นความรู้สึกในการสนทนา</p>
+    </div>
+    ${myTurn ? `
+    <div class="bg-primary/10 rounded-2xl p-4 mb-5 flex items-center gap-3">
+      ${icon('mic','text-primary text-2xl')}
+      <div>
+        <p class="font-bold text-primary text-sm">ทีมของคุณกำลังพูด!</p>
+        <p class="text-xs text-on-surface-variant">ส่งสัญญาณอารมณ์ให้ทีมตรงข้ามเห็น</p>
+      </div>
+    </div>` : `
+    <div class="bg-secondary-container/50 rounded-2xl p-4 mb-5 flex items-center gap-3">
+      ${icon('hearing','text-on-secondary-container text-2xl')}
+      <div>
+        <p class="font-bold text-on-secondary-container text-sm">ฟังอย่างตั้งใจ</p>
+        <p class="text-xs text-on-surface-variant">ส่งความรู้สึกขณะฟังทีม ${speakingTeam} พูด</p>
+      </div>
+    </div>`}
+    <div class="bg-surface-container-low rounded-3xl p-6 mb-5">
+      <label class="block text-lg font-bold text-primary mb-4">คุณกำลังรู้สึกอย่างไร?</label>
+      <div class="flex flex-wrap gap-2 mb-5">
+        ${QUICK_EMOTIONS.map(e=>`
+          <button data-action="send-emotion:${encodeURIComponent(e.text)}" class="${e.cls} px-5 py-2.5 rounded-full text-sm font-semibold hover:scale-105 active:scale-95 transition-transform">${e.text}</button>
+        `).join('')}
+      </div>
+      <div class="relative">
+        <input id="custom-emotion" type="text" maxlength="20" placeholder="หรือพิมพ์ความรู้สึก..." class="w-full bg-surface-variant rounded-xl px-4 py-3 pr-14 text-on-surface placeholder:text-outline border-none focus:ring-2 focus:ring-primary/20 outline-none">
+        <button data-action="send-custom-emotion" class="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-on-primary w-10 h-10 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-transform">
+          ${icon('send','text-sm')}
+        </button>
+      </div>
+    </div>
+    <div class="text-center">
+      <p class="text-xs text-on-surface-variant mb-3">ความรู้สึกที่คุณส่งแล้ว: <span class="font-bold text-on-surface">${state.emotions.filter(e=>e.pid===player.id).length}</span> ครั้ง</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        ${state.emotions.filter(e=>e.pid===player.id).slice(-5).map(e=>`<span class="bg-surface-container text-on-surface-variant text-xs px-3 py-1 rounded-full">${e.text}</span>`).join('')}
+      </div>
+    </div>
+  </div>
+  ${bottomNav('discussion')}`;
+}
+
+function renderMobileSummary(state, player) {
+  return `
+  ${mobileTopBar('สรุปผล')}
+  <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
+    ${fillIcon('spa','text-6xl text-primary mb-4 block')}
+    <h1 class="text-3xl font-extrabold text-primary mb-3">ขอบคุณ!</h1>
+    <p class="text-on-surface-variant mb-2">ขอบคุณที่ร่วมสร้างพื้นที่แห่งความเข้าใจ</p>
+    <p class="font-bold text-on-surface mb-8">${player.name} · ทีม ${player.teamId}</p>
+    <div class="bg-surface-container-low rounded-3xl p-6 w-full max-w-xs">
+      <p class="text-3xl font-black text-primary">${state.emotions.filter(e=>e.pid===player.id).length}</p>
+      <p class="text-sm text-on-surface-variant mt-1">ความรู้สึกที่คุณส่ง</p>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   SETTINGS SCREEN
+   ============================================================ */
+function renderSettings(state) {
+  return `
+  <div class="min-h-screen bg-background">
+    <!-- Header -->
+    <header class="bg-surface-container-low border-b border-outline-variant/20 px-8 py-5 flex items-center justify-between sticky top-0 z-50">
+      <div>
+        <span class="text-xs font-bold uppercase tracking-widest text-on-secondary-container">Facilitator Suite</span>
+        <h1 class="text-2xl font-extrabold text-primary font-headline">Workshop Controls</h1>
+      </div>
+      <div class="flex gap-3">
+        <a href="${location.pathname}?view=stage" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+          ${icon('present_to_all','text-sm')} เปิด Stage View
+        </a>
+        <a href="${location.pathname}?view=mobile" class="bg-secondary-container text-on-secondary-container px-6 py-2.5 rounded-full font-bold text-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2" target="_blank">
+          ${icon('smartphone','text-sm')} Mobile Preview
+        </a>
+      </div>
+    </header>
+    <div class="max-w-5xl mx-auto px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Phase Timers -->
+      <div class="lg:col-span-2 space-y-6">
+        <section class="bg-surface-container-low rounded-3xl p-8">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-primary flex items-center gap-2">${icon('hourglass_empty','text-primary')} Phase Timers</h2>
+            <span class="text-xs font-bold bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full">ปรับแต่งได้</span>
+          </div>
+          <div class="space-y-4">
+            <div class="bg-surface-container-lowest rounded-2xl p-5 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center">${icon('groups','text-primary')}</div>
+                <div>
+                  <p class="font-bold text-on-surface">ทีม A พูด (Discussion A)</p>
+                  <p class="text-sm text-on-surface-variant">เวลาสำหรับทีม A ในการแสดงความคิดเห็น</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button data-action="set-time:A:-1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
+                <span class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamATime)}</span>
+                <button data-action="set-time:A:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
+              </div>
+            </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-5 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-full bg-tertiary-fixed flex items-center justify-center">${icon('groups','text-tertiary')}</div>
+                <div>
+                  <p class="font-bold text-on-surface">ทีม B พูด (Discussion B)</p>
+                  <p class="text-sm text-on-surface-variant">เวลาสำหรับทีม B ในการแสดงความคิดเห็น</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button data-action="set-time:B:-1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
+                <span class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamBTime)}</span>
+                <button data-action="set-time:B:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Room Management -->
+        <section class="bg-surface-container-low rounded-3xl p-8">
+          <h2 class="text-xl font-bold text-primary mb-6 flex items-center gap-2">${icon('meeting_room','text-primary')} Room Management</h2>
+          <div class="grid grid-cols-2 gap-5">
+            <div class="bg-surface-container-lowest p-5 rounded-2xl">
+              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Room Code</p>
+              <p class="text-2xl font-extrabold tracking-widest text-primary">${state.roomCode}</p>
+            </div>
+            <div class="bg-surface-container-lowest p-5 rounded-2xl">
+              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">ผู้เข้าร่วม</p>
+              <p class="text-2xl font-extrabold text-primary">${state.players.length} คน</p>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t border-outline-variant/20">
+            <p class="text-xs font-bold uppercase tracking-widest text-error mb-3">Danger Zone</p>
+            <button data-action="reset-game" class="border border-error/30 text-error px-6 py-2.5 rounded-full font-bold text-sm hover:bg-error-container/20 transition-colors">
+              ${icon('refresh','text-sm align-middle')} Reset Session ทั้งหมด
+            </button>
+          </div>
+        </section>
+      </div>
+      <!-- Participants -->
+      <div class="space-y-6">
+        <section class="bg-surface-container-low rounded-3xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-primary">Participants</h2>
+            <span class="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded">${state.players.length} Online</span>
+          </div>
+          <div class="space-y-3 max-h-80 overflow-y-auto">
+            ${state.players.length === 0
+              ? '<p class="text-sm text-on-surface-variant italic text-center py-4">ยังไม่มีผู้เข้าร่วม</p>'
+              : state.players.map(p=>`
+                <div class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-3">
+                  <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center">${p.avatar}</div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold truncate">${p.name}</p>
+                    <p class="text-xs text-on-surface-variant">ทีม ${p.teamId||'?'}</p>
+                  </div>
+                  <div class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></div>
+                </div>`).join('')}
+          </div>
+        </section>
+        <!-- Game phase status -->
+        <section class="bg-surface-container-low rounded-3xl p-6">
+          <h2 class="text-lg font-bold text-primary mb-4">Game Status</h2>
+          <div class="space-y-2">
+            ${['lobby','teams','category','cards','detail','discussion','summary'].map(ph => `
+              <div class="flex items-center gap-2 ${state.phase===ph?'text-primary font-bold':'text-on-surface-variant'}">
+                <div class="w-2 h-2 rounded-full ${state.phase===ph?'bg-primary':'bg-surface-container-highest'} flex-shrink-0"></div>
+                <span class="text-sm capitalize">${ph}</span>
+                ${state.phase===ph?icon('arrow_right','text-sm ml-auto'):''}
+              </div>`).join('')}
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   MAIN RENDER
+   ============================================================ */
+function render() {
+  const mode = getMode();
+  const state = getState();
+  const app = document.getElementById('app');
+  if (!app) return;
+
+  if (mode === 'settings') app.innerHTML = renderSettings(state);
+  else if (mode === 'mobile') app.innerHTML = renderMobile(state);
+  else app.innerHTML = renderStage(state);
+
+  afterRender(mode, state);
+}
+
+function renderStage(state) {
+  switch(state.phase) {
+    case 'lobby':      return renderLobby(state);
+    case 'teams':      return renderTeams(state);
+    case 'category':   return renderCategory(state);
+    case 'cards':      return renderCards(state);
+    case 'detail':     return renderCardDetail(state);
+    case 'discussion': return renderDiscussion(state);
+    case 'summary':    return renderSummary(state);
+    default:           return renderLobby(state);
+  }
+}
+
+function afterRender(mode, state) {
+  if (mode === 'stage') {
+    if (state.phase === 'lobby') generateQR(state.roomCode);
+    if (state.phase === 'discussion') {
+      updateTimerUI(state);
+      if (state.timerRunning && !_timer) startTimer();
+    }
+  }
+}
+
+function generateQR(roomCode) {
+  const qrEl = document.getElementById('qr-code');
+  if (!qrEl) return;
+  qrEl.innerHTML = '';
+  const url = `${location.protocol}//${location.host}${location.pathname}?view=mobile&room=${roomCode}`;
+  if (typeof QRCode !== 'undefined') {
+    new QRCode(qrEl, { text:url, width:130, height:130, colorDark:'#00464a', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+  } else {
+    qrEl.innerHTML = `<div class="text-xs text-on-surface-variant p-3 font-mono break-all">${url}</div>`;
+  }
+}
+
+/* ============================================================
+   EVENT HANDLING
+   ============================================================ */
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+  const raw = el.dataset.action;
+  const [action, ...rest] = raw.split(':');
+  handleAction(action, rest.join(':'), el, e);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const joinBtn = document.querySelector('[data-action="mobile-join"]');
+    if (joinBtn) joinBtn.click();
+    const customBtn = document.querySelector('[data-action="send-custom-emotion"]');
+    if (customBtn) customBtn.click();
+  }
+});
+
+function handleAction(action, param, el, e) {
+  const state = getState();
+  switch(action) {
+
+    case 'assign-teams': {
+      if (state.players.length < 2) return;
+      const shuffled = [...state.players].sort(()=>Math.random()-.5);
+      const half = Math.ceil(shuffled.length/2);
+      const players = shuffled.map((p,i) => ({...p, teamId: i < half ? 'A' : 'B'}));
+      patchState({ players, phase:'teams' });
+      break;
+    }
+
+    case 'go-category': patchState({ phase:'category' }); break;
+    case 'go-cards': patchState({ phase:'cards' }); break;
+
+    case 'select-cat': {
+      patchState({ catId: param, cardId:null, phase:'cards' });
+      break;
+    }
+
+    case 'select-card': {
+      patchState({ cardId: param, phase:'detail' });
+      break;
+    }
+
+    case 'start-discussion': {
+      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[] });
+      break;
+    }
+
+    case 'toggle-timer': {
+      const running = !state.timerRunning;
+      const ns = { ...getState(), timerRunning: running };
+      saveState(ns);
+      if (running) startTimer();
+      else stopTimer();
+      render();
+      break;
+    }
+
+    case 'timer-plus': {
+      patchState({ timerSec: getState().timerSec + 60 });
+      break;
+    }
+
+    case 'timer-minus': {
+      const s = Math.max(10, getState().timerSec - 60);
+      patchState({ timerSec: s });
+      break;
+    }
+
+    case 'go-next-team': {
+      stopTimer();
+      const ns = getState();
+      if (ns.speakingTeam === 'A') {
+        patchState({ speakingTeam:'B', timerSec: ns.settings.teamBTime, timerRunning:false, teamADone:true });
+      } else {
+        patchState({ teamBDone:true, timerRunning:false, phase:'summary' });
+      }
+      break;
+    }
+
+    case 'go-summary': {
+      stopTimer();
+      patchState({ phase:'summary', timerRunning:false });
+      break;
+    }
+
+    case 'reset-game': {
+      stopTimer();
+      const fresh = defaultState();
+      fresh.roomCode = state.roomCode;
+      saveState(fresh);
+      // Clear player session only in mobile
+      if (getMode() === 'mobile') sessionStorage.removeItem('sh_pid');
+      render();
+      break;
+    }
+
+    case 'add-demo-players': {
+      const existing = state.players.length;
+      const toAdd = Math.max(0, 12 - existing);
+      const newPlayers = [];
+      for (let i = 0; i < toAdd; i++) {
+        const idx = (existing + i) % DEMO_NAMES.length;
+        newPlayers.push({ id:'demo_'+Date.now()+'_'+i, name:DEMO_NAMES[idx], avatar:AVATARS[idx%AVATARS.length], teamId:null });
+      }
+      patchState({ players: [...state.players, ...newPlayers] });
+      break;
+    }
+
+    case 'clear-players': {
+      patchState({ players:[] });
+      break;
+    }
+
+    case 'copy-room': {
+      navigator.clipboard.writeText(state.roomCode).catch(()=>{});
+      const orig = el.innerHTML;
+      el.innerHTML = icon('check','text-primary');
+      setTimeout(()=>{ el.innerHTML = orig; }, 1500);
+      break;
+    }
+
+    case 'mobile-join': {
+      const nameEl = document.getElementById('mobile-name');
+      const name = nameEl?.value.trim();
+      if (!name) { nameEl?.focus(); return; }
+      const pid = el.dataset.pid;
+      const avatarIdx = parseInt(el.dataset.avatar||'0');
+      if (state.players.find(p=>p.id===pid)) { render(); return; }
+      const player = { id:pid, name, avatar:AVATARS[avatarIdx%AVATARS.length], teamId:null };
+      patchState({ players:[...state.players, player] });
+      break;
+    }
+
+    case 'send-emotion': {
+      const text = decodeURIComponent(param);
+      const pid = getMobilePid();
+      const emotion = { text, pid, id:Date.now()+'_'+Math.random().toString(36).slice(2) };
+      patchState({ emotions:[...state.emotions, emotion] });
+      // Animate feedback
+      el.classList.add('scale-95','opacity-50');
+      setTimeout(()=>{ el.classList.remove('scale-95','opacity-50'); },300);
+      break;
+    }
+
+    case 'send-custom-emotion': {
+      const input = document.getElementById('custom-emotion');
+      const text = input?.value.trim();
+      if (!text) return;
+      const pid = getMobilePid();
+      const emotion = { text, pid, id:Date.now()+'_'+Math.random().toString(36).slice(2) };
+      patchState({ emotions:[...state.emotions, emotion] });
+      if (input) input.value = '';
+      break;
+    }
+
+    case 'set-time': {
+      const [team, deltaStr] = param.split(':');
+      const delta = parseInt(deltaStr) * 60;
+      const key = team==='A' ? 'teamATime' : 'teamBTime';
+      const cur = state.settings[key];
+      const next = Math.max(30, cur + delta);
+      patchState({ settings:{...state.settings, [key]:next} });
+      break;
+    }
+
+    case 'open-settings': {
+      window.open(`${location.pathname}?view=settings`, '_blank');
+      break;
+    }
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+// Ensure state exists
+if (!localStorage.getItem(STORAGE_KEY)) {
+  saveState(defaultState());
+}
+
+render();
+
+// Auto-refresh for mobile polling (every 2 seconds when BroadcastChannel not available)
+if (getMode() === 'mobile' && !BC) {
+  setInterval(() => {
+    render();
+  }, 2000);
+}
+
+// Restore timer state on page load
+(function restoreTimer() {
+  const s = getState();
+  if (s.phase === 'discussion' && s.timerRunning) {
+    startTimer();
+  }
+})();
+</script>
+</body>
+</html>

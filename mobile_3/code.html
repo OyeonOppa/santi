@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Role Analysis &amp; Scenario - Resonant Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Sarabun:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e9e8e7",
+                        "on-surface": "#1b1c1c",
+                        "on-tertiary-fixed-variant": "#6f3818",
+                        "on-primary-fixed-variant": "#004f53",
+                        "tertiary-container": "#814626",
+                        "surface-container-highest": "#e3e2e2",
+                        "secondary-fixed": "#cbe7f5",
+                        "on-primary-fixed": "#002021",
+                        "surface-dim": "#dbdad9",
+                        "primary-container": "#006064",
+                        "secondary": "#48626e",
+                        "surface-variant": "#e3e2e2",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#cbe7f5",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-tint": "#14696d",
+                        "inverse-surface": "#303031",
+                        "surface-container-low": "#f5f3f3",
+                        "inverse-on-surface": "#f2f0f0",
+                        "surface-bright": "#fbf9f9",
+                        "primary-fixed-dim": "#8ad3d7",
+                        "outline": "#6f7979",
+                        "on-secondary-container": "#4e6874",
+                        "on-background": "#1b1c1c",
+                        "tertiary": "#653011",
+                        "on-secondary": "#ffffff",
+                        "surface": "#fbf9f9",
+                        "on-surface-variant": "#3f4949",
+                        "on-tertiary-container": "#ffbd9c",
+                        "inverse-primary": "#8ad3d7",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#bec8c9",
+                        "on-primary-container": "#8fd8dc",
+                        "background": "#fbf9f9",
+                        "surface-container": "#efeded",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "primary-fixed": "#a6eff3",
+                        "primary": "#00464a",
+                        "on-secondary-fixed": "#021f29",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "on-tertiary-fixed": "#341100"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "Sarabun"],
+                        "body": ["Be Vietnam Pro", "Sarabun"],
+                        "label": ["Manrope", "Sarabun"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fbf9f9;
+            color: #1b1c1c;
+            -webkit-font-smoothing: antialiased;
+        }
+        .thai-line-height { line-height: 1.8; }
+        .glass-panel {
+            background: rgba(251, 249, 249, 0.7);
+            backdrop-filter: blur(12px);
+        }
+        .asymmetric-header {
+            margin-left: 1.5rem;
+            margin-right: 2.5rem;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky z-50 bg-stone-50 dark:bg-stone-950 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-teal-900 dark:text-teal-100" style="font-variation-settings: 'FILL' 0;">spa</span>
+<h1 class="text-lg font-bold text-teal-800 dark:text-teal-200 font-headline tracking-tight">Phase 1: Setting the Stage</h1>
+</div>
+<div class="bg-stone-100 dark:bg-stone-900 px-3 py-1 rounded-full">
+<span class="font-manrope text-stone-900 dark:text-stone-50 text-xs font-semibold tracking-tight">Room: 4209</span>
+</div>
+</header>
+<main class="pb-32 pt-6 px-6 max-w-md mx-auto">
+<!-- Editorial Section Header -->
+<div class="asymmetric-header mb-8">
+<span class="font-label text-[0.75rem] uppercase tracking-[0.15em] text-on-surface-variant font-bold">Current Role</span>
+<h2 class="font-headline text-[1.75rem] font-extrabold leading-tight text-primary mt-1">เจ้าหน้าที่อุทยาน (Forest Ranger)</h2>
+</div>
+<!-- Role Image / Visual Anchor -->
+<div class="w-full h-48 rounded-xl overflow-hidden mb-8 shadow-sm">
+<img alt="Forest scenery" class="w-full h-full object-cover" data-alt="Cinematic shot of misty morning in a dense green pine forest with soft sunbeams filtering through branches" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBs-e3sJJ91hPNl1RjXaOiwJDD9NN33_FmIOy471TWTovfKfGeEGkzdZjpC49iGsr9EwyqfMj1BmG1iL0tTohmdGovaPM-vD1vv7pIhTNNjjCkFvN0Nq5h7ObChiqYHW_DhqKTeVj3AYNSkHNfABCLVH7fL21Kf5IXBKsbOSSgICAu9V-6-QHI3Zh_ISZJ4lTG78NE-5wsxEhHhFExnOIl5uFzBWcXfUvpciFxQFLrydlT7Tzy_S6n0JVAk--0lHqx0v5YirkMOFvv-"/>
+</div>
+<!-- Your Role Description -->
+<section class="mb-10">
+<div class="bg-surface-container-low p-6 rounded-xl relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-6xl">shield_person</span>
+</div>
+<h3 class="font-headline text-lg font-bold text-on-surface mb-3">บทบาทของคุณ (Your Role)</h3>
+<p class="thai-line-height text-on-surface-variant text-[1rem]">
+                    คุณคือผู้พิทักษ์ป่าที่ทุ่มเททำงานมานานกว่า 10 ปี หน้าที่ของคุณคือการรักษาสมดุลระหว่างการอนุรักษ์ธรรมชาติและการอยู่ร่วมกันของชุมชน คุณมีความกังวลเรื่องการบุกรุกพื้นที่ป่า แต่ก็เข้าใจถึงความจำเป็นในการทำมาหากินของชาวบ้านในพื้นที่
+                </p>
+<div class="mt-4 flex flex-wrap gap-2">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-medium">ความรับผิดชอบ</span>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full text-xs font-medium">ความยั่งยืน</span>
+</div>
+</div>
+</section>
+<!-- Scenario Card (Digital Version) -->
+<section class="mb-10">
+<div class="bg-surface-container-lowest border border-outline-variant/20 p-6 rounded-xl shadow-[0_4px_32px_rgba(0,0,0,0.04)]">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-tertiary">description</span>
+<h3 class="font-headline text-lg font-bold text-tertiary">บัตรสถานการณ์ (Scenario)</h3>
+</div>
+<div class="space-y-4">
+<div class="bg-tertiary-fixed/30 p-4 rounded-lg">
+<h4 class="font-bold text-on-tertiary-fixed-variant text-sm mb-1">หัวข้อการขัดแย้ง</h4>
+<p class="thai-line-height font-medium text-on-tertiary-fixed">"โครงการก่อสร้างเส้นทางศึกษาธรรมชาติทับซ้อนพื้นที่ทำกินเดิม"</p>
+</div>
+<p class="thai-line-height text-on-surface text-[1rem]">
+                        รัฐบาลมีนโยบายสร้างเส้นทางท่องเที่ยวเพื่อกระตุ้นเศรษฐกิจ แต่เส้นทางที่กำหนดไว้ต้องตัดผ่านพื้นที่เพาะปลูกของชาวบ้านที่อยู่มาดั้งเดิม คุณต้องเป็นตัวกลางในการเจรจาเพื่อหาทางออกที่ทุกฝ่ายยอมรับได้
+                    </p>
+</div>
+</div>
+</section>
+<!-- Notes Section -->
+<section class="mb-12">
+<div class="flex items-center justify-between mb-3">
+<h3 class="font-headline text-lg font-bold text-on-surface">บันทึกความคิดเห็น (Notes)</h3>
+<span class="text-xs text-on-surface-variant font-medium">บันทึกอัตโนมัติ</span>
+</div>
+<div class="relative">
+<textarea class="w-full h-40 p-4 bg-surface-variant border-none rounded-xl focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline/60 resize-none thai-line-height" placeholder="ร่างความคิดเห็นหรือประเด็นที่คุณต้องการสื่อสาร..."></textarea>
+<div class="absolute bottom-3 right-3 opacity-20">
+<span class="material-symbols-outlined">edit_note</span>
+</div>
+</div>
+</section>
+<!-- Primary Action -->
+<button class="w-full py-4 bg-gradient-to-r from-primary to-primary-container text-on-primary rounded-full font-bold shadow-lg shadow-primary/20 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+            ส่งข้อเสนอลำดับแรก
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 pt-4 bg-stone-50/80 dark:bg-stone-950/80 backdrop-blur-xl shadow-[0_-4px_32px_rgba(0,0,0,0.06)] rounded-t-3xl border-t border-stone-200/20">
+<!-- Dialogue Tab (Active) -->
+<a class="flex flex-col items-center justify-center bg-teal-100/50 dark:bg-teal-900/30 text-teal-900 dark:text-teal-100 rounded-full px-5 py-1.5 transition-transform duration-300 ease-out scale-105" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="font-manrope text-[11px] font-medium tracking-wide uppercase mt-1">Dialogue</span>
+</a>
+<!-- Emotions Tab -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-teal-600 dark:hover:text-teal-400" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<span class="font-manrope text-[11px] font-medium tracking-wide uppercase mt-1">Emotions</span>
+</a>
+<!-- Needs Tab -->
+<a class="flex flex-col items-center justify-center text-stone-500 dark:text-stone-400 px-5 py-1.5 hover:text-teal-600 dark:hover:text-teal-400" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-manrope text-[11px] font-medium tracking-wide uppercase mt-1">Needs</span>
+</a>
+</nav>
+</body></html>

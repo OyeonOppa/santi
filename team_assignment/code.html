@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500&amp;family=Sarabun:wght@300;400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#a6eff3",
+                        "on-primary-fixed-variant": "#004f53",
+                        "on-tertiary-fixed-variant": "#6f3818",
+                        "surface-dim": "#dbdad9",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#002021",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "primary": "#00464a",
+                        "on-tertiary-container": "#ffbd9c",
+                        "on-surface-variant": "#3f4949",
+                        "tertiary-fixed": "#ffdbcb",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#653011",
+                        "on-secondary-fixed": "#021f29",
+                        "surface-container": "#efeded",
+                        "outline": "#6f7979",
+                        "surface-container-low": "#f5f3f3",
+                        "on-secondary-container": "#4e6874",
+                        "background": "#fbf9f9",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-tertiary-fixed": "#341100",
+                        "on-background": "#1b1c1c",
+                        "surface-bright": "#fbf9f9",
+                        "on-tertiary": "#ffffff",
+                        "secondary": "#48626e",
+                        "primary-fixed-dim": "#8ad3d7",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f2f0f0",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "on-primary-container": "#8fd8dc",
+                        "inverse-surface": "#303031",
+                        "secondary-container": "#cbe7f5",
+                        "surface-container-high": "#e9e8e7",
+                        "error": "#ba1a1a",
+                        "tertiary-container": "#814626",
+                        "on-error": "#ffffff",
+                        "inverse-primary": "#8ad3d7",
+                        "primary-container": "#006064",
+                        "surface-tint": "#14696d",
+                        "on-surface": "#1b1c1c",
+                        "surface-variant": "#e3e2e2",
+                        "outline-variant": "#bec8c9",
+                        "secondary-fixed": "#cbe7f5",
+                        "on-primary": "#ffffff",
+                        "surface": "#fbf9f9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "Sarabun"],
+                        "body": ["Be Vietnam Pro", "Sarabun"],
+                        "label": ["Manrope", "Sarabun"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Be Vietnam Pro', 'Sarabun', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', 'Sarabun', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-md flex justify-between items-center px-6 py-3 w-full max-w-full mx-auto sticky top-0 z-50 shadow-sm">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold text-teal-800 dark:text-teal-200">Santi Harmony</span>
+</div>
+<div class="hidden md:flex items-center gap-8 font-manrope text-base tracking-tight">
+<a class="text-teal-700 dark:text-teal-300 border-b-2 border-teal-600 font-bold" href="#">หน้าหลัก</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-600" href="#">รายงาน</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-teal-600" href="#">การตั้งค่า</a>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center gap-3 mr-4 bg-white/50 dark:bg-slate-800/50 px-3 py-1.5 rounded-xl border border-teal-100 dark:border-teal-900">
+<div class="bg-white p-1 rounded-md shadow-sm">
+<img alt="QR Code" class="w-8 h-8" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyJMph3yi0LYoiRCGFVHD2l-4pkRkrVL-2RSYOa99zSgvket4Ec0M60l1ZuJT5uKPK9cT-_NXzA3Bl1uPVXEQ6fZ6Gm3HkI08yCIWYN3cBNlMGAWXew1pBylpdMI3MJNkwxc0vyc2vHCpiG8epnZrG07UYaeSEycGd7vfLHDla7eXQFQqLzjSP9NWd0bAn7FBvK950_WqaJgisVpy2tsicf6wcuyu1DKs8n_TF4ij8Y-iRLndFLvJXHRIa8Q_sKTVdRxzh1CySTJRA"/>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider font-bold text-teal-600 dark:text-teal-400">Join Session</span>
+<span class="text-sm font-bold font-manrope text-slate-700 dark:text-slate-200">Room: Harmony-99</span>
+</div>
+</div><div class="flex gap-2">
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">group</span>
+</button>
+<button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors rounded-full relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-tertiary-container rounded-full"></span>
+</button>
+</div>
+<img alt="รูปโปรไฟล์ผู้ควบคุม" class="w-10 h-10 rounded-full bg-surface-container-high border-2 border-primary-fixed" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-AzKP1UB274fYG4AzUBiu8E5P_nbtfnVtlScyvIiIyaEysphGb2_oeY5ubIoBRp80MpVOVE96YZwD4ahmmL1WWFky2FyqdayaXluBcLWMjHcIJfnQGoaaVrx-eD2RvRps-pDRtOCNgk_PN-ndGPaTXT2QHCWtRNLWb4XAZTC_SnXVPT3v14mOLIxTulNA7VU8OyQB4kAdj4FD2QA0HK4qub1wNNCe1N9QrnQ32YxDUAgCh0V7vIMuzZui4tspb9INwiAwzDHUb3m0"/>
+<button class="hidden lg:block bg-primary text-on-primary px-6 py-2 rounded-full font-semibold scale-95 active:scale-90 duration-200 transition-all">จบเซสชัน</button>
+</div>
+</nav>
+<main class="flex-grow flex flex-col items-center py-10 px-4 md:px-8 max-w-7xl mx-auto w-full">
+<!-- Header Section -->
+<header class="text-center mb-12 space-y-4">
+<h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight">
+                จับคู่แบ่งทีม (Random Assignment)
+            </h1>
+<p class="text-on-surface-variant text-lg max-w-2xl mx-auto">
+                ผู้เข้าร่วมทั้งหมด 12 ท่านเข้าสู่ระบบแล้ว ระบบกำลังสุ่มแบ่งฝ่ายเพื่อเริ่มต้นกระบวนการสันติวิธี
+            </p>
+</header>
+<!-- Team Assignment Grid (Asymmetric) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 w-full items-start">
+<!-- Team A: Dark Teal -->
+<section class="lg:col-span-5 bg-primary-container/10 rounded-[2rem] p-8 border border-primary/5 relative overflow-hidden group">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-on-primary shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold text-primary">ทีม A</h2>
+<span class="text-xs font-bold tracking-widest text-primary/60 uppercase">The Listeners</span>
+</div>
+</div>
+<span class="px-4 py-1 bg-primary text-on-primary rounded-full text-sm font-bold">6 คน</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Real-time Player Cards -->
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="close up profile photo of a smiling thai woman in a cozy indoor setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqzFglURtNYeERF5sbnI8oLj0QobtFh9vr6W3P99QI1MPapAqQaXehPYY0bFXre16PkGJcesfbD-4OEa_D4mGZOB7-Du6yITDq8xgGUiTswc8rp0SSAIWzvJaaek5xAoURoPzUHpuLE03mN3zygKZXfTD6ajZJ_t_fRWPqQ0YrzHwx-Y58-Z8NIWl_pDsSM60n0A97v8aSLlDwN-vpGpnp0OmSrDpcRyAo_bVhCr1Vu-T8iXpC-LN-oz3LO-1ZnCTxSx9R7VWnSmF0"/>
+<span class="font-medium">นรินทร์ธร</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="portrait of a young thai man with glasses in soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAO1_lWimCKfYMNBXVorEBW7gi8fEjzuib3I9eUJyjYDw0huYutYTftb2FHXWmX-VTv0HH9prHeiYB1ww3rUuj1xPj42xnX09ygpffs0fYxIgh15My-Gc9SYn0NVy-8POA3LrxoUBp-KR3O2e7Z-ZArQ0C3q6MUa9buOxOJLyVXBR9vzeDJdixtb8BwXdfb7v5r12Byqiyy4EOjiRF69nAL-tEUPCCrZ_vs_zpClFsGcs9bRBIXipCeu9Pc2z4Vl1cvzHJiN4v-zWy6"/>
+<span class="font-medium">กิตติพงษ์</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="casual photo of a thai woman with long dark hair in a brightly lit room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpEIjVxj3438PRhqGiGn1bdYpi36dJsNlSz73dPj4fpCq5RHnq2EQdYKa2HhDgq9FX3kbqFZOva8wHxMWEWjJgxOH5VkkZV2pDbothz167OO9bWgPVMNkN6GdVo_nUKvp9Y-KCrKw7X4EqK2bl4t2YS9H7jDNJLfthcWRnbq3eCE2Fdq1C2AQ-TM0PZn15BAwXgNUxqLUXyT_5vnRRixIyjzuctKYiJbfOM1WFm9sa_R5qrBaNlvtoum-lXOAftWLAb9GkPt4moeUT"/>
+<span class="font-medium">มลฤดี</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="professional looking thai man in his 30s with a warm expression" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo6J0SmdiUir8VeDMiz2Q6QKYkyFRpfLbXKhoaKbJUfho5UfFFS88w-OtiJ3YjfhFZsv_oGLRe9-7NHFZ0yy3r3Xpbqj1SfLlLmKJe3XP5oYjYt-tJvGVdcMS3hC3hNQU4-N8h4ce1N09PxPop31LBON9TXsBzTjWMij02VOAzWXB3zq4SpiN01Lx6Cvx6kbTusiY1pF74FiO-AZrEdXD6i4t5wRydv9pYBAw70ZY_hmq-G2QNPv3D3kFo9bmPsvIMWLFNCXaWONbJ"/>
+<span class="font-medium">ศักดิ์ชัย</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="cheerful thai woman with short hair and colorful scarf" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBB9IWms4wE0-2gT3jyErPi3lInb5VGwMuMbayI7OSv4zeQ-o1KCvXatsiYuNZtMTBI73yib4ctsw96pyThl-3K4Su3Pqf5nVcU2dMJTLyuzyHUvzyR8tF_L-JgYJT4Gj2Xvl2MrOU_eL0M59FdGot4ni8phZQqDGKwMUu4aprvUHjz5jlda8u8_qLs1g4hlb-VcM9KUYLjOqzJierfVcZea3eK33TjZ3Ctgafkpzi74ic3HEyRHSFNjcXCQ356IkLeRpMA57d6voii"/>
+<span class="font-medium">วรรณิศา</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform border-2 border-dashed border-primary/20">
+<div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-sm">sync</span>
+</div>
+<span class="text-on-surface-variant italic">กำลังสุ่ม...</span>
+</div>
+</div>
+</section>
+<!-- Center Divider / VS -->
+<div class="lg:col-span-2 flex lg:flex-col items-center justify-center gap-4 py-8 lg:py-0">
+<div class="h-px lg:h-32 w-full lg:w-px bg-gradient-to-b from-primary/5 to-tertiary/20"></div>
+<div class="w-16 h-16 rounded-full bg-surface-container-highest border-4 border-background flex items-center justify-center shadow-xl">
+<span class="font-black text-xl text-on-surface-variant">VS</span>
+</div>
+<div class="h-px lg:h-32 w-full lg:w-px bg-gradient-to-t from-tertiary/5 to-primary/20"></div>
+</div>
+<!-- Team B: Soft Orange -->
+<section class="lg:col-span-5 bg-tertiary-fixed/30 rounded-[2rem] p-8 border border-tertiary/5 relative overflow-hidden group">
+<div class="absolute -bottom-12 -left-12 w-32 h-32 bg-tertiary/10 rounded-full blur-3xl group-hover:bg-tertiary/20 transition-all duration-500"></div>
+<div class="flex items-center justify-between mb-8">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-2xl bg-tertiary flex items-center justify-center text-on-tertiary shadow-lg">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">volunteer_activism</span>
+</div>
+<div>
+<h2 class="text-2xl font-bold text-tertiary">ทีม B</h2>
+<span class="text-xs font-bold tracking-widest text-tertiary/60 uppercase">The Empaths</span>
+</div>
+</div>
+<span class="px-4 py-1 bg-tertiary text-on-tertiary rounded-full text-sm font-bold">6 คน</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Real-time Player Cards -->
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="gentle thai man in white shirt sitting in a modern office space" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC95oq_1FKRc87S5wmqClljZAHldV4hp5oy3hr7ldZeVGwWJ0eFdpx8ysAIXLajTKQUXvQlrqZk_NPYfrOHmPLegC6ASFZaJ8E9H0v2U3ZC7vYjEklK8UfCkkbhTFY0YqsnJ5LbtZooJ14flG-7cA8AGkFlGffQx7PEooduBJZSaFgfNk2JQynsy7Dp_Vwidw6FbzJWhRpuLYUokvLIU5OLqVzKoz-lTQlBxhBxbz8nXXHOQPc2fcJdj2Y01UWyoAOomXTzGwQSD-DO"/>
+<span class="font-medium">อภิชาติ</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="stylish thai woman with minimal accessories and soft makeup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpIFqHHflYNniEo0rwVMxEW0JJlOL5pjYKXty_rTB4QIraeHT3FS4Lx_38hWaf1kDcTFWbkWz97AOwtQlcfiqPIGF9ressCrEfPv8ByTipBNx0g2LSnwoM7QNXmE99iHYPEVyG9mPGgDWv2CfTz_mCynrtwKuK9gthbQ6Zm73ljuYc57IA66z4ByJfZroPjdQVMhrfHr8G67l2hLc_t8rCn1vPD7m4ch_IOEMi8pF5pTmqY0odLhG4K6AFBrN9nW13b-47WoP1TRtu"/>
+<span class="font-medium">พรทิพย์</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="kind looking elderly thai man with graying hair and friendly smile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYLyiB8IlEj5ga4FF3VoiGhhsel2vXdqAweG8QsfCVXa-Fi7WkEk5zdS72znodiAgTIiC4bQdKn5b5rhVn-I0tzZXdXiGdkxlSJ-voJrmWXMdDGrZBmGn3vFgwkMVUcY7yGfEKKDXQf1DzUTfsh1Vm0oVjUbCSRqfQWlCu0pPAo12-iGYQU6Rf8i6FOqhYXXtNr-IMt8He5sYfGC2PGK7gDVzW-TKth228sL05NH7jbGamIkn3P2e52gvoU_cukKpyvJMJYSUgZ-61"/>
+<span class="font-medium">ชัยวุฒิ</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="thai woman in early 20s with energetic and positive vibe" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9Kj4Su3N5OrQ1pItYrhtJ9F-tVUvDC8ckJTf_dL4ooiP12rBDMYCifxpQVd4UQCe0rvRxI1PAoo4NJ6yWWFru5CCChxj3WFS2Z-N21bllDj4MKi_27B7jZQamF-25urbAhuh3FB3hxf2uwVdJeTcq1Qdg971K-uQsu8XlGBZJtN1KW9ZArrBcSRTmHbhbp0-n-QbaZmIcEoWb4yrVLEewq29THexSeKbNqRYDNhIlWKYHN9D3x2wRHPPiw-C_ZoSw-MnuBi9Iv4yh"/>
+<span class="font-medium">จิราพร</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform">
+<img alt="User" class="w-10 h-10 rounded-xl object-cover" data-alt="friendly thai student with backpack in campus garden" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4Oo5CRKC30u1l3YKrWKJAwCcphvKfGboFB4dvzEAhuYy9lxfKwmwJWpHJcXNobO_SimrKzMJyH4EbSBC5oA8vmqrtGz6hE_mqA-4iF52BgxWW4kDE_MtR6Hsn6_e5nEWfVONrxnY7kmlf0U1HNgw_cX6kMbCdn8Cm-99Htc03OFoJRB9RKLUqfanVkwDc0Ad0kjPBNV29xM2S38uTTxMad3NINznmlDQEvBTG8eO28zAZEoqlu_QkQHrXP9LkmgLQ7bm205P2rC3m"/>
+<span class="font-medium">ธนพล</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:scale-[1.02] transition-transform border-2 border-dashed border-tertiary/20">
+<div class="w-10 h-10 rounded-xl bg-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary text-sm">sync</span>
+</div>
+<span class="text-on-surface-variant italic">กำลังสุ่ม...</span>
+</div>
+</div>
+</section>
+</div>
+<!-- Facilitator Action -->
+<div class="mt-16 text-center">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-12 py-5 rounded-full text-xl font-bold shadow-[0_12px_40px_-12px_rgba(0,70,74,0.4)] hover:shadow-[0_12px_50px_-12px_rgba(0,70,74,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-3 mx-auto">
+<span class="material-symbols-outlined">style</span>
+                เริ่มเลือกหมวดหมู่การ์ด
+            </button>
+<p class="mt-6 text-on-surface-variant/70 font-medium flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm">info</span>
+                วิทยากรสามารถเปลี่ยนสมาชิกทีมได้โดยการลากและวางก่อนเริ่มเกม
+            </p>
+</div>
+</main>
+<!-- SideNavBar (Hidden on Mobile) -->
+<aside class="hidden lg:fixed left-0 top-0 h-screen w-20 hover:w-64 transition-all duration-500 bg-slate-50 dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800 z-40 group/sidebar">
+<div class="flex flex-col h-full p-4">
+<div class="mb-10 flex items-center gap-4 px-2">
+<div class="w-10 h-10 rounded-xl bg-teal-500 flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-white">meeting_room</span>
+</div>
+<div class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity">
+<h3 class="font-bold text-teal-700 whitespace-nowrap">ห้องประชุม</h3>
+<p class="text-[10px] text-slate-500">Harmony-99</p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 font-semibold rounded-lg flex items-center gap-4 p-3 overflow-hidden" href="#">
+<span class="material-symbols-outlined flex-shrink-0">psychology</span>
+<span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity">สถานการณ์</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg flex items-center gap-4 p-3 overflow-hidden" href="#">
+<span class="material-symbols-outlined flex-shrink-0">favorite</span>
+<span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity whitespace-nowrap">ความรู้สึก</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg flex items-center gap-4 p-3 overflow-hidden" href="#">
+<span class="material-symbols-outlined flex-shrink-0">lightbulb</span>
+<span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity whitespace-nowrap">ความต้องการ</span>
+</a>
+<a class="text-slate-600 dark:text-slate-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg flex items-center gap-4 p-3 overflow-hidden" href="#">
+<span class="material-symbols-outlined flex-shrink-0">analytics</span>
+<span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity">ผลลัพธ์</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full bg-teal-50 text-teal-700 p-3 rounded-xl flex items-center justify-center gap-2 overflow-hidden hover:bg-teal-100 transition-colors">
+<span class="material-symbols-outlined flex-shrink-0">person_add</span>
+<span class="opacity-0 group-hover/sidebar:opacity-100 transition-opacity whitespace-nowrap">เพิ่มผู้เข้าร่วม</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- BottomNavBar (Navigation Shell for specific journey) -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-center gap-8 py-4 px-6 pb-safe bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-100 dark:border-slate-800 shadow-[0_-4px_20px_0_rgba(0,0,0,0.05)] rounded-t-3xl">
+<button class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-6 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-2xl transition-all scale-105 active:scale-95">
+<span class="material-symbols-outlined">arrow_back</span>
+<span class="font-manrope font-semibold text-xs mt-1">ก่อนหน้า</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-200 rounded-2xl px-8 py-2 transition-all scale-105 active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">visibility</span>
+<span class="font-manrope font-semibold text-xs mt-1">เปิดเผยผล</span>
+</button>
+<button class="flex flex-col items-center justify-center text-slate-500 dark:text-slate-400 px-6 py-2 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-2xl transition-all scale-105 active:scale-95">
+<span class="material-symbols-outlined">arrow_forward</span>
+<span class="font-manrope font-semibold text-xs mt-1">ถัดไป</span>
+</button>
+</footer>
+<!-- Background Decoration -->
+<div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden">
+<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-tertiary/5 rounded-full blur-[120px]"></div>
+</div>
+</body></html>

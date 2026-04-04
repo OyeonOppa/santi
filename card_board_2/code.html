@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Resonant Sanctuary - Card Selection Board</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@300;400;500;600&amp;family=Sarabun:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Be Vietnam Pro', 'Sarabun', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        h1, h2, h3, .font-headline {
+            font-family: 'Manrope', 'Sarabun', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(251, 249, 249, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .perspective {
+            perspective: 1000px;
+        }
+        .card-reveal-gradient {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 60%);
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed": "#002021",
+                        "on-background": "#1b1c1c",
+                        "surface-bright": "#fbf9f9",
+                        "inverse-surface": "#303031",
+                        "surface-container-high": "#e9e8e7",
+                        "on-tertiary-fixed-variant": "#6f3818",
+                        "tertiary-container": "#814626",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary-fixed-dim": "#8ad3d7",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "inverse-primary": "#8ad3d7",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#8fd8dc",
+                        "inverse-on-surface": "#f2f0f0",
+                        "surface-dim": "#dbdad9",
+                        "secondary": "#48626e",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "secondary-container": "#cbe7f5",
+                        "tertiary": "#653011",
+                        "surface-container": "#efeded",
+                        "primary": "#00464a",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e3e2e2",
+                        "primary-fixed": "#a6eff3",
+                        "on-secondary-container": "#4e6874",
+                        "surface-container-low": "#f5f3f3",
+                        "error": "#ba1a1a",
+                        "on-surface-variant": "#3f4949",
+                        "on-primary-fixed-variant": "#004f53",
+                        "background": "#fbf9f9",
+                        "on-error": "#ffffff",
+                        "surface": "#fbf9f9",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-fixed": "#341100",
+                        "on-secondary-fixed": "#021f29",
+                        "surface-tint": "#14696d",
+                        "outline": "#6f7979",
+                        "secondary-fixed": "#cbe7f5",
+                        "primary-container": "#006064",
+                        "outline-variant": "#bec8c9",
+                        "on-tertiary-container": "#ffbd9c",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope", "Sarabun"],
+                        "body": ["Be Vietnam Pro", "Sarabun"],
+                        "label": ["Manrope", "Sarabun"]
+                    }
+                },
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface min-h-screen overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<nav class="flex justify-between items-center px-8 h-16 w-full fixed top-0 z-50 bg-stone-50/80 dark:bg-stone-900/80 backdrop-blur-xl shadow-sm dark:shadow-none">
+<div class="text-xl font-bold tracking-tighter text-teal-800 dark:text-teal-200">Resonant Sanctuary</div>
+<div class="hidden md:flex items-center gap-10 font-manrope text-sm tracking-tight">
+<a class="text-teal-700 dark:text-teal-300 font-bold border-b-2 border-teal-600 transition-colors" href="#">Home</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-teal-600 dark:hover:text-teal-200 transition-colors" href="#">Reports</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-teal-600 dark:hover:text-teal-200 transition-colors" href="#">Settings</a>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2 rounded-full font-semibold text-sm transition-transform active:scale-95 duration-200">End Session</button>
+</nav>
+<!-- Side Navigation (Facilitator Tools) -->
+<aside class="hidden lg:flex flex-col h-screen w-64 fixed left-0 top-0 pt-20 pb-6 bg-stone-100 dark:bg-stone-950 font-manrope text-sm">
+<div class="px-8 mb-8">
+<div class="flex items-center gap-3 mb-4">
+<div class="w-10 h-10 rounded-full overflow-hidden">
+<img alt="Facilitator Avatar" class="w-full h-full object-cover" data-alt="professional portrait of a confident middle-aged female facilitator with a warm smile in a modern office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzLh-uUi5o5J3-7Ot38EJcXwzKzGSqZ3Dyf_m8mR3YOLxDNa8fMXfoy0cNdfBObmOr6EVYbFFY5NGwc9g_2cNNwSb-vZ3Qh_TdLWo425kWf6bEOlY9DlEucObB9BmaMwGdtWgCKPhKkjbS9UTk6esHpmPfS9GWOny3T-P3G9BaIPFmDpxYKogEroxiMGEbMQvBho9XtbVYae07Xrx4pXtqj4xBsIT2AnLOHJRZi3Sw-jnAtvt9oPGKWs-YJJKRCb2g9LwM8U1S3X30"/>
+</div>
+<div>
+<p class="font-bold text-teal-900 leading-tight">Facilitator Tools</p>
+<p class="text-xs text-stone-500 uppercase tracking-widest">Seminar Session #402</p>
+</div>
+</div>
+<button class="w-full bg-primary-container text-white py-3 px-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-base">add</span>
+<span>New Scenario</span>
+</button>
+</div>
+<div class="flex-1 flex flex-col gap-1">
+<a class="bg-stone-50 dark:bg-stone-800 text-teal-700 dark:text-teal-200 rounded-l-full ml-4 pl-4 py-3 font-semibold shadow-sm flex items-center gap-3 transition-all translate-x-1" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span>Game Board</span>
+</a>
+<a class="text-stone-600 dark:text-stone-400 px-8 py-3 flex items-center gap-3 hover:bg-stone-200 dark:hover:bg-stone-800 transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span>Participants</span>
+</a>
+<a class="text-stone-600 dark:text-stone-400 px-8 py-3 flex items-center gap-3 hover:bg-stone-200 dark:hover:bg-stone-800 transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span>Session Analytics</span>
+</a>
+<a class="text-stone-600 dark:text-stone-400 px-8 py-3 flex items-center gap-3 hover:bg-stone-200 dark:hover:bg-stone-800 transition-all" href="#">
+<span class="material-symbols-outlined">timer</span>
+<span>Timer</span>
+</a>
+</div>
+<div class="px-8 mt-auto">
+<div class="p-4 bg-tertiary-fixed rounded-xl border border-tertiary/10">
+<p class="text-on-tertiary-fixed font-bold text-xs mb-1">CURRENT PHASE</p>
+<p class="text-tertiary font-medium">Empathy Mapping</p>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="lg:ml-64 pt-24 pb-12 px-6 md:px-12">
+<header class="mb-12 max-w-4xl">
+<h1 class="text-4xl md:text-5xl font-extrabold text-primary tracking-tight mb-4 leading-tight">กระดานเลือกกรณีศึกษา</h1>
+<p class="text-on-surface-variant text-lg leading-relaxed font-light">เลือกหนึ่งในการ์ดเพื่อเริ่มการสนทนาเกี่ยวกับความขัดแย้งด้านที่ดินในระดับท้องถิ่น เพื่อทำความเข้าใจความต้องการและมุมมองที่แตกต่าง</p>
+</header>
+<div class="grid grid-cols-12 gap-8">
+<!-- Game Board Grid -->
+<div class="col-span-12 xl:col-span-8">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+<!-- Card 1 (Revealed: Dam Construction) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Dam Construction" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnWooY7kU1RYYrttimt4F1z1npnikHiCEyVPu75sH_w1paKpfJ3zBMzFBuP_5o2RmpoyYtW8wq_VqBMiYbTsrckEE8d0rO8B1hPZrfHWaq6AC4c44InvddSxTe8T-m-VOlfbJ7vVrLS5QvvISM_LteKJf7qhhpH5ciBt9em_3256BV82adAsTEDFEqoGa48wWrMHaMqHPX4XPu96rG1boFOyrIUK_E7_WPovU1nP1KFqOHhjaiX4LOHouztMVXKAZukqLrKOvew6ko"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Infrastructure</p>
+<h3 class="text-white font-bold text-sm leading-tight">โครงการสร้างเขื่อนกักเก็บน้ำ</h3>
+</div>
+</div>
+<!-- Card 2 (Revealed: Industrial Zone) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Industrial Zone" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD4ewUIUhYuH7ms8L8Oy2Eca6M7W4mMa4BoxsI-ywT1lUkBYmtUTfOObGTy-O0Xy4Gl6wZKavyKoTWNp1HDWO9Mw9eAfSqLJgucFfCAaxSIJDRum-PqY4e7nImoSyvinhDathvcg6hcs49UC5JQjVzQxbwst9fmdkHGSwoA0LlJhJyIwFgffDpmMFJDVAM6af6yTVH0KjZDS28T3q5nqYOY23sVKxt3sJq82R4nwEh_SUoL99QOIzXhehlGBcHqbnV7gJjHW472-cIv"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Development</p>
+<h3 class="text-white font-bold text-sm leading-tight">เขตนิคมอุตสาหกรรมใหม่</h3>
+</div>
+</div>
+<!-- Card 3 (Mystery) -->
+<div class="aspect-[3/4] bg-surface-container rounded-2xl p-4 flex items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/40 transition-colors cursor-pointer group">
+<div class="text-center">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">question_mark</span>
+</div>
+<span class="text-[10px] font-label text-stone-400 font-bold tracking-widest uppercase">Mystery #03</span>
+</div>
+</div>
+<!-- Card 4 (Revealed: Heritage Dispute) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Land Ownership" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBq7_YfFqwX8vLLGvjW-RqZd5Pcek4U01geS0sXPop8ih_OBM8QcoallKLJfNPZuaHfR3-OIW0ycPR9WsUG7eNGornDzNSA57xo-Fjk8-yo-BW6VGG2YH05G2ault8EAx_VQDhdkFUAGMkxPxQlZA-xaLk1UMLXXkkfvW7cO3v5j3b4Hpw740BNbjxEkpO7079MgS8OMJJ-MzMvM50yKI-nmxKgvU7KdUj8CiMKMTwcQ5C5CaGAs-RDsRGgKKWnaWefatCL9N0mCiIL"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Ownership</p>
+<h3 class="text-white font-bold text-sm leading-tight">ข้อพิพาทกรรมสิทธิ์ที่ดินมรดก</h3>
+</div>
+</div>
+<!-- Card 5 (Revealed: Forest Reserve) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Forest" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA-ZUs2nXZI05P8uN5rei43_mYj_ddp4M4jqi6UBRvyGZUJXwzo0KFBV9bz-XKxWdSqnpktU5zuF0bvecwSyxSN7nUslYk04VuCoAeYej1eNEzWBHUj8od1ZDxafxXCYwIKne4S1dGKi35FUCr7guhnYZLTpMCVEDXHYZLukssR29AG645Cp-nILscz-2Wgrm8d6rGLCcarPBk_4Hk2vSdZl_P0iUGcX-5RAfeOH3Clz1qLv5EvDLgQMI_lV1GMpw1dVr37ugPh-JQ"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Conservation</p>
+<h3 class="text-white font-bold text-sm leading-tight">พื้นที่ป่าสงวนทับซ้อนที่ทำกิน</h3>
+</div>
+</div>
+<!-- Card 6 (Mystery) -->
+<div class="aspect-[3/4] bg-surface-container rounded-2xl p-4 flex items-center justify-center border-2 border-dashed border-outline-variant/30 hover:border-primary/40 transition-colors cursor-pointer group">
+<div class="text-center">
+<div class="w-16 h-16 bg-primary/5 rounded-full flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary text-3xl">question_mark</span>
+</div>
+<span class="text-[10px] font-label text-stone-400 font-bold tracking-widest uppercase">Mystery #06</span>
+</div>
+</div>
+<!-- Card 7 (Revealed: Mining Rights) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Mining" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxorWcs21CpyM67ffzdOx9RsbddE4RVctwoAbJnz8T1lkE7IEGyg4CzXKnsQDwbCpKnFP2yezjNmSaZnUpBnUa4TTZfBWg2IQabZjimDLPNbxx4oI-GJoZbmtqloSh4sMdXojUvySqF2h3PYmFR-4QbeiJFops5U8XDz8oXD-wmdNt3zsgrgOBLVzaYpCVbZOCzaKnP3YzUk0ltYZu2Hosx8d1eb0HY0vxoZQEPAB0s0sxy3uMCJyBL_UcOpy-smIxjYJ0zyhMvDX1"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Resources</p>
+<h3 class="text-white font-bold text-sm leading-tight">สัมปทานเหมืองแร่ในชุมชน</h3>
+</div>
+</div>
+<!-- Card 8 (Revealed: Urban Expansion) -->
+<div class="aspect-[3/4] bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all border border-outline-variant/10 cursor-pointer group relative">
+<img alt="Urban" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOhAy478iKoGBAOve-W3aBb_KUX6HYN_7P6_xGbRt-JtgljMsJP4nqljplBECBQ4qUPPLfsRKB2d-gUXcOfZpWEUnT1yK1Tc4DEhQHAOiCpq8oibTwNiQctnjblfyM8EcPZQPjt60qCVmLqrkL7Njf601eTX2bW1g1pNtDqeJySBw4KLsUX8czdmEp7VdS545qNlmBBFVtDaVeMOccerDMGWznPvUeMtsp2lmiYoiPgYAfGh5losiOe-0rTPdlKTlNKF5lXOdqCamq"/>
+<div class="absolute inset-0 card-reveal-gradient flex flex-col justify-end p-5">
+<p class="text-[10px] font-bold text-teal-300 uppercase tracking-widest mb-1">Urbanization</p>
+<h3 class="text-white font-bold text-sm leading-tight">การขยายตัวของเมืองสู่พื้นที่เกษตร</h3>
+</div>
+</div>
+</div>
+<!-- FAB-like button for random opening -->
+<div class="flex justify-center mt-12">
+<button class="group flex items-center gap-4 bg-gradient-to-r from-primary to-primary-container text-white px-10 py-5 rounded-full shadow-lg shadow-primary/20 hover:scale-105 transition-all active:scale-95">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-180 transition-transform duration-500">casino</span>
+<span class="text-lg font-bold tracking-tight">สุ่มเปิดการ์ด</span>
+</button>
+</div>
+</div>
+<!-- History Sidebar -->
+<div class="col-span-12 xl:col-span-4">
+<div class="bg-surface-container-low rounded-3xl p-8 sticky top-24">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-xl font-extrabold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined">history</span>
+                        ประวัติการเลือก
+                    </h2>
+<span class="text-xs font-bold text-stone-400 bg-stone-200 px-2 py-1 rounded">3 คาร์ด</span>
+</div>
+<div class="space-y-6">
+<!-- History Item 1 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Scenario thumbnail" class="w-full h-full object-cover" data-alt="view of a small wooden hut in a dense tropical forest with sunbeams filtering through leaves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZ7reoQ6r-Ut_RRgtPq3rnjCGIzzECEyZcJEtChCOClsaKsp87Ym6PFHI-rJdFvByxP6PfY-Xoki30oYoYF2cC7c-3Q6ptnKffy9kVPwHcXEqPqEpB2qPAD8bpr9AT9vzqHEz9KtzYzfU3EOs62RlPbjmM6djdbvGQiY2p8_IwO_W5MqPApCO_HwIfVVboHeUMr-ysGhnarMPmP4BmaCBaQofriNvnLzBOFsAYR_s-H4jWvhMNzLeqbNuoO-L_kIdCvsEDjDbVJQ6W"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-on-surface truncate">สิทธิทำกินในป่าชุมชน</p>
+<p class="text-xs text-on-surface-variant line-clamp-2 mt-1">ผู้ร่วมเสวนา 12 คน | ความขัดแย้ง: การอนุรักษ์ vs วิถีชีวิต</p>
+</div>
+</div>
+<!-- History Item 2 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Scenario thumbnail" class="w-full h-full object-cover" data-alt="close up of red clay soil being held by calloused hands of a local farmer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDXd8-BdJ4RuX5klGJHRkDMFdtNK1CbmRaGZ6W_XHajZOTCmIFjP6kN9JgdSayn99fPsNnY8DHyL4cayT6jGCuIxbY-GW-BjNRZXzF42JgxfbRLKm02dDa93M3PSSahw6Q4JdMme79z8NgUlTRwuceSNr1uM4MWRIpA7S2Ip1q0t9T3-Wc-PEufESlinu6J6ooVSAezmuFVFt6dZtEYEfoGiGP1jtrk927UkLhqZ7QvWunNrDrWJfForDeKnyQWa5gsNDnZaj1R8XFr"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-on-surface truncate">การขยายเขตเศรษฐกิจพิเศษ</p>
+<p class="text-xs text-on-surface-variant line-clamp-2 mt-1">ผู้ร่วมเสวนา 8 คน | ความขัดแย้ง: การพัฒนา vs กรรมสิทธิ์</p>
+</div>
+</div>
+<!-- History Item 3 -->
+<div class="flex gap-4 items-start group cursor-pointer">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0">
+<img alt="Scenario thumbnail" class="w-full h-full object-cover" data-alt="panoramic view of misty mountain range at sunrise with silhouetted trees in foreground" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKNjJ8YGxsPIHm4bq6FKo_7vFIJq4G0lg66rhA0y37rQr50LbQxxz0lCbSe23LpbTZ0fXPuGfVWU7pB9hUs0Jch0_PktqlCCJ7MPhYZBr3cEDd8bVigRHJQCSed_zNzwYsKhsu49tdqZX5cNZmBo_M4oloRfcWcn089K1xOcVTEnNPYri64APUtMMOTk3gBsxV3oGMYOLfLVvEQmUnDGFfyFKXIFzMKFgUvaYtWv2s7-_w_n6MgzwyYR7v8LpNywrW8LBasGma7HYv"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-on-surface truncate">ที่ดินมรดกที่ไม่มีโฉนด</p>
+<p class="text-xs text-on-surface-variant line-clamp-2 mt-1">ผู้ร่วมเสวนา 15 คน | ความขัดแย้ง: กฎหมาย vs จารีต</p>
+</div>
+</div>
+</div>
+<div class="mt-12 p-6 bg-secondary-container rounded-2xl">
+<p class="text-on-secondary-container text-sm font-medium italic">"เป้าหมายไม่ใช่การหาผู้ถูก แต่คือการหาความต้องการที่แท้จริงที่ซ่อนอยู่ใต้ความขัดแย้ง"</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Expanded Modal / Centered Card View (Hidden by default in flow, but kept as placeholder for active state) -->
+<div class="fixed inset-0 z-[100] flex items-center justify-center px-4 pointer-events-none opacity-0 transition-opacity">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-stone-900/40 backdrop-blur-md"></div>
+<!-- Active Card Content -->
+<div class="relative w-full max-w-5xl bg-surface-container-lowest rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[921px]">
+<!-- Visual Section -->
+<div class="md:w-1/2 relative min-h-[300px]">
+<img alt="Selected Land Conflict" class="absolute inset-0 w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCREdaLdNyS445QMKqfFU8iZNEUcLRtmMTjBNvUnDWFpSpC0ucjtK7iyydOBrHej2TEIOYWofS-xg_tU3AxB_DaMhsiEAhRzHGu9wc4Y0kfcICCl8Z3vWJGqvR7blzfGlvptcjleM5_ImP71AzbuxnRuHWPl03XKZFvyv4vVfEYM5yZYNCvBun65QcDeGEB6WE5agP0S46whF-4I39_GbWi0A3rpzpwzXaHyab8iUZCks2IYeOj5hrbt99VkcNSV7EnFz26I9Vu6uCf"/>
+<div class="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8">
+<span class="inline-block bg-tertiary-fixed px-3 py-1 rounded-full text-on-tertiary-fixed text-xs font-bold uppercase tracking-wider mb-3">Active Scenario</span>
+<h2 class="text-3xl font-extrabold text-white leading-tight">กรณีพิพาทที่ดิน: อุทยานแห่งชาติ vs ชุมชนดั้งเดิม</h2>
+</div>
+</div>
+<!-- Context Section -->
+<div class="md:w-1/2 p-10 md:p-14 overflow-y-auto bg-surface-container-lowest">
+<button class="absolute top-6 right-8 w-12 h-12 flex items-center justify-center rounded-full bg-surface-variant/20 hover:bg-surface-variant/40 transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">close</span>
+</button>
+<div class="mb-10">
+<p class="text-on-surface-variant text-lg leading-relaxed mb-6">
+                    ชาวบ้านอาศัยอยู่ในพื้นที่นี้มาหลายชั่วอายุคน แต่กฎหมายที่ประกาศในภายหลังกำหนดให้เป็นเขตอุทยานฯ ทำให้การทำเกษตรและการใช้ทรัพยากรกลายเป็นเรื่องผิดกฎหมาย
+                </p>
+<div class="flex flex-wrap gap-2 mb-8">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-lg text-xs font-semibold">#สิทธิที่ดิน</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-lg text-xs font-semibold">#การอนุรักษ์</span>
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-lg text-xs font-semibold">#สิทธิชุมชน</span>
+</div>
+</div>
+<div class="p-8 bg-tertiary-fixed rounded-[2rem] relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 text-tertiary-container/10">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">format_quote</span>
+</div>
+<p class="text-xs font-bold text-on-tertiary-fixed-variant uppercase tracking-widest mb-4">Deep Empathy Question</p>
+<h3 class="text-2xl font-bold text-on-tertiary-fixed leading-snug relative z-10">
+                    "หากคุณเป็นหัวหน้าอุทยานฯ ที่ต้องรักษากฎหมาย และเป็นลูกหลานชาวบ้านที่ต้องรักษาที่ดินของบรรพบุรุษ คุณจะมองเห็นทางออกที่ปกป้องทั้ง 'ป่า' และ 'คน' ได้อย่างไร?"
+                </h3>
+</div>
+<div class="mt-12 flex gap-4">
+<button class="flex-1 bg-primary text-on-primary py-4 rounded-full font-bold flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all">
+<span>เริ่มการเสวนา</span>
+<span class="material-symbols-outlined">play_circle</span>
+</button>
+<button class="px-6 border border-outline-variant/30 text-on-surface-variant rounded-full hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

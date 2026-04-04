@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html lang="th"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Sarabun:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-container": "#006064",
+                    "tertiary-fixed-dim": "#ffb691",
+                    "inverse-primary": "#8ad3d7",
+                    "primary": "#00464a",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#a6eff3",
+                    "tertiary": "#653011",
+                    "surface": "#fbf9f9",
+                    "surface-container-lowest": "#ffffff",
+                    "primary-fixed-dim": "#8ad3d7",
+                    "surface-bright": "#fbf9f9",
+                    "on-primary-fixed-variant": "#004f53",
+                    "on-tertiary-fixed-variant": "#6f3818",
+                    "surface-variant": "#e3e2e2",
+                    "on-tertiary-container": "#ffbd9c",
+                    "error": "#ba1a1a",
+                    "secondary-container": "#cbe7f5",
+                    "surface-dim": "#dbdad9",
+                    "on-surface-variant": "#3f4949",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#e3e2e2",
+                    "inverse-on-surface": "#f2f0f0",
+                    "error-container": "#ffdad6",
+                    "surface-tint": "#14696d",
+                    "surface-container-low": "#f5f3f3",
+                    "on-surface": "#1b1c1c",
+                    "surface-container": "#efeded",
+                    "outline-variant": "#bec8c9",
+                    "on-primary": "#ffffff",
+                    "outline": "#6f7979",
+                    "on-secondary-fixed-variant": "#304a55",
+                    "on-primary-fixed": "#002021",
+                    "on-tertiary-fixed": "#341100",
+                    "on-secondary-fixed": "#021f29",
+                    "surface-container-high": "#e9e8e7",
+                    "on-secondary-container": "#4e6874",
+                    "tertiary-fixed": "#ffdbcb",
+                    "secondary-fixed": "#cbe7f5",
+                    "tertiary-container": "#814626",
+                    "secondary-fixed-dim": "#afcbd8",
+                    "on-primary-container": "#8fd8dc",
+                    "background": "#fbf9f9",
+                    "on-background": "#1b1c1c",
+                    "secondary": "#48626e",
+                    "on-error-container": "#93000a",
+                    "on-error": "#ffffff",
+                    "inverse-surface": "#303031"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope", "Sarabun"],
+                    "body": ["Be Vietnam Pro", "Sarabun"],
+                    "label": ["Manrope", "Sarabun"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top Navigation Anchor -->
+<header class="bg-cyan-900/80 backdrop-blur-md dark:bg-slate-900/80 text-cyan-50 dark:text-cyan-200 font-headline font-bold text-lg tracking-tight docked full-width top-0 sticky z-50 shadow-xl shadow-cyan-950/5 flex justify-between items-center px-6 py-4 w-full">
+<div class="flex items-center gap-3">
+<span class="text-xl font-bold text-cyan-50 dark:text-cyan-100 tracking-wide">Santi Harmony</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:bg-cyan-800/50 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="timer">timer</span>
+</button>
+<button class="hover:bg-cyan-800/50 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+</button>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-6 pt-12 pb-32">
+<!-- Editorial Header Section -->
+<section class="mb-16 md:ml-12 max-w-2xl">
+<span class="text-on-tertiary-fixed-variant font-label text-xs tracking-[0.2em] mb-4 block uppercase">Step 01 — Selection</span>
+<h1 class="text-4xl md:text-5xl font-headline font-extrabold text-primary mb-6 leading-tight">
+            เลือกหมวดหมู่สถานการณ์<br/>
+<span class="text-on-surface-variant font-medium text-2xl md:text-3xl">(Select Category)</span>
+</h1>
+<p class="text-lg text-on-surface-variant leading-relaxed opacity-80">
+            เลือกหัวข้อความขัดแย้งที่คุณต้องการสำรวจในเซสชันนี้ เพื่อทำความเข้าใจมุมมองที่แตกต่างและหาทางออกร่วมกันอย่างสร้างสรรค์
+        </p>
+</section>
+<!-- Category Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
+<!-- 1. Natural Resources -->
+<div class="group relative overflow-hidden rounded-3xl bg-surface-container-low transition-all duration-300 hover:shadow-2xl border border-outline-variant/10 flex flex-col">
+<div class="absolute inset-0 z-0 opacity-10 group-hover:opacity-20 transition-opacity">
+<img class="w-full h-full object-cover" data-alt="misty morning over a lush green tropical forest" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbEdDr4O32I5L_CIySIIWdW862Ap9WwHP5e-zRsw_GG4rJZsL_qHMzDI3eea9iVQFPJO0WXi2YC8HrOHDLg1wBMkxeWMBNVfFGs98kxSzein7UMaaA4RzSkYJfpaEeTjK85p5ksinK3aoK19ZIDiyu61qxWvbwOqSLvpPn5JkMiuRwFaOL_RgHYfsTCgFFFJ9mxDIbcrtvstt7_5HuQ5w6PmVuPzhDUHoTKR90-fOz8sCZ4OmlkM-Wnp1avYZWS1IVgIWaliaZDbnd"/>
+</div>
+<div class="relative z-10 p-8 flex flex-col flex-grow justify-between">
+<div>
+<div class="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center text-on-primary mb-6 shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-3xl" data-icon="forest">forest</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-3">ทรัพยากรธรรมชาติ<br/><span class="text-lg font-medium opacity-70">(Natural Resources)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">การจัดการที่ดิน แหล่งน้ำ ป่าไม้ และผลกระทบต่อวิถีชีวิตของคนในชุมชน</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl bg-primary text-on-primary font-bold hover:brightness-110 transition-all flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- 2. Government Policy -->
+<div class="group bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 hover:bg-surface-container transition-all duration-300">
+<div>
+<div class="w-14 h-14 bg-secondary-container rounded-2xl flex items-center justify-center text-on-secondary-container mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="account_balance">account_balance</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-3">นโยบายรัฐบาล<br/><span class="text-lg font-medium opacity-70">(Government Policy)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">ข้อกำหนด กฎหมาย หรือโครงการพัฒนาของรัฐที่ส่งผลกระทบต่อท้องถิ่น</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl border border-outline-variant/30 text-on-secondary-container font-bold hover:bg-secondary-container/50 transition-colors flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- 3. Social Welfare -->
+<div class="group bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 hover:bg-surface-container transition-all duration-300">
+<div>
+<div class="w-14 h-14 bg-cyan-100 rounded-2xl flex items-center justify-center text-cyan-900 mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="volunteer_activism">volunteer_activism</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-3">สวัสดิการสังคม<br/><span class="text-lg font-medium opacity-70">(Social Welfare)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">การเข้าถึงบริการสาธารณสุข การศึกษา และความเท่าเทียมในการรับสิทธิประโยชน์</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl border border-outline-variant/30 text-on-secondary-container font-bold hover:bg-secondary-container/50 transition-colors flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- 4. Culture & Beliefs -->
+<div class="group bg-tertiary-container/5 rounded-3xl p-8 border border-tertiary-container/10 flex flex-col justify-between hover:shadow-xl hover:bg-tertiary-container/10 transition-all duration-300">
+<div>
+<div class="w-14 h-14 bg-tertiary-fixed rounded-2xl flex items-center justify-center text-on-tertiary-fixed mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="diversity_3" style="font-variation-settings: 'FILL' 1;">diversity_3</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-tertiary mb-3">วัฒนธรรมและความเชื่อ<br/><span class="text-lg font-medium opacity-70">(Culture &amp; Beliefs)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">ความขัดแย้งเชิงคุณค่า ประเพณีดั้งเดิม และความเชื่อที่แตกต่างในสังคม</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl bg-tertiary-fixed text-on-tertiary-fixed font-bold hover:brightness-95 transition-all flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- 5. Urban Planning -->
+<div class="group bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 hover:bg-surface-container transition-all duration-300">
+<div>
+<div class="w-14 h-14 bg-stone-200 rounded-2xl flex items-center justify-center text-stone-700 mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="location_city">location_city</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-3">การจัดการผังเมือง<br/><span class="text-lg font-medium opacity-70">(Urban Planning)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">การใช้ประโยชน์ที่ดินในเขตเมือง ทางสาธารณะ และการขยายตัวของเมืองที่ทับซ้อนชุมชน</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl border border-outline-variant/30 text-on-secondary-container font-bold hover:bg-secondary-container/50 transition-colors flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- 6. Human Rights -->
+<div class="group bg-surface-container-low rounded-3xl p-8 flex flex-col justify-between border border-outline-variant/10 hover:bg-surface-container transition-all duration-300">
+<div>
+<div class="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-red-700 mb-6">
+<span class="material-symbols-outlined text-3xl" data-icon="balance">balance</span>
+</div>
+<h3 class="text-2xl font-headline font-bold text-primary mb-3">สิทธิมนุษยชน<br/><span class="text-lg font-medium opacity-70">(Human Rights)</span></h3>
+<p class="text-on-surface-variant leading-relaxed">เสรีภาพในการแสดงออก การละเมิดสิทธิส่วนบุคคล และความเท่าเทียมทางศักดิ์ศรี</p>
+</div>
+<div class="mt-8">
+<button class="w-full py-4 rounded-xl border border-outline-variant/30 text-on-secondary-container font-bold hover:bg-secondary-container/50 transition-colors flex justify-center items-center gap-2">
+<span>เลือก (Select)</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Collaborative Note -->
+<section class="mt-24 grid md:grid-cols-2 items-center gap-12 bg-surface-container-high rounded-[2.5rem] p-10 md:p-16">
+<div>
+<h4 class="text-xl font-headline font-bold text-primary mb-4 italic">"สันติภาพไม่ใช่การขาดหายไปของความขัดแย้ง แต่คือความสามารถในการรับมือกับความขัดแย้งด้วยวิธีการที่สันติ"</h4>
+<p class="text-on-surface-variant opacity-80">การเลือกหมวดหมู่ที่เหมาะสมเป็นก้าวแรกที่สำคัญในการเปิดพื้นที่สำหรับการสนทนาที่มีคุณภาพ</p>
+</div>
+<div class="flex justify-center md:justify-end">
+<div class="w-24 h-24 rounded-full border-4 border-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="groups">groups</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-stone-50/95 backdrop-blur-xl dark:bg-slate-950/95 shadow-[0_-4px_24px_rgba(0,0,0,0.04)] rounded-t-3xl z-50">
+<!-- Item 1: Active (หัวข้อ) -->
+<a class="flex flex-col items-center justify-center bg-cyan-100 dark:bg-cyan-900/40 text-cyan-900 dark:text-cyan-100 rounded-2xl px-5 py-2 scale-105 transition-all" href="#">
+<span class="material-symbols-outlined text-cyan-800 dark:text-cyan-400" data-icon="category" style="font-variation-settings: 'FILL' 1;">category</span>
+<span class="font-sarabun text-xs font-medium tracking-wide mt-1">หัวข้อ</span>
+</a>
+<!-- Item 2: Inactive (การสนทนา) -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-slate-500 px-5 py-2 opacity-60 hover:text-cyan-700 dark:hover:text-cyan-300 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-sarabun text-xs font-medium tracking-wide mt-1">การสนทนา</span>
+</a>
+<!-- Item 3: Inactive (สะท้อนคิด) -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-slate-500 px-5 py-2 opacity-60 hover:text-cyan-700 dark:hover:text-cyan-300 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-sarabun text-xs font-medium tracking-wide mt-1">สะท้อนคิด</span>
+</a>
+<!-- Item 4: Inactive (สรุปผล) -->
+<a class="flex flex-col items-center justify-center text-stone-400 dark:text-slate-500 px-5 py-2 opacity-60 hover:text-cyan-700 dark:hover:text-cyan-300 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="task_alt">task_alt</span>
+<span class="font-sarabun text-xs font-medium tracking-wide mt-1">สรุปผล</span>
+</a>
+</nav>
+</body></html>

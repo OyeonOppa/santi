@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Santi Harmony - Facilitator Suite</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#8fd8dc",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e3e2e2",
+                        "on-tertiary-container": "#ffbd9c",
+                        "on-primary-fixed": "#002021",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#a6eff3",
+                        "primary": "#00464a",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#bec8c9",
+                        "on-surface-variant": "#3f4949",
+                        "surface-bright": "#fbf9f9",
+                        "secondary-fixed-dim": "#afcbd8",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dbdad9",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-container": "#814626",
+                        "on-secondary-fixed-variant": "#304a55",
+                        "inverse-primary": "#8ad3d7",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#6f7979",
+                        "secondary-fixed": "#cbe7f5",
+                        "inverse-on-surface": "#f2f0f0",
+                        "secondary": "#48626e",
+                        "surface-container-high": "#e9e8e7",
+                        "on-primary-fixed-variant": "#004f53",
+                        "surface": "#fbf9f9",
+                        "on-background": "#1b1c1c",
+                        "inverse-surface": "#303031",
+                        "primary-container": "#006064",
+                        "on-secondary-container": "#4e6874",
+                        "background": "#fbf9f9",
+                        "tertiary": "#653011",
+                        "surface-container": "#efeded",
+                        "on-tertiary-fixed": "#341100",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb691",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#6f3818",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f5f3f3",
+                        "primary-fixed-dim": "#8ad3d7",
+                        "surface-container-highest": "#e3e2e2",
+                        "on-secondary-fixed": "#021f29",
+                        "secondary-container": "#cbe7f5",
+                        "tertiary-fixed": "#ffdbcb",
+                        "surface-tint": "#14696d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Manrope"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Manrope"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        h1, h2, h3 { font-family: 'Manrope', sans-serif; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl border-none bg-surface-container-low shadow-sm shadow-cyan-900/5 flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold bg-gradient-to-br from-cyan-900 to-cyan-700 bg-clip-text text-transparent dark:from-cyan-100 dark:to-cyan-400">Santi Harmony</span>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-zinc-500 dark:text-zinc-400 font-medium hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-colors p-2 rounded-full active:scale-95 duration-200">timer</button>
+<button class="material-symbols-outlined text-zinc-500 dark:text-zinc-400 font-medium hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-colors p-2 rounded-full active:scale-95 duration-200">settings</button>
+<button class="material-symbols-outlined text-zinc-500 dark:text-zinc-400 font-medium hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50 transition-colors p-2 rounded-full active:scale-95 duration-200">account_circle</button>
+</div>
+</header>
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-64px)] w-72 p-4 flex flex-col gap-2 bg-zinc-50 dark:bg-zinc-900 border-r-0">
+<div class="mb-6 px-3">
+<h2 class="text-lg font-bold text-cyan-900 dark:text-cyan-50 font-headline">Facilitator Suite</h2>
+<p class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Managing The Resonant Sanctuary</p>
+</div>
+<nav class="flex flex-col gap-1">
+<a class="flex items-center gap-3 bg-white dark:bg-zinc-800 text-cyan-900 dark:text-cyan-100 rounded-xl p-3 shadow-sm shadow-cyan-900/5 transition-all scale-102" href="#">
+<span class="material-symbols-outlined" data-icon="tune">tune</span>
+<span class="font-manrope text-sm font-medium">Workshop Controls</span>
+</a>
+<a class="flex items-center gap-3 text-zinc-500 dark:text-zinc-400 p-3 hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="format_size">format_size</span>
+<span class="font-manrope text-sm font-medium">Display Settings</span>
+</a>
+<a class="flex items-center gap-3 text-zinc-500 dark:text-zinc-400 p-3 hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+<span class="font-manrope text-sm font-medium">Room Management</span>
+</a>
+<a class="flex items-center gap-3 text-zinc-500 dark:text-zinc-400 p-3 hover:translate-x-1 transition-transform duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-manrope text-sm font-medium">Participants</span>
+</a>
+</nav>
+<div class="mt-auto p-4 bg-surface-container-high/50 backdrop-blur-md rounded-2xl border border-white/20">
+<button class="w-full py-3 px-4 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-full font-headline text-sm font-semibold shadow-lg shadow-primary/20 active:scale-95 transition-all">
+                Launch Projector
+            </button>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-72 pt-16 min-h-screen">
+<div class="max-w-6xl mx-auto px-12 py-12">
+<!-- Header Section -->
+<div class="mb-12">
+<span class="text-[0.75rem] font-headline font-extrabold uppercase tracking-widest text-on-secondary-container mb-2 block">Control Center</span>
+<h1 class="text-5xl font-extrabold text-primary tracking-tight mb-4 leading-tight">Workshop Controls</h1>
+<p class="text-lg text-secondary max-w-2xl leading-relaxed">Adjust the rhythmic flow of your sanctuary. Manage session timing and participant visibility to maintain a safe, focused dialogue.</p>
+</div>
+<!-- Bento Grid of Controls -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Workshop Timers - Primary Section -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<section class="bg-surface-container-low rounded-[1.5rem] p-8">
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold text-primary flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-container" data-icon="hourglass_empty">hourglass_empty</span>
+                                Phase Timers
+                            </h2>
+<span class="px-4 py-1 bg-secondary-container text-on-secondary-container rounded-full text-xs font-bold uppercase tracking-tighter">Auto-Transition Enabled</span>
+</div>
+<div class="space-y-6">
+<!-- Analysis Phase -->
+<div class="group bg-surface-container-lowest rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/5 border border-transparent hover:border-outline-variant/20">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/5 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Analysis Phase</h3>
+<p class="text-sm text-zinc-500">Initial silent observation and tagging</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<span class="block text-2xl font-extrabold text-primary tabular-nums">15:00</span>
+<button class="text-xs font-bold text-primary-container uppercase tracking-widest">Adjust</button>
+</div>
+<button class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Discussion Phase -->
+<div class="group bg-surface-container-lowest rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/5 border border-transparent hover:border-outline-variant/20">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Discussion Phase</h3>
+<p class="text-sm text-zinc-500">Active dialogue and resonant sharing</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<span class="block text-2xl font-extrabold text-primary tabular-nums">25:00</span>
+<button class="text-xs font-bold text-primary-container uppercase tracking-widest">Adjust</button>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Reflection Phase -->
+<div class="group bg-surface-container-lowest rounded-2xl p-6 transition-all hover:scale-[1.01] hover:shadow-xl hover:shadow-primary/5 border border-transparent hover:border-outline-variant/20">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" data-icon="self_improvement">self_improvement</span>
+</div>
+<div>
+<h3 class="font-bold text-on-surface">Reflection Phase</h3>
+<p class="text-sm text-zinc-500">Closing insights and future commitments</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<span class="block text-2xl font-extrabold text-primary tabular-nums">10:00</span>
+<button class="text-xs font-bold text-primary-container uppercase tracking-widest">Adjust</button>
+</div>
+<button class="w-12 h-12 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Room Management -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-8">
+<h2 class="text-2xl font-bold text-primary mb-8 flex items-center gap-3">
+<span class="material-symbols-outlined" data-icon="meeting_room">meeting_room</span>
+                            Room Management
+                        </h2>
+<div class="grid grid-cols-2 gap-6">
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10">
+<label class="text-[0.65rem] font-bold uppercase tracking-widest text-secondary block mb-2">Room Code</label>
+<div class="flex items-center justify-between bg-surface-variant/30 px-4 py-3 rounded-xl">
+<span class="text-2xl font-extrabold tracking-[0.2em] text-primary">RESO-742</span>
+<button class="material-symbols-outlined text-primary" data-icon="edit">edit</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/10 flex flex-col justify-center">
+<label class="text-[0.65rem] font-bold uppercase tracking-widest text-error block mb-2">Danger Zone</label>
+<button class="w-full py-3 px-4 border border-error/30 text-error rounded-full font-headline text-sm font-bold hover:bg-error-container/20 transition-colors">
+                                    Reset Session
+                                </button>
+</div>
+</div>
+</section>
+</div>
+<!-- Sidebar Content (Display & Participants) -->
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<!-- Display Settings Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-8 h-fit">
+<h2 class="text-xl font-bold text-primary mb-6">Display Settings</h2>
+<div class="space-y-6">
+<div>
+<label class="text-xs font-bold text-zinc-500 uppercase tracking-widest block mb-4">Projector Font Size</label>
+<div class="flex bg-surface-container-highest p-1 rounded-full">
+<button class="flex-1 py-2 text-sm font-bold rounded-full transition-all text-on-surface-variant hover:bg-white/50">Small</button>
+<button class="flex-1 py-2 text-sm font-bold rounded-full transition-all bg-white text-primary shadow-sm">Medium</button>
+<button class="flex-1 py-2 text-sm font-bold rounded-full transition-all text-on-surface-variant hover:bg-white/50">Large</button>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant/10">
+<div class="flex items-center justify-between mb-4">
+<span class="text-sm font-medium text-on-surface">Screen Dimming</span>
+<button class="w-10 h-5 bg-primary rounded-full relative flex items-center px-1">
+<div class="w-3 h-3 bg-white rounded-full translate-x-5 transition-transform"></div>
+</button>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-sm font-medium text-on-surface">Participant Labels</span>
+<button class="w-10 h-5 bg-surface-container-highest rounded-full relative flex items-center px-1">
+<div class="w-3 h-3 bg-white rounded-full transition-transform"></div>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Participants Card -->
+<section class="bg-surface-container-low rounded-[1.5rem] p-8 h-fit">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-xl font-bold text-primary">Participants</h2>
+<span class="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded">12 Online</span>
+</div>
+<div class="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+<div class="flex items-center gap-3">
+<img alt="Participant" class="w-10 h-10 rounded-full object-cover" data-alt="Close-up portrait of a man smiling warmly in a bright indoor setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBjabjseyTLC9n4Tt8lbn2la12qZPHDziCtieFn1EEpcUxFZYV22LakSUdczia6aaoG7zpZ_dBjpK1YICuE5s9XvlW5qN_UKPhRgUPQ-pnB1QZ38tkus_HD42wMvtFsoOV1unnRuS0_LhZn733NNBWC-CNOayXi5DgwSXpM1G7BNXlZZlYfi7X0xZC0sUXN1nCkjTHZB5Jd0g5w5lvsekne-kBiSQDnUEyZ1vW8n50LLziQL946dbjj8lU0f_srI3vy99wHQERPR0SJ"/>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none mb-1">Alex Rivet</p>
+<span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Observer</span>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-emerald-500"></div>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Participant" class="w-10 h-10 rounded-full object-cover" data-alt="Professional portrait of a woman with long dark hair looking at the camera against a soft grey background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwnNXas2cd9NMp6lVANFeTm2lfWxkDqlmNrJqc3EihIsu-cbzz2noyKc8YkMAzofKBECkO_FqblvL4ind6LsWdCuGUloGqFz6xrDt8itRpo04SJsw5QHN91N8Owje4f55Nf65wqF45dflZV2AmS5GMuSbfCCfBSszKm_t0OmyngvaEwPKOuTUA9djfXoQwGYgMtRxKLVu14ODADFOE69Tysvg8IBhlKdJ15mG-GvQ-pd1f_auXr99hHseHnWpGiiZuRLI32lelD0Ex"/>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none mb-1">Sarah Chen</p>
+<span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Contributor</span>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-emerald-500"></div>
+</div>
+<div class="flex items-center gap-3">
+<img alt="Participant" class="w-10 h-10 rounded-full object-cover" data-alt="Smiling person with glasses in a casual sunlit studio environment with warm neutral tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBuKlOHkeyXTN7aObTxJ8kvLhHbJixpNmBQTuj7F8XpPHdlecSC0uTn4NtEHoqcC6W4F39WfPnHg0H_WouWcQPRsY478tFB00CFAImHuOGGeYY1lrWgBhem2f1XEgTB-Pj_yhL4Ui20OROoUMbwLofjlB2_zTWchm_iJHlvD87gD-yJopBf4Tu0BKk1TBuRfPIybQ5TWSF6yTkA4JjqDwUCOkfqX9jAybGc8XhUomF8UXoItOq9hOVV6f2gdwmX71mxc9A5d9lT0gkp"/>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none mb-1">Marcus Thorne</p>
+<span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Contributor</span>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-emerald-500"></div>
+</div>
+<div class="flex items-center gap-3 opacity-60">
+<img alt="Participant" class="w-10 h-10 rounded-full object-cover grayscale" data-alt="Candid portrait of a young woman looking thoughtful with soft artistic depth of field blur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDuw6BHa_5dpyzzpDDUVjeEG4exGjJ-fG5pZT4wj1vFn4rnOD-6G-wF7NaYu4hhqaIe_ePZJWk9L8-HEaVnO3H23Gpe1vYSpndARv5hOPxdPKuSG50-VkISoXlxG2z7CTRhzDrp8xdS1VE8m_EHTWitEA6e2PFlXIAlrq8zAhsicyBBq8QQa_Big83eM0UT7ZLrLfXhxhcoAB9GV6ElY4ZxOsRxpxSIELS3A-2ZBG6dvduv53ZKQgHZx0ECNopO5zENlSyBST57nljI"/>
+<div>
+<p class="text-sm font-bold text-on-surface leading-none mb-1">Elena Sofia</p>
+<span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Disconnected</span>
+</div>
+<div class="ml-auto w-2 h-2 rounded-full bg-zinc-300"></div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Tooltip / Status -->
+<div class="fixed bottom-8 right-8 z-[100] group">
+<div class="bg-surface-container-high/80 backdrop-blur-xl p-4 rounded-[2rem] shadow-2xl shadow-primary/20 border border-white/20 flex items-center gap-4 hover:scale-105 transition-all">
+<div class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></div>
+<span class="text-sm font-headline font-extrabold text-primary tracking-tight">Active Session: Workshop Round 2</span>
+<button class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</div>
+</body></html>
