@@ -278,7 +278,7 @@ function defaultState() {
     teamADone: false,
     teamBDone: false,
     emotions: [],
-    settings: { teamATime: 180, teamBTime: 180 }
+    settings: { teamATime: 180, teamBTime: 180, maxPlayers: 0 }
   };
 }
 
@@ -1202,14 +1202,34 @@ function renderSettings(state) {
         <!-- Room Management -->
         <section class="bg-surface-container-low rounded-3xl p-8">
           <h2 class="text-xl font-bold text-primary mb-6 flex items-center gap-2">${icon('meeting_room','text-primary')} Room Management</h2>
-          <div class="grid grid-cols-2 gap-5">
+          <div class="space-y-4">
+            <!-- Room Code editor -->
             <div class="bg-surface-container-lowest p-5 rounded-2xl">
-              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">Room Code</p>
-              <p class="text-2xl font-extrabold tracking-widest text-primary">${state.roomCode}</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">Room Code</p>
+              <div class="flex items-center gap-3">
+                <input id="room-code-input" type="text" value="${state.roomCode}" maxlength="20"
+                  class="flex-1 bg-surface-container rounded-xl px-4 py-2.5 text-xl font-extrabold text-primary tracking-widest border-none focus:ring-2 focus:ring-primary/30 transition-all font-headline"
+                  placeholder="SANTI-00">
+                <button data-action="save-room-code" class="bg-primary text-on-primary px-5 py-2.5 rounded-xl font-bold text-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                  ${icon('check','text-sm')} บันทึก
+                </button>
+                <button data-action="random-room-code" class="bg-surface-container text-on-surface-variant px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-surface-container-high transition-colors flex items-center gap-2" title="สุ่มใหม่">
+                  ${icon('casino','text-sm')}
+                </button>
+              </div>
             </div>
+            <!-- Max players -->
             <div class="bg-surface-container-lowest p-5 rounded-2xl">
-              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">ผู้เข้าร่วม</p>
-              <p class="text-2xl font-extrabold text-primary">${state.players.length} คน</p>
+              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">จำนวนผู้เข้าร่วมสูงสุด</p>
+              <p class="text-xs text-on-surface-variant mb-3">ผู้เข้าร่วมปัจจุบัน: <span class="font-bold text-on-surface">${state.players.length} คน</span>${state.settings.maxPlayers ? ` / ${state.settings.maxPlayers} คน` : ' (ไม่จำกัด)'}</p>
+              <div class="flex items-center gap-3">
+                <button data-action="set-max-players:-10" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
+                <span class="text-2xl font-extrabold text-primary tabular-nums w-24 text-center">
+                  ${state.settings.maxPlayers ? state.settings.maxPlayers + ' คน' : 'ไม่จำกัด'}
+                </span>
+                <button data-action="set-max-players:10" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
+                ${state.settings.maxPlayers ? `<button data-action="set-max-players:0" class="text-xs text-on-surface-variant hover:text-primary transition-colors ml-1">ไม่จำกัด</button>` : ''}
+              </div>
             </div>
           </div>
           <div class="mt-5 pt-5 border-t border-outline-variant/20">
@@ -1449,6 +1469,16 @@ function handleAction(action, param, el, e) {
       const pid = el.dataset.pid;
       const avatarIdx = parseInt(el.dataset.avatar||'0');
       if (state.players.find(p=>p.id===pid)) { render(); return; }
+      const max = state.settings?.maxPlayers || 0;
+      if (max > 0 && state.players.length >= max) {
+        const app = document.getElementById('app');
+        if (app) app.innerHTML = `<div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col items-center justify-center px-6 text-center">
+          ${fillIcon('group_off','text-6xl text-white opacity-80 mb-4')}
+          <h1 class="text-2xl font-extrabold text-white mb-3">ห้องเต็มแล้ว</h1>
+          <p class="text-white/80">ผู้เข้าร่วมครบ ${max} คนแล้ว</p>
+        </div>`;
+        return;
+      }
       const player = { id:pid, name, avatar:AVATARS[avatarIdx%AVATARS.length], teamId:null };
       patchState({ players:[...state.players, player] });
       break;
@@ -1483,6 +1513,34 @@ function handleAction(action, param, el, e) {
       const cur = state.settings[key];
       const next = Math.max(30, cur + delta);
       patchState({ settings:{...state.settings, [key]:next} });
+      break;
+    }
+
+    case 'save-room-code': {
+      const input = document.getElementById('room-code-input');
+      const val = (input?.value || '').trim().toUpperCase().replace(/\s+/g,'');
+      if (val.length >= 2) patchState({ roomCode: val });
+      break;
+    }
+
+    case 'random-room-code': {
+      const n = Math.floor(Math.random()*90+10);
+      const newCode = 'SANTI-' + n;
+      const input = document.getElementById('room-code-input');
+      if (input) input.value = newCode;
+      patchState({ roomCode: newCode });
+      break;
+    }
+
+    case 'set-max-players': {
+      const delta = parseInt(param);
+      if (delta === 0) {
+        patchState({ settings: { ...state.settings, maxPlayers: 0 } });
+      } else {
+        const cur = state.settings.maxPlayers || 0;
+        const next = Math.max(0, cur + delta);
+        patchState({ settings: { ...state.settings, maxPlayers: next } });
+      }
       break;
     }
 
