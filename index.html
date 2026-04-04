@@ -235,9 +235,13 @@ const DEMO_NAMES = ['นรินทร์ธร','กิตติพงษ์',
 const AVATARS = ['🧑','👩','👨','🧕','👩‍💼','👨‍💼','🧑‍🏫','👩‍🔬','👨‍🎓','🧑‍💻','👩‍🍳','👨‍🎨'];
 
 /* ============================================================
-   STATE
+   STATE  —  localStorage (same-device) + Server API (cross-device)
    ============================================================ */
 const STORAGE_KEY = 'santi_harmony_v2';
+
+// Detect if we're running from an HTTP server (not file://)
+// When served by server.js, we use /api/state for cross-device sync
+const IS_SERVER = location.protocol === 'http:' || location.protocol === 'https:';
 
 function defaultState() {
   const n = Math.floor(Math.random()*90+10);
@@ -261,16 +265,29 @@ function getState() {
   try { const s = localStorage.getItem(STORAGE_KEY); return s ? JSON.parse(s) : defaultState(); }
   catch(e) { return defaultState(); }
 }
+
+// Write state to localStorage AND push to server (non-blocking)
 function saveState(s) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  // Broadcast to same-browser tabs
   try { BC && BC.postMessage({ type:'SYNC', state:s }); } catch(e){}
+  // Push to server for cross-device sync (stage is the writer)
+  if (IS_SERVER && getMode() !== 'mobile') {
+    fetch('/api/state', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(s)
+    }).catch(() => {}); // silent fail if no server
+  }
 }
+
 function patchState(patch) {
   const s = { ...getState(), ...patch };
   saveState(s);
   render();
 }
 
+// Same-browser sync via BroadcastChannel
 let BC = null;
 try { BC = new BroadcastChannel('santi-harmony'); } catch(e){}
 if (BC) BC.onmessage = (e) => {
@@ -447,8 +464,15 @@ function renderLobby(state) {
           </div>
           <div class="bg-surface-container-low rounded-2xl p-4">
             <p class="text-xs text-on-surface-variant mb-1">หรือเปิดลิงก์</p>
-            <p class="text-xs font-mono text-primary break-all">${url}</p>
+            <p id="mobile-url" class="text-xs font-mono text-primary break-all">${url}</p>
           </div>
+          ${!IS_SERVER ? `<div class="bg-tertiary-fixed/50 rounded-xl p-3 mt-3 flex items-start gap-2">
+            ${icon('warning','text-on-tertiary-fixed-variant text-sm flex-shrink-0 mt-0.5')}
+            <p class="text-xs text-on-tertiary-fixed-variant leading-relaxed"><strong>โหมดสาธิต (Single Device):</strong> เปิดแท็บใหม่ด้วย URL ข้างต้น เพื่อทดสอบบนอุปกรณ์เดียวกัน สำหรับหลายอุปกรณ์ ให้รัน <code class="bg-black/10 px-1 rounded">node server.js</code></p>
+          </div>` : `<div class="bg-primary-fixed/30 rounded-xl p-3 mt-3 flex items-center gap-2">
+            ${icon('wifi','text-on-primary-fixed text-sm')}
+            <p class="text-xs text-on-primary-fixed font-medium">Server mode: QR code ใช้งานได้จริงข้ามอุปกรณ์</p>
+          </div>`}
         </div>
         <div class="flex gap-2 items-center text-sm text-on-surface-variant">
           ${icon('info','text-sm')} <span>ผู้เล่นต้องเชื่อมต่อเครือข่ายเดียวกัน</span>
@@ -905,16 +929,38 @@ function mobileTopBar(title, phase='') {
 function renderMobileJoin(state) {
   const pid = getMobilePid();
   const avatarIdx = Math.floor(Math.random()*AVATARS.length);
+  // Room code from URL param (what the QR code encoded)
+  const urlRoom = new URLSearchParams(location.search).get('room') || '';
+  // Check if URL room matches current game room
+  const roomMismatch = urlRoom && state.roomCode && urlRoom !== state.roomCode;
+
   return `
   <div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col">
     <div class="flex-1 flex flex-col items-center justify-center px-6 py-10">
-      <div class="text-6xl mb-6">${fillIcon('spa','text-6xl text-white opacity-80')}</div>
+      <div class="mb-6">${fillIcon('spa','text-6xl text-white opacity-80')}</div>
       <h1 class="text-3xl font-extrabold text-white font-headline mb-2">Santi Harmony</h1>
-      <p class="text-white/70 mb-10 text-center">เข้าร่วมเซสชัน · ห้อง: <span class="font-bold text-white">${state.roomCode}</span></p>
+      <p class="text-white/70 mb-8 text-center">เข้าร่วมเซสชัน</p>
+
+      ${roomMismatch ? `
+      <div class="w-full max-w-sm bg-white/20 backdrop-blur rounded-2xl p-4 mb-4 flex items-start gap-3">
+        ${icon('sync_problem','text-white text-xl flex-shrink-0 mt-0.5')}
+        <div>
+          <p class="text-white font-bold text-sm">ห้องไม่ตรงกัน</p>
+          <p class="text-white/80 text-xs mt-1">QR นี้สำหรับห้อง <strong>${urlRoom}</strong> แต่เซสชันปัจจุบันคือ <strong>${state.roomCode}</strong></p>
+          <p class="text-white/70 text-xs mt-1">ถ้าวิทยากรเพิ่งรีเซ็ต ให้สแกน QR ใหม่อีกครั้ง</p>
+        </div>
+      </div>` : `
+      <div class="w-full max-w-sm bg-white/10 rounded-2xl px-5 py-3 mb-4 text-center">
+        <p class="text-white/60 text-xs uppercase tracking-widest mb-1">ห้อง</p>
+        <p class="text-white font-bold text-xl">${urlRoom || state.roomCode}</p>
+      </div>`}
+
       <div class="w-full max-w-sm bg-white/10 backdrop-blur rounded-3xl p-8 space-y-5">
         <h2 class="text-white font-bold text-xl text-center">ชื่อเล่น (Nickname)</h2>
-        <input id="mobile-name" type="text" maxlength="20" placeholder="ชื่อเล่นของคุณ..." class="w-full bg-white/20 text-white placeholder:text-white/50 border-none rounded-2xl px-5 py-4 text-lg focus:ring-2 focus:ring-white/30 outline-none">
-        <button data-action="mobile-join" data-pid="${pid}" data-avatar="${avatarIdx}" class="w-full bg-white text-primary font-bold py-4 rounded-2xl text-lg hover:scale-[1.02] active:scale-95 transition-all">
+        <input id="mobile-name" type="text" maxlength="20" placeholder="ชื่อเล่นของคุณ..."
+          class="w-full bg-white/20 text-white placeholder:text-white/50 border-none rounded-2xl px-5 py-4 text-lg focus:ring-2 focus:ring-white/30 outline-none">
+        <button data-action="mobile-join" data-pid="${pid}" data-avatar="${avatarIdx}"
+          class="w-full bg-white text-primary font-bold py-4 rounded-2xl text-lg hover:scale-[1.02] active:scale-95 transition-all ${roomMismatch ? 'opacity-60' : ''}">
           เข้าร่วมทันที
         </button>
       </div>
@@ -1217,11 +1263,18 @@ function afterRender(mode, state) {
   }
 }
 
+function getMobileURL(roomCode) {
+  return `${location.protocol}//${location.host}${location.pathname}?view=mobile&room=${encodeURIComponent(roomCode)}`;
+}
+
 function generateQR(roomCode) {
   const qrEl = document.getElementById('qr-code');
   if (!qrEl) return;
   qrEl.innerHTML = '';
-  const url = `${location.protocol}//${location.host}${location.pathname}?view=mobile&room=${roomCode}`;
+  const url = getMobileURL(roomCode);
+  // Update the link display too
+  const linkEl = document.getElementById('mobile-url');
+  if (linkEl) linkEl.textContent = url;
   if (typeof QRCode !== 'undefined') {
     new QRCode(qrEl, { text:url, width:130, height:130, colorDark:'#00464a', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
   } else {
@@ -1408,27 +1461,79 @@ function handleAction(action, param, el, e) {
 /* ============================================================
    INIT
    ============================================================ */
-// Ensure state exists
-if (!localStorage.getItem(STORAGE_KEY)) {
-  saveState(defaultState());
-}
+async function init() {
+  const mode = getMode();
 
-render();
+  if (IS_SERVER) {
+    // ── Running from server.js ──────────────────────────────
+    // Fetch authoritative state from server
+    try {
+      const res = await fetch('/api/state');
+      const serverState = await res.json();
+      if (serverState && serverState.roomCode) {
+        // Server has a live game — use it
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+      } else if (!localStorage.getItem(STORAGE_KEY)) {
+        // No state anywhere — stage creates the initial state
+        if (mode !== 'mobile') saveState(defaultState());
+      }
+    } catch(e) {
+      // Server not running or no /api/state — fall back to localStorage
+      if (!localStorage.getItem(STORAGE_KEY)) saveState(defaultState());
+    }
 
-// Auto-refresh for mobile polling (every 2 seconds when BroadcastChannel not available)
-if (getMode() === 'mobile' && !BC) {
-  setInterval(() => {
-    render();
-  }, 2000);
-}
+    // ── Mobile: subscribe to SSE for real-time game updates ──
+    if (mode === 'mobile') {
+      connectSSE();
+    }
 
-// Restore timer state on page load
-(function restoreTimer() {
+  } else {
+    // ── File:// mode — same device only ─────────────────────
+    if (!localStorage.getItem(STORAGE_KEY)) saveState(defaultState());
+    if (mode === 'mobile' && !BC) {
+      // Fallback polling for same-device file:// mode
+      setInterval(() => render(), 1500);
+    }
+  }
+
+  render();
+
+  // Restore timer if discussion was in progress
   const s = getState();
-  if (s.phase === 'discussion' && s.timerRunning) {
+  if (s.phase === 'discussion' && s.timerRunning && mode !== 'mobile') {
     startTimer();
   }
-})();
+}
+
+// Server-Sent Events connection for mobile (receives state pushes from stage)
+function connectSSE() {
+  const evtSource = new EventSource('/api/events');
+  evtSource.onmessage = (e) => {
+    try {
+      const serverState = JSON.parse(e.data);
+      if (serverState && serverState.roomCode) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+        render();
+      }
+    } catch(ex) {}
+  };
+  evtSource.onerror = () => {
+    // SSE disconnected — fall back to polling
+    evtSource.close();
+    setInterval(async () => {
+      try {
+        const res = await fetch('/api/state');
+        const s = await res.json();
+        if (s && s.roomCode) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+          render();
+        }
+      } catch(ex) {}
+    }, 2000);
+  };
+}
+
+init();
 </script>
 </body>
 </html>
