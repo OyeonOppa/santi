@@ -432,6 +432,68 @@ const STORAGE_KEY = 'santi_harmony_v2';
 // When served by server.js, we use /api/state for cross-device sync
 const IS_SERVER = location.protocol === 'http:' || location.protocol === 'https:';
 
+/* ============================================================
+   SOUND EFFECTS — Web Audio API, no external files needed
+   ============================================================ */
+const SFX = (() => {
+  let ctx = null;
+  let _enabled = localStorage.getItem('sh_sfx') !== 'false';
+
+  function ac() {
+    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+  function tone(freq, type, dur, vol, at) {
+    const c = ac();
+    const t = at ?? c.currentTime;
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    osc.connect(gain); gain.connect(c.destination);
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(vol ?? 0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    osc.start(t); osc.stop(t + dur);
+  }
+
+  return {
+    get enabled() { return _enabled; },
+    toggle() { _enabled = !_enabled; localStorage.setItem('sh_sfx', _enabled); return _enabled; },
+    // Subtle click feedback for buttons
+    click() {
+      if (!_enabled) return;
+      tone(900, 'sine', 0.06, 0.35);
+    },
+    // Countdown beep for last 5 seconds
+    beep(isLast) {
+      if (!_enabled) return;
+      tone(isLast ? 1047 : 880, 'sine', 0.1, 0.55);
+    },
+    // Timer end — three quick pulses
+    alarm() {
+      if (!_enabled) return;
+      const c = ac(); const t = c.currentTime;
+      tone(660, 'square', 0.15, 0.65, t);
+      tone(660, 'square', 0.15, 0.65, t + 0.2);
+      tone(880, 'square', 0.3, 0.75, t + 0.4);
+    },
+    // Phase transition — ascending chime
+    chime() {
+      if (!_enabled) return;
+      const c = ac(); const t = c.currentTime;
+      [523, 659, 784, 1047].forEach((f, i) => tone(f, 'sine', 0.4, 0.45, t + i * 0.1));
+    },
+    // Player joined — quick two-note ding
+    join() {
+      if (!_enabled) return;
+      const c = ac(); const t = c.currentTime;
+      tone(880, 'sine', 0.2, 0.45, t);
+      tone(1100, 'sine', 0.32, 0.45, t + 0.15);
+    }
+  };
+})();
+
 function defaultState() {
   const n = Math.floor(Math.random()*90+10);
   return {
@@ -446,7 +508,7 @@ function defaultState() {
     teamADone: false,
     teamBDone: false,
     emotions: [],
-    settings: { teamATime: 180, teamBTime: 180, maxPlayers: 0 }
+    settings: { teamATime: 180, teamBTime: 180 }
   };
 }
 
@@ -507,15 +569,23 @@ window.addEventListener('storage', (e) => {
    TIMER
    ============================================================ */
 let _timer = null;
+// Unique ID for this browser tab — prevents multiple tabs from running simultaneous timers
+const _tabId = Math.random().toString(36).slice(2, 10);
 
 function startTimer() {
   stopTimer();
+  // Claim timer ownership; another tab starting will override this and our interval will stop
+  localStorage.setItem('sh_timer_tab', _tabId);
   _timer = setInterval(() => {
+    // Yield if another tab has claimed ownership
+    if (localStorage.getItem('sh_timer_tab') !== _tabId) { stopTimer(); return; }
     const s = getState();
     if (!s.timerRunning) { stopTimer(); return; }
     const rem = s.timerSec - 1;
     if (rem <= 0) {
       stopTimer();
+      localStorage.removeItem('sh_timer_tab');
+      SFX.alarm();
       const ns = getState();
       if (ns.speakingTeam === 'A') {
         // Hold after Team A — wait for facilitator to manually switch to Team B
@@ -527,6 +597,7 @@ function startTimer() {
       render();
       return;
     }
+    if (rem <= 5) SFX.beep(rem === 1);
     const ns2 = getState();
     ns2.timerSec = rem;
     saveState(ns2);
@@ -1386,25 +1457,30 @@ function renderSettings(state) {
                 </button>
               </div>
             </div>
-            <!-- Max players -->
-            <div class="bg-surface-container-lowest p-5 rounded-2xl">
-              <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">จำนวนผู้เข้าร่วมสูงสุด</p>
-              <p class="text-xs text-on-surface-variant mb-3">ผู้เข้าร่วมปัจจุบัน: <span class="font-bold text-on-surface">${state.players.length} คน</span>${state.settings.maxPlayers ? ` / ${state.settings.maxPlayers} คน` : ' (ไม่จำกัด)'}</p>
-              <div class="flex items-center gap-3">
-                <button data-action="set-max-players:-10" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
-                <span class="text-2xl font-extrabold text-primary tabular-nums w-24 text-center">
-                  ${state.settings.maxPlayers ? state.settings.maxPlayers + ' คน' : 'ไม่จำกัด'}
-                </span>
-                <button data-action="set-max-players:10" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
-                ${state.settings.maxPlayers ? `<button data-action="set-max-players:0" class="text-xs text-on-surface-variant hover:text-primary transition-colors ml-1">ไม่จำกัด</button>` : ''}
-              </div>
-            </div>
           </div>
-          <div class="mt-5 pt-5 border-t border-outline-variant/20">
-            <p class="text-xs font-bold uppercase tracking-widest text-error mb-3">Danger Zone</p>
-            <button data-action="reset-game" class="border border-error/30 text-error px-6 py-2.5 rounded-full font-bold text-sm hover:bg-error-container/20 transition-colors">
-              ${icon('refresh','text-sm align-middle')} Reset Session ทั้งหมด
-            </button>
+          <div class="mt-5 pt-5 border-t border-outline-variant/20 space-y-4">
+            <!-- SFX Toggle -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full ${SFX.enabled ? 'bg-primary/10' : 'bg-surface-container'} flex items-center justify-center transition-colors">
+                  ${icon(SFX.enabled ? 'volume_up' : 'volume_off', SFX.enabled ? 'text-primary' : 'text-on-surface-variant')}
+                </div>
+                <div>
+                  <p class="font-bold text-sm text-on-surface">Sound Effects</p>
+                  <p class="text-xs text-on-surface-variant">เสียงนับถอยหลัง เปลี่ยน phase และกดปุ่ม</p>
+                </div>
+              </div>
+              <button data-action="toggle-sfx" class="relative w-12 h-6 rounded-full transition-colors ${SFX.enabled ? 'bg-primary' : 'bg-surface-container-highest'}">
+                <span class="absolute top-0.5 transition-all duration-200 w-5 h-5 rounded-full bg-white shadow ${SFX.enabled ? 'left-6' : 'left-0.5'}"></span>
+              </button>
+            </div>
+            <!-- Danger Zone -->
+            <div>
+              <p class="text-xs font-bold uppercase tracking-widest text-error mb-3">Danger Zone</p>
+              <button data-action="reset-game" class="border border-error/30 text-error px-6 py-2.5 rounded-full font-bold text-sm hover:bg-error-container/20 transition-colors">
+                ${icon('refresh','text-sm align-middle')} Reset Session ทั้งหมด
+              </button>
+            </div>
           </div>
         </section>
       </div>
@@ -1480,7 +1556,6 @@ function afterRender(mode, state) {
     if (state.phase === 'lobby') generateQR(state.roomCode);
     if (state.phase === 'discussion') {
       updateTimerUI(state);
-      if (state.timerRunning && !_timer) startTimer();
     }
   }
 }
@@ -1510,7 +1585,11 @@ function generateQR(roomCode) {
 document.addEventListener('click', (e) => {
   const el = e.target.closest('[data-action]');
   if (!el) return;
+  // Play click SFX for most actions (chime/alarm actions play their own sound)
   const raw = el.dataset.action;
+  if (!['go-category','start-discussion','go-summary','toggle-sfx'].includes(raw.split(':')[0])) {
+    SFX.click();
+  }
   const [action, ...rest] = raw.split(':');
   handleAction(action, rest.join(':'), el, e);
 });
@@ -1537,8 +1616,8 @@ function handleAction(action, param, el, e) {
       break;
     }
 
-    case 'go-category': patchState({ phase:'category' }); break;
-    case 'go-cards': patchState({ phase:'cards' }); break;
+    case 'go-category': SFX.chime(); patchState({ phase:'category' }); break;
+    case 'go-cards': SFX.click(); patchState({ phase:'cards' }); break;
 
     case 'select-cat': {
       patchState({ catId: param, cardId:null, phase:'cards' });
@@ -1551,6 +1630,7 @@ function handleAction(action, param, el, e) {
     }
 
     case 'start-discussion': {
+      SFX.chime();
       patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[] });
       break;
     }
@@ -1590,6 +1670,7 @@ function handleAction(action, param, el, e) {
 
     case 'go-summary': {
       stopTimer();
+      SFX.chime();
       patchState({ phase:'summary', timerRunning:false });
       break;
     }
@@ -1637,16 +1718,6 @@ function handleAction(action, param, el, e) {
       const pid = el.dataset.pid;
       const avatarIdx = parseInt(el.dataset.avatar||'0');
       if (state.players.find(p=>p.id===pid)) { render(); return; }
-      const max = state.settings?.maxPlayers || 0;
-      if (max > 0 && state.players.length >= max) {
-        const app = document.getElementById('app');
-        if (app) app.innerHTML = `<div class="min-h-screen bg-gradient-to-br from-primary to-primary-container flex flex-col items-center justify-center px-6 text-center">
-          ${fillIcon('group_off','text-6xl text-white opacity-80 mb-4')}
-          <h1 class="text-2xl font-extrabold text-white mb-3">ห้องเต็มแล้ว</h1>
-          <p class="text-white/80">ผู้เข้าร่วมครบ ${max} คนแล้ว</p>
-        </div>`;
-        return;
-      }
       const player = { id:pid, name, avatar:AVATARS[avatarIdx%AVATARS.length], teamId:null };
       patchState({ players:[...state.players, player] });
       break;
@@ -1700,15 +1771,11 @@ function handleAction(action, param, el, e) {
       break;
     }
 
-    case 'set-max-players': {
-      const delta = parseInt(param);
-      if (delta === 0) {
-        patchState({ settings: { ...state.settings, maxPlayers: 0 } });
-      } else {
-        const cur = state.settings.maxPlayers || 0;
-        const next = Math.max(0, cur + delta);
-        patchState({ settings: { ...state.settings, maxPlayers: next } });
-      }
+
+    case 'toggle-sfx': {
+      const on = SFX.toggle();
+      if (on) SFX.chime();
+      render();
       break;
     }
 
@@ -1862,7 +1929,10 @@ function connectSSE(roomCode) {
       if (!serverState || !serverState.roomCode) return;
       // Ignore SSE that bounced back from our own recent save (within 1 sec)
       if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000) return;
+      const prev = getState();
+      const prevCount = prev?.players?.length ?? 0;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
+      if (serverState.players?.length > prevCount) SFX.join();
       render();
     } catch(ex) {}
   };
