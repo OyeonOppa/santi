@@ -476,7 +476,7 @@ function saveState(s) {
   try { BC && BC.postMessage({ type:'SYNC', state:s }); } catch(e){}
   // Push to server — all clients push, server holds latest truth
   if (IS_SERVER) {
-    fetch('/api/state', {
+    fetch('/api/state?room=' + encodeURIComponent(s.roomCode || ''), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(s)
@@ -1735,7 +1735,10 @@ async function init() {
   // STAGE / SETTINGS: create state if needed, push to server
   if (IS_SERVER) {
     try {
-      const res = await fetch('/api/state');
+      const existingRoom = localStorage.getItem(STORAGE_KEY)
+        ? (JSON.parse(localStorage.getItem(STORAGE_KEY)).roomCode || '')
+        : '';
+      const res = await fetch('/api/state?room=' + encodeURIComponent(existingRoom));
       if (!res.ok) throw new Error('no-api');
       const serverState = await res.json();
       if (serverState && serverState.roomCode) {
@@ -1763,12 +1766,12 @@ async function init() {
 async function initMobile(urlRoom) {
   if (IS_SERVER) {
     try {
-      const res = await fetch('/api/state');
+      const res = await fetch('/api/state?room=' + encodeURIComponent(urlRoom));
       if (!res.ok) throw new Error('no-api');
       const serverState = await res.json();
       if (serverState && serverState.roomCode) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
-        connectSSE();
+        connectSSE(urlRoom);
         render();
         return;
       }
@@ -1832,12 +1835,12 @@ function pollMobileState(urlRoom, attempt) {
   if (attempt > 90) return; // give up after 3 min
   setTimeout(async () => {
     try {
-      const res = await fetch('/api/state');
+      const res = await fetch('/api/state?room=' + encodeURIComponent(urlRoom));
       if (!res.ok) throw new Error('no-api');
       const serverState = await res.json();
       if (serverState && serverState.roomCode) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
-        connectSSE();
+        connectSSE(urlRoom);
         render();
         return;
       }
@@ -1847,8 +1850,12 @@ function pollMobileState(urlRoom, attempt) {
 }
 
 // Server-Sent Events — real-time push from server to all clients (stage + mobile)
-function connectSSE() {
-  const evtSource = new EventSource('/api/events');
+function connectSSE(roomCode) {
+  if (!roomCode) {
+    const s = localStorage.getItem(STORAGE_KEY);
+    roomCode = s ? (JSON.parse(s).roomCode || '') : '';
+  }
+  const evtSource = new EventSource('/api/events?room=' + encodeURIComponent(roomCode));
   evtSource.onmessage = (e) => {
     try {
       const serverState = JSON.parse(e.data);
@@ -1864,7 +1871,7 @@ function connectSSE() {
     // Fall back to polling every 2 seconds
     setInterval(async () => {
       try {
-        const res = await fetch('/api/state');
+        const res = await fetch('/api/state?room=' + encodeURIComponent(roomCode));
         const s = await res.json();
         if (s && s.roomCode) {
           // Same bounce-guard for stage polling

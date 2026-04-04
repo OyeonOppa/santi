@@ -1,28 +1,39 @@
 /**
- * SANTI HARMONY - Local Game Server
+ * SANTI - Local Game Server (Multi-Room Support)
  * Run: node server.js
- * Then open: http://localhost:3000 (stage) and share http://YOUR_IP:3000/?view=mobile
+ * Supports multiple simultaneous rooms via ?room=SANTI-XX
  */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
 
-// In-memory game state
-let gameState = null;
+// Per-room state: Map<roomCode, state>
+const rooms = new Map();
 
-// Connected SSE clients
-const clients = new Set();
+// Per-room SSE clients: Map<roomCode, Set<{res, id}>>
+const roomClients = new Map();
 
-// Broadcast state to all connected clients
-function broadcast(state) {
+function getClients(roomCode) {
+  if (!roomClients.has(roomCode)) roomClients.set(roomCode, new Set());
+  return roomClients.get(roomCode);
+}
+
+function broadcast(roomCode, state) {
   const msg = 'data: ' + JSON.stringify(state) + '\n\n';
+  const clients = getClients(roomCode);
   for (const client of clients) {
     try { client.res.write(msg); } catch(e) { clients.delete(client); }
   }
 }
 
-// Get local IP address
+function getRoomFromUrl(url) {
+  try {
+    const u = new URL(url, 'http://localhost');
+    return (u.searchParams.get('room') || '').trim();
+  } catch(e) { return ''; }
+}
+
 function getLocalIP() {
   const ifaces = os.networkInterfaces();
   for (const iface of Object.values(ifaces)) {
@@ -44,27 +55,34 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-  // CORS headers for dev
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
 
-  // ── GET /api/state ─────────────────────────────
-  if (req.url === '/api/state' && req.method === 'GET') {
+  const urlPath = req.url.split('?')[0];
+
+  // ── GET /api/state?room=SANTI-XX ──────────────────────────
+  if (urlPath === '/api/state' && req.method === 'GET') {
+    const roomCode = getRoomFromUrl(req.url);
+    const state = roomCode ? (rooms.get(roomCode) || null) : null;
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(gameState || {}));
+    res.end(JSON.stringify(state || {}));
     return;
   }
 
-  // ── POST /api/state ────────────────────────────
-  if (req.url === '/api/state' && req.method === 'POST') {
+  // ── POST /api/state ────────────────────────────────────────
+  // Room code is extracted from the request body (state.roomCode)
+  if (urlPath === '/api/state' && req.method === 'POST') {
     let body = '';
     req.on('data', c => body += c);
     req.on('end', () => {
       try {
-        gameState = JSON.parse(body);
-        broadcast(gameState);
+        const state = JSON.parse(body);
+        const roomCode = state.roomCode || getRoomFromUrl(req.url);
+        if (!roomCode) { res.writeHead(400); res.end('Missing roomCode'); return; }
+        rooms.set(roomCode, state);
+        broadcast(roomCode, state);
         res.writeHead(200); res.end('OK');
       } catch(e) {
         res.writeHead(400); res.end('Bad JSON');
@@ -73,30 +91,43 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // ── GET /api/events (Server-Sent Events) ───────
-  if (req.url === '/api/events') {
+  // ── GET /api/events?room=SANTI-XX (SSE) ───────────────────
+  if (urlPath === '/api/events') {
+    const roomCode = getRoomFromUrl(req.url);
     res.writeHead(200, {
       'Content-Type':  'text/event-stream',
       'Cache-Control': 'no-cache',
       'Connection':    'keep-alive',
     });
     res.flushHeaders();
-    // Send current state immediately
-    if (gameState) res.write('data: ' + JSON.stringify(gameState) + '\n\n');
+    // Send current room state immediately
+    const existing = roomCode ? rooms.get(roomCode) : null;
+    if (existing) res.write('data: ' + JSON.stringify(existing) + '\n\n');
     const client = { res, id: Date.now() };
-    clients.add(client);
-    // Heartbeat to keep connection alive
+    if (roomCode) getClients(roomCode).add(client);
     const hb = setInterval(() => { try { res.write(': ping\n\n'); } catch(e) {} }, 20000);
-    req.on('close', () => { clients.delete(client); clearInterval(hb); });
+    req.on('close', () => {
+      if (roomCode) getClients(roomCode).delete(client);
+      clearInterval(hb);
+    });
     return;
   }
 
-  // ── Static files ───────────────────────────────
-  let urlPath = req.url.split('?')[0];
-  if (urlPath === '/' || urlPath === '') urlPath = '/index.html';
-  const filePath = path.join(__dirname, urlPath);
-  const ext = path.extname(filePath).toLowerCase();
+  // ── GET /api/rooms (debug: list active rooms) ──────────────
+  if (urlPath === '/api/rooms' && req.method === 'GET') {
+    const list = [];
+    for (const [code, state] of rooms.entries()) {
+      list.push({ room: code, players: state.players?.length || 0, phase: state.phase });
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(list));
+    return;
+  }
 
+  // ── Static files ───────────────────────────────────────────
+  let filePath = urlPath === '/' || urlPath === '' ? '/index.html' : urlPath;
+  filePath = path.join(__dirname, filePath);
+  const ext = path.extname(filePath).toLowerCase();
   fs.readFile(filePath, (err, data) => {
     if (err) { res.writeHead(404); res.end('Not found'); return; }
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'text/plain' });
@@ -109,12 +140,13 @@ const LOCAL_IP = getLocalIP();
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log('');
-  console.log('🎮  SANTI HARMONY Server');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`📺  Stage (เวที):    http://${LOCAL_IP}:${PORT}/?view=stage`);
-  console.log(`📱  Mobile (ผู้เล่น): http://${LOCAL_IP}:${PORT}/?view=mobile`);
-  console.log(`⚙️   Settings:        http://${LOCAL_IP}:${PORT}/?view=settings`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('🎮  SANTI Server (Multi-Room)');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`📺  Stage:   http://${LOCAL_IP}:${PORT}/?view=stage`);
+  console.log(`📱  Mobile:  http://${LOCAL_IP}:${PORT}/?view=mobile`);
+  console.log(`⚙️   Settings: http://${LOCAL_IP}:${PORT}/?view=settings`);
+  console.log(`🔍  Rooms:   http://${LOCAL_IP}:${PORT}/api/rooms`);
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`🌐  Local IP: ${LOCAL_IP}:${PORT}`);
   console.log('');
 });
