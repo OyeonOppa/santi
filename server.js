@@ -4,6 +4,7 @@
  * Supports multiple simultaneous rooms via ?room=SANTI-XX
  */
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -113,6 +114,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // ── GET /api/ping (keep-alive probe) ──────────────────────
+  if (urlPath === '/api/ping') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, rooms: rooms.size, ts: Date.now() }));
+    return;
+  }
+
   // ── GET /api/rooms (debug: list active rooms) ──────────────
   if (urlPath === '/api/rooms' && req.method === 'GET') {
     const list = [];
@@ -149,4 +157,23 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`🌐  Local IP: ${LOCAL_IP}:${PORT}`);
   console.log('');
+
+  // ── Keep-alive self-ping (Railway idle sleep prevention) ──
+  // Railway sleeps process after ~15 min of no traffic on free tier.
+  // Ping own /api/ping every 10 minutes to stay awake.
+  const RAILWAY_DOMAIN = process.env.RAILWAY_PUBLIC_DOMAIN;
+  if (RAILWAY_DOMAIN) {
+    const pingUrl = `https://${RAILWAY_DOMAIN}/api/ping`;
+    console.log(`💓  Keep-alive: pinging ${pingUrl} every 10 min`);
+    setInterval(() => {
+      https.get(pingUrl, (res) => {
+        console.log(`[keep-alive] ${new Date().toISOString()} → ${res.statusCode}`);
+        res.resume(); // drain response
+      }).on('error', (e) => {
+        console.warn(`[keep-alive] ping failed: ${e.message}`);
+      });
+    }, 10 * 60 * 1000); // 10 minutes
+  } else {
+    console.log('ℹ️   Keep-alive: disabled (no RAILWAY_PUBLIC_DOMAIN env var)');
+  }
 });
