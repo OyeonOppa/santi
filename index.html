@@ -376,6 +376,8 @@ const CATEGORIES = [
    IMAGES  —  Unsplash photo IDs per category & card
    ============================================================ */
 const IMGS = {
+  // Custom card fallback
+  custom: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=800&h=400&fit=crop&q=80',
   // Category cover images
   natural:   'https://images.unsplash.com/photo-1448375240586-882707db888b?w=800&h=400&fit=crop&q=80',
   policy:    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=800&h=400&fit=crop&q=80',
@@ -638,7 +640,10 @@ function updateTimerUI(state) {
    HELPERS
    ============================================================ */
 function getCategory(id) { return CATEGORIES.find(c=>c.id===id); }
-function getCard(catId, cardId) { return getCategory(catId)?.cards.find(c=>c.id===cardId); }
+function getCard(catId, cardId) {
+  if (catId === 'custom' && cardId === 'custom') return getState()?.customCard || null;
+  return getCategory(catId)?.cards.find(c=>c.id===cardId);
+}
 function getMode() { return new URLSearchParams(location.search).get('view') || 'stage'; }
 function isMobile() { return /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent); }
 function icon(name, extra='') { return `<span class="material-symbols-outlined ${extra}">${name}</span>`; }
@@ -883,6 +888,21 @@ function renderCategory(state) {
             </div>
           </div>
         </button>`).join('')}
+      <!-- Custom card tile -->
+      <button data-action="go-custom-card" class="card-hover text-left bg-surface-container-lowest rounded-3xl overflow-hidden shadow-sm hover:shadow-lg group cursor-pointer block w-full border-2 border-dashed border-outline-variant hover:border-primary transition-colors">
+        <div class="h-40 relative overflow-hidden bg-gradient-to-br from-secondary-container to-surface-container-high flex items-center justify-center">
+          ${fillIcon('edit_note','text-6xl text-on-secondary-container opacity-40')}
+        </div>
+        <div class="p-6">
+          <h3 class="font-headline font-bold text-xl text-on-surface mb-1">สร้างกรณีศึกษาเอง</h3>
+          <p class="text-xs text-on-surface-variant uppercase tracking-wider mb-3">Custom Scenario</p>
+          <p class="text-sm text-on-surface-variant leading-relaxed mb-5">ออกแบบสถานการณ์ บทบาท และคำถามเองได้ตามบริบทของงานสัมมนา</p>
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-on-surface-variant">กรอกแบบฟอร์ม</span>
+            <span class="bg-secondary-container text-on-secondary-container px-4 py-2 rounded-full text-sm font-bold group-hover:bg-secondary transition-colors group-hover:text-on-secondary">${icon('add','text-sm align-middle')} สร้าง</span>
+          </div>
+        </div>
+      </button>
     </div>
   </main>`;
 }
@@ -1665,15 +1685,93 @@ function render() {
 
 function renderStage(state) {
   switch(state.phase) {
-    case 'lobby':      return renderLobby(state);
-    case 'teams':      return renderTeams(state);
-    case 'category':   return renderCategory(state);
-    case 'cards':      return renderCards(state);
-    case 'detail':     return renderCardDetail(state);
-    case 'discussion': return renderDiscussion(state);
-    case 'summary':    return renderSummary(state);
-    default:           return renderLobby(state);
+    case 'lobby':       return renderLobby(state);
+    case 'teams':       return renderTeams(state);
+    case 'category':    return renderCategory(state);
+    case 'cards':       return renderCards(state);
+    case 'custom-card': return renderCustomCardForm(state);
+    case 'detail':      return renderCardDetail(state);
+    case 'discussion':  return renderDiscussion(state);
+    case 'summary':     return renderSummary(state);
+    default:            return renderLobby(state);
   }
+}
+
+/* --- CUSTOM CARD FORM --- */
+function renderCustomCardForm(state) {
+  const prev = state.customCard;
+  const val = (field, fallback='') => prev?.[field] ?? fallback;
+  return `
+  ${stageNav(state)}
+  <main class="max-w-3xl mx-auto px-6 py-10 pb-24">
+    <div class="mb-6">
+      <button data-action="go-category" class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-sm">
+        ${icon('arrow_back','text-sm')} กลับเลือกหมวดหมู่
+      </button>
+    </div>
+    <header class="mb-8">
+      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">CUSTOM SCENARIO</p>
+      <h1 class="text-3xl font-extrabold text-primary">สร้างกรณีศึกษาของคุณเอง</h1>
+      <p class="text-on-surface-variant mt-2">กรอกข้อมูลด้านล่าง แล้วกด "ใช้กรณีศึกษานี้" เพื่อเริ่มเสวนา</p>
+    </header>
+    <div class="space-y-5">
+
+      <!-- Title -->
+      <div class="bg-surface-container-lowest rounded-2xl p-5">
+        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-2">ชื่อกรณีศึกษา *</label>
+        <input id="cc-title" type="text" maxlength="120" placeholder="เช่น โรงงานใหม่ vs ชุมชน" value="${val('title')}"
+          class="w-full bg-surface-container rounded-xl px-4 py-3 text-on-surface font-medium border-none focus:ring-2 focus:ring-primary/30 transition-all">
+      </div>
+
+      <!-- Short desc -->
+      <div class="bg-surface-container-lowest rounded-2xl p-5">
+        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-2">สถานการณ์โดยย่อ</label>
+        <textarea id="cc-shortDesc" rows="2" maxlength="200" placeholder="อธิบายสั้นๆ ว่าความขัดแย้งนี้เกี่ยวกับอะไร"
+          class="w-full bg-surface-container rounded-xl px-4 py-3 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all resize-none">${val('shortDesc')}</textarea>
+      </div>
+
+      <!-- Team A -->
+      <div class="bg-primary/5 border border-primary/20 rounded-2xl p-5 space-y-4">
+        <p class="text-sm font-extrabold text-primary">ทีม A — ฝ่ายที่ 1</p>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant block mb-1">ชื่อบทบาท *</label>
+          <input id="cc-teamAName" type="text" maxlength="60" placeholder="เช่น ตัวแทนชาวบ้าน" value="${val('teamARoleName')}"
+            class="w-full bg-surface-container-lowest rounded-xl px-4 py-2.5 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant block mb-1">คำอธิบายบทบาท</label>
+          <textarea id="cc-teamADesc" rows="3" maxlength="400" placeholder="อธิบายมุมมอง ความต้องการ และบทบาทของทีม A"
+            class="w-full bg-surface-container-lowest rounded-xl px-4 py-2.5 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all resize-none">${val('teamARoleDesc')}</textarea>
+        </div>
+      </div>
+
+      <!-- Team B -->
+      <div class="bg-tertiary-fixed/20 border border-tertiary/20 rounded-2xl p-5 space-y-4">
+        <p class="text-sm font-extrabold text-tertiary">ทีม B — ฝ่ายที่ 2</p>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant block mb-1">ชื่อบทบาท *</label>
+          <input id="cc-teamBName" type="text" maxlength="60" placeholder="เช่น เจ้าหน้าที่รัฐ" value="${val('teamBRoleName')}"
+            class="w-full bg-surface-container-lowest rounded-xl px-4 py-2.5 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all">
+        </div>
+        <div>
+          <label class="text-xs font-bold text-on-surface-variant block mb-1">คำอธิบายบทบาท</label>
+          <textarea id="cc-teamBDesc" rows="3" maxlength="400" placeholder="อธิบายมุมมอง ความต้องการ และบทบาทของทีม B"
+            class="w-full bg-surface-container-lowest rounded-xl px-4 py-2.5 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all resize-none">${val('teamBRoleDesc')}</textarea>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div class="bg-surface-container-lowest rounded-2xl p-5">
+        <label class="text-xs font-bold uppercase tracking-widest text-on-surface-variant block mb-2">คำถามสะท้อนคิด</label>
+        <textarea id="cc-question" rows="3" maxlength="400" placeholder="คำถามที่จะปิดท้ายการเสวนา เช่น "ถ้าคุณเป็นอีกฝ่าย คุณจะรู้สึกอย่างไร?""
+          class="w-full bg-surface-container rounded-xl px-4 py-3 text-on-surface border-none focus:ring-2 focus:ring-primary/30 transition-all resize-none">${val('question')}</textarea>
+      </div>
+
+      <button data-action="save-custom-card" class="w-full bg-gradient-to-br from-primary to-primary-container text-on-primary py-4 rounded-2xl font-bold text-lg hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center gap-3">
+        ${icon('check_circle')} ใช้กรณีศึกษานี้
+      </button>
+    </div>
+  </main>`;
 }
 
 function afterRender(mode, state) {
@@ -1741,9 +1839,40 @@ function handleAction(action, param, el, e) {
       break;
     }
 
-    case 'go-lobby':    SFX.click(); patchState({ phase:'lobby' }); break;
-    case 'go-teams':    SFX.click(); patchState({ phase:'teams' }); break;
-    case 'go-category': SFX.chime(); patchState({ phase:'category' }); break;
+    case 'go-lobby':       SFX.click(); patchState({ phase:'lobby' }); break;
+    case 'go-teams':       SFX.click(); patchState({ phase:'teams' }); break;
+    case 'go-category':    SFX.chime(); patchState({ phase:'category' }); break;
+    case 'go-custom-card': SFX.click(); patchState({ phase:'custom-card', catId:'custom', cardId:'custom' }); break;
+
+    case 'save-custom-card': {
+      const title    = document.getElementById('cc-title')?.value.trim();
+      const teamAName = document.getElementById('cc-teamAName')?.value.trim();
+      const teamBName = document.getElementById('cc-teamBName')?.value.trim();
+      if (!title || !teamAName || !teamBName) {
+        alert('กรุณากรอกชื่อกรณีศึกษา และชื่อบทบาทของทั้งสองทีม');
+        return;
+      }
+      const customCard = {
+        id: 'custom', catId: 'custom',
+        title,
+        shortDesc:    document.getElementById('cc-shortDesc')?.value.trim() || '',
+        fullDesc:     document.getElementById('cc-shortDesc')?.value.trim() || '',
+        tags:         ['#Custom'],
+        from: 'from-secondary', to: 'to-secondary-container',
+        teamARoleName: teamAName,
+        teamARoleSub:  'Team A',
+        teamARoleIcon: 'groups',
+        teamARoleDesc: document.getElementById('cc-teamADesc')?.value.trim() || teamAName,
+        teamBRoleName: teamBName,
+        teamBRoleSub:  'Team B',
+        teamBRoleIcon: 'groups',
+        teamBRoleDesc: document.getElementById('cc-teamBDesc')?.value.trim() || teamBName,
+        question:     document.getElementById('cc-question')?.value.trim() || '',
+      };
+      SFX.chime();
+      patchState({ customCard, catId:'custom', cardId:'custom', phase:'detail' });
+      break;
+    }
     case 'go-cards':    SFX.click(); patchState({ phase:'cards' }); break;
     case 'go-detail':   SFX.click(); stopTimer(); patchState({ phase:'detail', timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false }); break;
     case 'new-round':   SFX.chime(); patchState({ phase:'category', catId:null, cardId:null, timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false, emotions:[] }); break;
