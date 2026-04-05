@@ -699,76 +699,99 @@ function bottomNav(active='') {
 /* --- LOBBY --- */
 function renderLobby(state) {
   const url = `${location.protocol}//${location.host}${location.pathname}?view=mobile&room=${state.roomCode}`;
-  const playerGrid = state.players.length === 0
-    ? `<div class="col-span-3 text-center text-on-surface-variant py-8 italic">รอผู้เล่นเข้าร่วม...</div>`
-    : state.players.map(p => `
-        <div class="bg-surface-container-lowest rounded-2xl p-3 flex items-center gap-3 slide-up">
-          <div class="w-10 h-10 rounded-xl bg-primary-fixed flex items-center justify-center text-lg">${p.avatar}</div>
-          <span class="font-medium truncate">${p.name}</span>
-        </div>`).join('');
+  const count = state.players.length;
 
   return `
   ${stageNav(state)}
-  <div class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none overflow-hidden">
-    <div class="absolute -top-20 -left-20 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-tertiary/5 rounded-full blur-3xl"></div>
-  </div>
-  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-10 items-start">
-      <!-- Left: workshop info -->
-      <div class="lg:col-span-3 space-y-8">
-        <div>
-          <span class="text-xs font-bold uppercase tracking-widest text-secondary px-3 py-1 bg-secondary-container rounded-full">SANTI WORKSHOP</span>
-          <h1 class="text-5xl font-extrabold text-on-background leading-tight mt-4 mb-3">การสื่อสารเพื่อ<br>ความเข้าใจในความ<br>ขัดแย้งพื้นที่</h1>
-          <p class="text-on-surface-variant text-lg leading-relaxed">พื้นที่แห่งการเรียนรู้และแลกเปลี่ยนผ่านการจำลองความขัดแย้ง ด้วยหัวใจที่เปิดกว้าง มาร่วมสร้างสรรค์กระบวนการแก้ไขปัญหาสันติวิธีร่วมกัน</p>
-        </div>
-        <div class="flex items-center gap-4">
+
+  <!-- Hero banner -->
+  <div class="relative overflow-hidden text-white" style="min-height:340px">
+    <!-- Background photo -->
+    <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&h=600&fit=crop&q=80"
+      alt="workshop" class="absolute inset-0 w-full h-full object-cover pointer-events-none">
+    <!-- Dark + teal gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/75 to-primary/40 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none"></div>
+
+    <div class="relative max-w-6xl mx-auto px-8 py-14 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+      <!-- Left: title + live count -->
+      <div>
+        <span class="inline-block text-xs font-bold uppercase tracking-widest bg-white/20 backdrop-blur-sm text-white px-4 py-1.5 rounded-full mb-6">🕊 SANTI Workshop</span>
+        <h1 class="text-5xl lg:text-6xl font-extrabold leading-[1.2] mb-5 font-headline drop-shadow-md">
+          พื้นที่แห่งความเข้าใจ<br>และการเรียนรู้ร่วมกัน
+        </h1>
+        <p class="text-white/80 text-base leading-relaxed max-w-sm">
+          สแกน QR ด้วยมือถือเพื่อเข้าร่วม แล้วมาสร้างพื้นที่สันติวิธีด้วยกัน
+        </p>
+        <!-- Live count pill -->
+        <div class="mt-8 flex items-center gap-3">
+          <div class="flex items-center gap-2 bg-white/15 backdrop-blur px-5 py-3 rounded-full">
+            <span class="live-dot w-2.5 h-2.5 rounded-full bg-emerald-300 flex-shrink-0"></span>
+            <span class="font-bold text-lg">${count}</span>
+            <span class="text-white/80">คนเข้าร่วมแล้ว</span>
+          </div>
+          ${count > 0 ? `
           <div class="flex -space-x-2">
-            ${state.players.slice(0,5).map(p=>`<div class="w-9 h-9 rounded-full bg-primary-fixed border-2 border-background flex items-center justify-center text-sm">${p.avatar}</div>`).join('')}
-            ${state.players.length > 5 ? `<div class="w-9 h-9 rounded-full bg-secondary-container border-2 border-background flex items-center justify-center text-xs font-bold text-on-secondary-container">+${state.players.length-5}</div>` : ''}
-          </div>
-          <span class="text-on-surface-variant font-medium">ผู้ร่วมทาง <span class="font-bold text-on-surface">${state.players.length}</span> ท่าน ${state.players.length>0?'กำลังรออยู่':'ยังไม่มีผู้เข้าร่วม'}</span>
-        </div>
-        <!-- Players grid -->
-        <div>
-          <h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">ผู้เข้าร่วม</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">${playerGrid}</div>
-          <div class="mt-4 flex gap-3">
-            <button data-action="add-demo-players" class="text-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full transition-colors flex items-center gap-2">
-              ${icon('person_add','text-sm')} เพิ่มผู้เล่นสาธิต (12 คน)
-            </button>
-            ${state.players.length>0?`<button data-action="clear-players" class="text-sm bg-error-container/30 hover:bg-error-container text-on-error-container px-4 py-2 rounded-full transition-colors flex items-center gap-2">${icon('clear_all','text-sm')} ล้างทั้งหมด</button>`:''}
-          </div>
+            ${state.players.slice(0,6).map(p=>`<div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-base">${p.avatar}</div>`).join('')}
+            ${count > 6 ? `<div class="w-9 h-9 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center text-xs font-bold">+${count-6}</div>` : ''}
+          </div>` : ''}
         </div>
       </div>
-      <!-- Right: QR + join info -->
-      <div class="lg:col-span-2 space-y-6">
-        <div class="bg-surface-container-lowest rounded-3xl p-8 text-center shadow-[0_8px_40px_rgba(0,70,74,0.08)]">
-          <h3 class="font-headline font-bold text-xl mb-1">เข้าร่วมห้องประชุม</h3>
-          <p class="text-sm text-on-surface-variant mb-6">สแกน QR เพื่อเข้าร่วมห้องประชุม</p>
-          <div class="flex justify-center mb-6">
-            <div id="qr-code" class="p-3 bg-white rounded-2xl shadow-sm"></div>
+
+      <!-- Right: QR card -->
+      <div class="flex justify-center lg:justify-end">
+        <div class="bg-white rounded-3xl p-6 shadow-2xl text-center w-72">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">สแกนเพื่อเข้าร่วม</p>
+          <div id="qr-code" class="flex justify-center mb-3"></div>
+          <div class="bg-surface-container-low rounded-2xl px-4 py-2.5 mt-1">
+            <p class="text-[11px] text-on-surface-variant mb-0.5">หรือเปิดลิงก์</p>
+            <p id="mobile-url" class="text-[11px] font-mono text-primary break-all leading-relaxed">${url}</p>
           </div>
-          <div class="bg-surface-container-low rounded-2xl p-4">
-            <p class="text-xs text-on-surface-variant mb-1">หรือเปิดลิงก์</p>
-            <p id="mobile-url" class="text-xs font-mono text-primary break-all">${url}</p>
-          </div>
-          ${!IS_SERVER ? `<div class="bg-tertiary-fixed/50 rounded-xl p-3 mt-3 flex items-start gap-2">
-            ${icon('warning','text-on-tertiary-fixed-variant text-sm flex-shrink-0 mt-0.5')}
-            <p class="text-xs text-on-tertiary-fixed-variant leading-relaxed"><strong>โหมดสาธิต (Single Device):</strong> เปิดแท็บใหม่ด้วย URL ข้างต้น เพื่อทดสอบบนอุปกรณ์เดียวกัน สำหรับหลายอุปกรณ์ ให้รัน <code class="bg-black/10 px-1 rounded">node server.js</code></p>
-          </div>` : `<div class="bg-primary-fixed/30 rounded-xl p-3 mt-3 flex items-center gap-2">
-            ${icon('wifi','text-on-primary-fixed text-sm')}
-            <p class="text-xs text-on-primary-fixed font-medium">Server mode: QR code ใช้งานได้จริงข้ามอุปกรณ์</p>
-          </div>`}
+          ${!IS_SERVER ? `
+          <p class="text-[10px] text-on-surface-variant mt-2 leading-relaxed">โหมดสาธิต: เปิดแท็บใหม่ด้วย URL ข้างต้น</p>` : ''}
         </div>
       </div>
     </div>
-    <!-- Action button -->
-    <div class="mt-12 text-center">
-      <button data-action="assign-teams" class="${state.players.length<2?'opacity-50 cursor-not-allowed':''} bg-gradient-to-br from-primary to-primary-container text-on-primary px-12 py-5 rounded-full text-xl font-bold shadow-[0_12px_40px_-8px_rgba(0,70,74,0.4)] hover:shadow-[0_16px_48px_-8px_rgba(0,70,74,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center gap-3 mx-auto" ${state.players.length<2?'disabled':''}>
-        ${icon('shuffle','text-2xl')} แบ่งกลุ่มผู้เล่น
+  </div>
+
+  <!-- Participants + action -->
+  <main class="max-w-6xl mx-auto px-8 py-8 pb-24">
+    <div class="flex items-center justify-between mb-5">
+      <h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant flex items-center gap-2">
+        ${icon('group','text-sm')} ผู้เข้าร่วม (${count} คน)
+      </h3>
+      <div class="flex gap-2">
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-on-surface-variant mr-1 flex items-center gap-1">${icon('person_add','text-xs')} สาธิต</span>
+          ${[2,4,6,8,12].map(n=>`<button data-action="add-demo-players:${n}" class="text-xs bg-surface-container hover:bg-primary hover:text-on-primary text-on-surface-variant w-8 h-7 rounded-full transition-colors font-medium">+${n}</button>`).join('')}
+        </div>
+        ${count > 0 ? `<button data-action="clear-players" class="text-xs bg-error-container/30 hover:bg-error-container text-on-error-container px-3 py-1.5 rounded-full transition-colors flex items-center gap-1.5">${icon('clear_all','text-xs')} ล้าง</button>` : ''}
+      </div>
+    </div>
+
+    ${count === 0
+      ? `<div class="text-center py-16 text-on-surface-variant">
+          ${fillIcon('qr_code_scanner','text-5xl mb-3 block opacity-30')}
+          <p class="text-lg font-medium opacity-50">รอผู้เข้าร่วมสแกน QR...</p>
+         </div>`
+      : `<div class="flex flex-wrap gap-2 mb-8">
+          ${state.players.map(p => `
+            <div class="slide-up flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 rounded-full px-4 py-2 shadow-sm">
+              <span class="text-lg">${p.avatar}</span>
+              <span class="font-medium text-on-surface">${p.name}</span>
+            </div>`).join('')}
+         </div>`
+    }
+
+    <div class="text-center mt-4">
+      <button data-action="assign-teams"
+        class="${count < 2 ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105 hover:shadow-[0_16px_48px_-8px_rgba(0,70,74,0.45)] active:scale-95'}
+          bg-gradient-to-br from-primary to-primary-container text-on-primary px-14 py-5 rounded-full text-xl font-bold
+          shadow-[0_12px_40px_-8px_rgba(0,70,74,0.35)] transition-all flex items-center gap-3 mx-auto"
+        ${count < 2 ? 'disabled' : ''}>
+        ${icon('shuffle','text-2xl')} แบ่งกลุ่มและเริ่มเลย
       </button>
-      ${state.players.length < 2 ? `<p class="mt-3 text-sm text-on-surface-variant">ต้องมีผู้เล่นอย่างน้อย 2 คนเพื่อเริ่ม</p>` : ''}
+      ${count < 2 ? `<p class="mt-3 text-sm text-on-surface-variant">ต้องมีผู้เข้าร่วมอย่างน้อย 2 คนเพื่อเริ่ม</p>` : `<p class="mt-3 text-sm text-on-surface-variant">พร้อมเริ่มได้เลย · ${count} คนรออยู่</p>`}
     </div>
   </main>`;
 }
@@ -1948,8 +1971,9 @@ function handleAction(action, param, el, e) {
     }
 
     case 'add-demo-players': {
+      const target = parseInt(param) || 12;
       const existing = state.players.length;
-      const toAdd = Math.max(0, 12 - existing);
+      const toAdd = target; // always add N more (not capped to target total)
       const newPlayers = [];
       for (let i = 0; i < toAdd; i++) {
         const idx = (existing + i) % DEMO_NAMES.length;
