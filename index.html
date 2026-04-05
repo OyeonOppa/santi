@@ -440,6 +440,7 @@ const STORAGE_KEY = 'santi_harmony_v2';
 // Detect if we're running from an HTTP server (not file://)
 // When served by server.js, we use /api/state for cross-device sync
 const IS_SERVER = location.protocol === 'http:' || location.protocol === 'https:';
+let _showSettings = false; // modal overlay flag
 
 /* ============================================================
    SOUND EFFECTS — Web Audio API, no external files needed
@@ -1554,20 +1555,19 @@ function renderMobileSummary(state, player) {
    ============================================================ */
 function renderSettings(state) {
   return `
-  <div class="min-h-screen bg-background">
-    <!-- Header -->
-    <header class="bg-surface-container-low border-b border-outline-variant/20 px-8 py-5 flex items-center justify-between sticky top-0 z-50">
-      <div>
-        <span class="text-xs font-bold uppercase tracking-widest text-on-secondary-container">Facilitator Suite</span>
-        <h1 class="text-2xl font-extrabold text-primary font-headline">Workshop Controls</h1>
+  <!-- Modal Backdrop -->
+  <div data-action="close-settings" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" style="animation:fadeIn .15s ease">
+    <div class="bg-background rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden" style="animation:slideUp .2s ease">
+      <!-- Modal Header -->
+      <div class="bg-surface-container-low border-b border-outline-variant/20 px-8 py-5 flex items-center justify-between flex-shrink-0">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-on-secondary-container">Facilitator Suite</span>
+          <h1 class="text-2xl font-extrabold text-primary font-headline">Workshop Controls</h1>
+        </div>
       </div>
-      <div class="flex gap-3">
-        <a href="${location.pathname}?view=stage" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-6 py-2.5 rounded-full font-bold text-sm hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
-          ${icon('present_to_all','text-sm')} เปิด Stage View
-        </a>
-      </div>
-    </header>
-    <div class="max-w-5xl mx-auto px-8 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Scrollable Content -->
+      <div class="overflow-y-auto flex-1">
+      <div class="max-w-5xl mx-auto px-8 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Phase Timers -->
       <div class="lg:col-span-2 space-y-6">
         <section class="bg-surface-container-low rounded-3xl p-8">
@@ -1586,7 +1586,7 @@ function renderSettings(state) {
               </div>
               <div class="flex items-center gap-3">
                 <button data-action="set-time:A:-1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
-                <span class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamATime)}</span>
+                <span id="set-timer-a" class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamATime)}</span>
                 <button data-action="set-time:A:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
               </div>
             </div>
@@ -1600,7 +1600,7 @@ function renderSettings(state) {
               </div>
               <div class="flex items-center gap-3">
                 <button data-action="set-time:B:-1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
-                <span class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamBTime)}</span>
+                <span id="set-timer-b" class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.teamBTime)}</span>
                 <button data-action="set-time:B:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
               </div>
             </div>
@@ -1630,7 +1630,7 @@ function renderSettings(state) {
             <!-- SFX Toggle -->
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full ${SFX.enabled ? 'bg-primary/10' : 'bg-surface-container'} flex items-center justify-center transition-colors">
+                <div id="set-sfx-icon" class="w-9 h-9 rounded-full ${SFX.enabled ? 'bg-primary/10' : 'bg-surface-container'} flex items-center justify-center transition-colors">
                   ${icon(SFX.enabled ? 'volume_up' : 'volume_off', SFX.enabled ? 'text-primary' : 'text-on-surface-variant')}
                 </div>
                 <div>
@@ -1638,7 +1638,7 @@ function renderSettings(state) {
                   <p class="text-xs text-on-surface-variant">เสียงนับถอยหลัง เปลี่ยน phase และกดปุ่ม</p>
                 </div>
               </div>
-              <button data-action="toggle-sfx" class="relative w-12 h-6 rounded-full transition-colors ${SFX.enabled ? 'bg-primary' : 'bg-surface-container-highest'}">
+              <button id="set-sfx-toggle" data-action="toggle-sfx" class="relative w-12 h-6 rounded-full transition-colors ${SFX.enabled ? 'bg-primary' : 'bg-surface-container-highest'}">
                 <span class="absolute top-0.5 transition-all duration-200 w-5 h-5 rounded-full bg-white shadow ${SFX.enabled ? 'left-6' : 'left-0.5'}"></span>
               </button>
             </div>
@@ -1657,9 +1657,9 @@ function renderSettings(state) {
         <section class="bg-surface-container-low rounded-3xl p-6">
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-lg font-bold text-primary">Participants</h2>
-            <span class="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded">${state.players.length} Online</span>
+            <span id="set-player-count" class="text-xs font-bold bg-primary/10 text-primary px-2 py-1 rounded">${state.players.length} Online</span>
           </div>
-          <div class="space-y-3 max-h-80 overflow-y-auto">
+          <div id="set-players-list" class="space-y-3 max-h-80 overflow-y-auto">
             ${state.players.length === 0
               ? '<p class="text-sm text-on-surface-variant italic text-center py-4">ยังไม่มีผู้เข้าร่วม</p>'
               : state.players.map(p=>`
@@ -1676,7 +1676,7 @@ function renderSettings(state) {
         <!-- Game phase status -->
         <section class="bg-surface-container-low rounded-3xl p-6">
           <h2 class="text-lg font-bold text-primary mb-4">Game Status</h2>
-          <div class="space-y-2">
+          <div id="set-phase-list" class="space-y-2">
             ${['lobby','teams','category','cards','detail','discussion','summary'].map(ph => `
               <div class="flex items-center gap-2 ${state.phase===ph?'text-primary font-bold':'text-on-surface-variant'}">
                 <div class="w-2 h-2 rounded-full ${state.phase===ph?'bg-primary':'bg-surface-container-highest'} flex-shrink-0"></div>
@@ -1686,8 +1686,56 @@ function renderSettings(state) {
           </div>
         </section>
       </div>
-    </div>
-  </div>`;
+      </div><!-- end scrollable -->
+    </div><!-- end modal panel -->
+  </div><!-- end backdrop -->`;
+}
+
+// Surgical update — only patches changed values inside an already-open modal
+function patchSettingsModal(state) {
+  const m = document.getElementById('settings-modal');
+  if (!m) return;
+  const q = id => m.querySelector('#' + id);
+
+  const ta = q('set-timer-a'); if (ta) ta.textContent = formatTime(state.settings.teamATime);
+  const tb = q('set-timer-b'); if (tb) tb.textContent = formatTime(state.settings.teamBTime);
+
+  const rc = m.querySelector('#room-code-input');
+  if (rc && document.activeElement !== rc) rc.value = state.roomCode;
+
+  const sfxIcon = q('set-sfx-icon');
+  if (sfxIcon) {
+    sfxIcon.className = `w-9 h-9 rounded-full ${SFX.enabled ? 'bg-primary/10' : 'bg-surface-container'} flex items-center justify-center transition-colors`;
+    sfxIcon.innerHTML = icon(SFX.enabled ? 'volume_up' : 'volume_off', SFX.enabled ? 'text-primary' : 'text-on-surface-variant');
+  }
+  const sfxBtn = q('set-sfx-toggle');
+  if (sfxBtn) {
+    sfxBtn.className = `relative w-12 h-6 rounded-full transition-colors ${SFX.enabled ? 'bg-primary' : 'bg-surface-container-highest'}`;
+    sfxBtn.querySelector('span').className = `absolute top-0.5 transition-all duration-200 w-5 h-5 rounded-full bg-white shadow ${SFX.enabled ? 'left-6' : 'left-0.5'}`;
+  }
+
+  const pc = q('set-player-count'); if (pc) pc.textContent = state.players.length + ' Online';
+
+  const pl = q('set-players-list');
+  if (pl) pl.innerHTML = state.players.length === 0
+    ? '<p class="text-sm text-on-surface-variant italic text-center py-4">ยังไม่มีผู้เข้าร่วม</p>'
+    : state.players.map(p => `
+        <div class="flex items-center gap-3 bg-surface-container-lowest rounded-xl p-3">
+          <div class="w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center">${p.avatar}</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold truncate">${p.name}</p>
+            <p class="text-xs text-on-surface-variant">ทีม ${p.teamId||'?'}</p>
+          </div>
+          <div class="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0"></div>
+        </div>`).join('');
+
+  const ph = q('set-phase-list');
+  if (ph) ph.innerHTML = ['lobby','teams','category','cards','detail','discussion','summary'].map(p => `
+    <div class="flex items-center gap-2 ${state.phase===p?'text-primary font-bold':'text-on-surface-variant'}">
+      <div class="w-2 h-2 rounded-full ${state.phase===p?'bg-primary':'bg-surface-container-highest'} flex-shrink-0"></div>
+      <span class="text-sm capitalize">${p}</span>
+      ${state.phase===p?icon('arrow_right','text-sm ml-auto'):''}
+    </div>`).join('');
 }
 
 /* ============================================================
@@ -1699,11 +1747,29 @@ function render() {
   const app = document.getElementById('app');
   if (!app) return;
 
-  if (mode === 'settings') app.innerHTML = renderSettings(state);
-  else if (mode === 'mobile') app.innerHTML = renderMobile(state);
-  else app.innerHTML = renderStage(state);
-
-  afterRender(mode, state);
+  if (mode === 'mobile') {
+    app.innerHTML = renderMobile(state);
+    afterRender(mode, state);
+  } else if (_showSettings) {
+    // Modal is open — patch only changed values, skip stage re-render
+    const existing = document.getElementById('settings-modal');
+    if (existing) {
+      patchSettingsModal(state);
+      // skip afterRender — stage is hidden, no need to regenerate QR etc.
+    } else {
+      // First open: render stage + mount modal
+      app.innerHTML = renderStage(state);
+      afterRender(mode, state);
+      const overlay = document.createElement('div');
+      overlay.id = 'settings-modal';
+      overlay.innerHTML = renderSettings(state);
+      document.body.appendChild(overlay);
+    }
+  } else {
+    app.innerHTML = renderStage(state);
+    document.getElementById('settings-modal')?.remove();
+    afterRender(mode, state);
+  }
 }
 
 function renderStage(state) {
@@ -2074,7 +2140,17 @@ function handleAction(action, param, el, e) {
     }
 
     case 'open-settings': {
-      location.href = `${location.pathname}?view=settings`;
+      _showSettings = true;
+      render();
+      break;
+    }
+
+    case 'close-settings': {
+      // Only close when clicking directly on backdrop, not bubbled from inside modal
+      if (e.target === el) {
+        _showSettings = false;
+        render();
+      }
       break;
     }
   }
