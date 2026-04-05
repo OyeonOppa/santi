@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SANTI</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2300464a'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-size='20' font-family='sans-serif' fill='white'%3E🕊%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00464a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SANTI">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Be+Vietnam+Pro:wght@400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
@@ -565,6 +571,13 @@ if (BC) BC.onmessage = (e) => {
 window.addEventListener('storage', (e) => {
   if (e.key === STORAGE_KEY) render();
 });
+document.addEventListener('fullscreenchange', () => {
+  // Re-render only the nav icon — cheapest way to update fullscreen button icon
+  const btn = document.querySelector('[data-action="toggle-fullscreen"]');
+  if (btn) btn.innerHTML = document.fullscreenElement
+    ? '<span class="material-symbols-outlined text-on-surface-variant">fullscreen_exit</span>'
+    : '<span class="material-symbols-outlined text-on-surface-variant">fullscreen</span>';
+});
 
 /* ============================================================
    TIMER
@@ -598,7 +611,7 @@ function startTimer() {
       render();
       return;
     }
-    if (rem <= 5) SFX.beep(rem === 1);
+    if (rem <= 30) SFX.beep(rem <= 3);
     const ns2 = getState();
     ns2.timerSec = rem;
     saveState(ns2);
@@ -614,7 +627,7 @@ function updateTimerUI(state) {
   if (el) el.textContent = formatTime(state.timerSec);
   const bar = document.getElementById('timer-bar');
   if (bar) {
-    const total = state.speakingTeam==='A' ? state.settings.teamATime : state.settings.teamBTime;
+    const total = state.timerInitialSec || (state.speakingTeam==='A' ? state.settings.teamATime : state.settings.teamBTime);
     const pct = Math.max(0, (state.timerSec/total)*100);
     bar.style.width = pct + '%';
     if (pct < 25) { bar.className = bar.className.replace(/from-\S+/g,'from-tertiary').replace(/to-\S+/g,'to-tertiary-container'); }
@@ -650,6 +663,9 @@ function stageNav(state) {
       </div>
       <button data-action="open-settings" class="p-2 rounded-full hover:bg-surface-container transition-colors" title="ตั้งค่า">
         ${icon('settings','text-on-surface-variant')}
+      </button>
+      <button data-action="toggle-fullscreen" class="p-2 rounded-full hover:bg-surface-container transition-colors" title="เต็มจอ">
+        ${icon(document.fullscreenElement ? 'fullscreen_exit' : 'fullscreen','text-on-surface-variant')}
       </button>
     </div>
   </nav>`;
@@ -711,7 +727,7 @@ function renderLobby(state) {
         <!-- Players grid -->
         <div>
           <h3 class="text-sm font-bold uppercase tracking-widest text-on-surface-variant mb-4">ผู้เข้าร่วม</h3>
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-60 overflow-y-auto pr-1">${playerGrid}</div>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">${playerGrid}</div>
           <div class="mt-4 flex gap-3">
             <button data-action="add-demo-players" class="text-sm bg-surface-container hover:bg-surface-container-high text-on-surface-variant px-4 py-2 rounded-full transition-colors flex items-center gap-2">
               ${icon('person_add','text-sm')} เพิ่มผู้เล่นสาธิต (12 คน)
@@ -1054,18 +1070,34 @@ function renderDiscussion(state) {
         <section class="bg-surface-container-low rounded-3xl p-6">
           <h3 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">ผู้เข้าร่วมการเสวนา</h3>
           <div class="grid grid-cols-2 gap-3">
-            <div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-3 ${isA?'ring-2 ring-primary/30':''}">
-              ${icon(card?.teamARoleIcon||'groups',`${isA?'text-primary':'text-on-surface-variant'}`)}
-              <div>
-                <p class="text-xs font-bold ${isA?'text-primary':'text-on-surface-variant'}">ทีม A ${isA?'· กำลังพูด':''}</p>
-                <p class="text-sm font-semibold leading-tight">${card?.teamARoleName||'ทีม A'}</p>
+            <div class="bg-surface-container-lowest rounded-2xl p-4 ${isA?'ring-2 ring-primary/30':''}">
+              <div class="flex items-center gap-2 mb-3">
+                ${icon(card?.teamARoleIcon||'groups',`text-sm ${isA?'text-primary':'text-on-surface-variant'}`)}
+                <div>
+                  <p class="text-xs font-bold ${isA?'text-primary':'text-on-surface-variant'}">ทีม A ${isA?'· กำลังพูด':''}</p>
+                  <p class="text-sm font-semibold leading-tight">${card?.teamARoleName||'ทีม A'}</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                ${state.players.filter(p=>p.teamId==='A').map(p=>`
+                  <span class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-full text-xs">
+                    <span>${p.avatar}</span><span class="font-medium">${p.name}</span>
+                  </span>`).join('') || '<span class="text-xs text-on-surface-variant italic">ไม่มีสมาชิก</span>'}
               </div>
             </div>
-            <div class="bg-surface-container-lowest rounded-2xl p-4 flex items-center gap-3 ${!isA?'ring-2 ring-tertiary/30':''}">
-              ${icon(card?.teamBRoleIcon||'groups',`${!isA?'text-tertiary':'text-on-surface-variant'}`)}
-              <div>
-                <p class="text-xs font-bold ${!isA?'text-tertiary':'text-on-surface-variant'}">ทีม B ${!isA?'· กำลังพูด':''}</p>
-                <p class="text-sm font-semibold leading-tight">${card?.teamBRoleName||'ทีม B'}</p>
+            <div class="bg-surface-container-lowest rounded-2xl p-4 ${!isA?'ring-2 ring-tertiary/30':''}">
+              <div class="flex items-center gap-2 mb-3">
+                ${icon(card?.teamBRoleIcon||'groups',`text-sm ${!isA?'text-tertiary':'text-on-surface-variant'}`)}
+                <div>
+                  <p class="text-xs font-bold ${!isA?'text-tertiary':'text-on-surface-variant'}">ทีม B ${!isA?'· กำลังพูด':''}</p>
+                  <p class="text-sm font-semibold leading-tight">${card?.teamBRoleName||'ทีม B'}</p>
+                </div>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                ${state.players.filter(p=>p.teamId==='B').map(p=>`
+                  <span class="flex items-center gap-1 bg-surface-container px-2 py-1 rounded-full text-xs">
+                    <span>${p.avatar}</span><span class="font-medium">${p.name}</span>
+                  </span>`).join('') || '<span class="text-xs text-on-surface-variant italic">ไม่มีสมาชิก</span>'}
               </div>
             </div>
           </div>
@@ -1134,48 +1166,123 @@ function renderSummary(state) {
   const topEmotions = {};
   state.emotions.forEach(e => topEmotions[e.text] = (topEmotions[e.text]||0)+1);
   const sorted = Object.entries(topEmotions).sort((a,b)=>b[1]-a[1]).slice(0,8);
+
+  // Emotions split by team
+  const emotionsByTeam = { A: {}, B: {} };
+  state.emotions.forEach(e => {
+    const player = state.players.find(p => p.id === e.playerId);
+    const team = player?.teamId || 'A';
+    emotionsByTeam[team][e.text] = (emotionsByTeam[team][e.text] || 0) + 1;
+  });
+  const topA = Object.entries(emotionsByTeam.A).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const topB = Object.entries(emotionsByTeam.B).sort((a,b)=>b[1]-a[1]).slice(0,4);
+
+  const REFLECTION_QUESTIONS = [
+    'คุณได้ยินอะไรจากฝ่ายตรงข้ามที่ทำให้รู้สึกประหลาดใจ หรือเข้าใจมากขึ้น?',
+    'ความต้องการพื้นฐานอะไรที่ทั้งสองฝ่ายมีร่วมกัน แม้ว่ามุมมองจะต่างกัน?',
+    'หากคุณสลับบทบาทกับอีกฝ่าย คุณจะรู้สึกหรือคิดอย่างไรที่แตกต่างออกไป?',
+    'มีจุดไหนที่คุณรู้สึกว่าการสื่อสารระหว่างสองฝ่ายเริ่มเปิดกว้างขึ้น?',
+    'ทางออกที่เป็นไปได้ที่ทำให้ทุกฝ่ายได้รับการดูแลความต้องการ คืออะไร?',
+  ];
+
   return `
   ${stageNav(state)}
-  <main class="max-w-5xl mx-auto px-6 py-12 text-center">
-    <div class="mb-8 inline-block">
-      ${fillIcon('spa','text-6xl text-primary')}
+  <main class="max-w-5xl mx-auto px-6 py-10 pb-16">
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <div class="inline-block mb-4">${fillIcon('spa','text-5xl text-primary')}</div>
+      <h1 class="text-4xl font-extrabold text-primary mb-2">สรุปผลการเสวนา</h1>
+      <p class="text-on-surface-variant text-lg">ขอบคุณทุกท่านที่ร่วมสร้างพื้นที่แห่งความเข้าใจในวันนี้</p>
     </div>
-    <h1 class="text-5xl font-extrabold text-primary mb-4">สรุปผลการเสวนา</h1>
-    <p class="text-on-surface-variant text-xl mb-10">ขอบคุณทุกท่านที่ร่วมสร้างพื้นที่แห่งความเข้าใจในวันนี้</p>
-    ${card ? `
-    <div class="bg-surface-container-low rounded-3xl p-8 mb-8 text-left">
-      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-2">สถานการณ์ที่ใช้</p>
-      <h2 class="text-2xl font-bold text-on-surface mb-3">${card.title}</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-surface-container-lowest rounded-2xl p-4">
-          <p class="text-xs text-primary font-bold mb-1">ทีม A · ${card.teamARoleName}</p>
-          <p class="text-sm text-on-surface-variant">${card.teamARoleSub}</p>
-        </div>
-        <div class="bg-surface-container-lowest rounded-2xl p-4">
-          <p class="text-xs text-tertiary font-bold mb-1">ทีม B · ${card.teamBRoleName}</p>
-          <p class="text-sm text-on-surface-variant">${card.teamBRoleSub}</p>
-        </div>
-      </div>
-    </div>` : ''}
-    <div class="bg-surface-container-lowest rounded-3xl p-8 mb-8">
-      <h3 class="font-bold text-xl mb-6 flex items-center justify-center gap-2">${fillIcon('waves','text-primary')} คลื่นความรู้สึกจากผู้เข้าร่วม (${state.emotions.length} ความรู้สึก)</h3>
-      <div class="flex flex-wrap gap-3 justify-center">
-        ${sorted.map(([text,count],i) => {
-          const cls = WAVE_COLORS[i%WAVE_COLORS.length];
-          return `<span class="${cls} px-5 py-3 rounded-full font-bold text-lg">${text} <span class="opacity-60 text-sm font-normal ml-1">×${count}</span></span>`;
-        }).join('') || '<p class="text-on-surface-variant italic">ไม่มีการส่งความรู้สึก</p>'}
-      </div>
-    </div>
-    <div class="flex gap-4 justify-center flex-wrap">
-      <div class="bg-surface-container-low rounded-2xl px-8 py-5 text-center">
+
+    <!-- Stats row -->
+    <div class="flex gap-4 justify-center flex-wrap mb-8">
+      <div class="bg-surface-container-low rounded-2xl px-8 py-4 text-center">
         <p class="text-3xl font-black text-primary">${state.players.length}</p>
         <p class="text-sm text-on-surface-variant mt-1">ผู้เข้าร่วม</p>
       </div>
-      <div class="bg-surface-container-low rounded-2xl px-8 py-5 text-center">
+      <div class="bg-surface-container-low rounded-2xl px-8 py-4 text-center">
         <p class="text-3xl font-black text-tertiary">${state.emotions.length}</p>
         <p class="text-sm text-on-surface-variant mt-1">ความรู้สึกที่ส่ง</p>
       </div>
+      ${card ? `
+      <div class="bg-surface-container-low rounded-2xl px-8 py-4 text-center">
+        <p class="text-3xl font-black text-secondary">${state.players.filter(p=>p.teamId==='A').length} / ${state.players.filter(p=>p.teamId==='B').length}</p>
+        <p class="text-sm text-on-surface-variant mt-1">ทีม A / ทีม B</p>
+      </div>` : ''}
     </div>
+
+    <div class="space-y-6">
+
+      ${card ? `
+      <!-- Scenario recap -->
+      <section class="bg-surface-container-low rounded-3xl p-6">
+        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">กรณีศึกษา</p>
+        <h2 class="text-xl font-bold text-on-surface mb-4">${card.title}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-primary/5 border border-primary/20 rounded-2xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              ${icon(card.teamARoleIcon||'groups','text-primary text-sm')}
+              <p class="text-sm font-extrabold text-primary">ทีม A · ${card.teamARoleName}</p>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">${card.teamARoleDesc}</p>
+            ${topA.length ? `
+            <div class="mt-3 pt-3 border-t border-primary/10">
+              <p class="text-xs text-primary/70 font-bold mb-2">ความรู้สึกที่ส่ง</p>
+              <div class="flex flex-wrap gap-1">${topA.map(([t,c])=>`<span class="bg-primary/10 text-primary text-xs px-2 py-1 rounded-full font-medium">${t} ×${c}</span>`).join('')}</div>
+            </div>` : ''}
+          </div>
+          <div class="bg-tertiary-fixed/20 border border-tertiary/20 rounded-2xl p-5">
+            <div class="flex items-center gap-2 mb-3">
+              ${icon(card.teamBRoleIcon||'groups','text-tertiary text-sm')}
+              <p class="text-sm font-extrabold text-tertiary">ทีม B · ${card.teamBRoleName}</p>
+            </div>
+            <p class="text-sm text-on-surface leading-relaxed">${card.teamBRoleDesc}</p>
+            ${topB.length ? `
+            <div class="mt-3 pt-3 border-t border-tertiary/10">
+              <p class="text-xs text-tertiary/70 font-bold mb-2">ความรู้สึกที่ส่ง</p>
+              <div class="flex flex-wrap gap-1">${topB.map(([t,c])=>`<span class="bg-tertiary-fixed/50 text-on-tertiary-fixed-variant text-xs px-2 py-1 rounded-full font-medium">${t} ×${c}</span>`).join('')}</div>
+            </div>` : ''}
+          </div>
+        </div>
+      </section>` : ''}
+
+      <!-- Emotion wave -->
+      <section class="bg-surface-container-lowest rounded-3xl p-6">
+        <h3 class="font-bold text-lg mb-4 flex items-center gap-2">${fillIcon('waves','text-primary')} คลื่นความรู้สึกรวม (${state.emotions.length} ความรู้สึก)</h3>
+        <div class="flex flex-wrap gap-2">
+          ${sorted.map(([text,count],i) => {
+            const cls = WAVE_COLORS[i%WAVE_COLORS.length];
+            return `<span class="${cls} px-4 py-2 rounded-full font-bold">${text} <span class="opacity-60 text-sm font-normal ml-1">×${count}</span></span>`;
+          }).join('') || '<p class="text-on-surface-variant italic">ไม่มีการส่งความรู้สึก</p>'}
+        </div>
+      </section>
+
+      <!-- Reflection question -->
+      ${card ? `
+      <section class="bg-gradient-to-br from-primary/5 to-primary-container/10 border border-primary/15 rounded-3xl p-6">
+        <div class="flex items-start gap-3 mb-5">
+          ${fillIcon('quiz','text-primary text-2xl flex-shrink-0 mt-0.5')}
+          <div>
+            <p class="text-xs font-bold uppercase tracking-widest text-primary mb-1">คำถามจากกรณีศึกษา</p>
+            <p class="text-on-surface font-medium leading-relaxed">${card.question}</p>
+          </div>
+        </div>
+        <div class="border-t border-primary/10 pt-5">
+          <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">คำถามสะท้อนคิดเพิ่มเติม</p>
+          <div class="space-y-3">
+            ${REFLECTION_QUESTIONS.map((q,i) => `
+            <div class="flex items-start gap-3 bg-surface-container-lowest/80 rounded-2xl p-4">
+              <span class="w-6 h-6 rounded-full bg-primary/15 text-primary text-xs font-black flex items-center justify-center flex-shrink-0 mt-0.5">${i+1}</span>
+              <p class="text-sm text-on-surface leading-relaxed">${q}</p>
+            </div>`).join('')}
+          </div>
+        </div>
+      </section>` : ''}
+
+    </div>
+
+    <!-- Action buttons -->
     <div class="mt-10 flex gap-4 justify-center flex-wrap">
       <button data-action="new-round" class="bg-primary text-on-primary px-8 py-4 rounded-full font-bold transition-all hover:scale-[1.02] active:scale-95 flex items-center gap-3">
         ${icon('replay')} เล่นรอบใหม่ (ทีมเดิม)
@@ -1653,7 +1760,7 @@ function handleAction(action, param, el, e) {
 
     case 'start-discussion': {
       SFX.chime();
-      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[] });
+      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerInitialSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[] });
       break;
     }
 
@@ -1668,7 +1775,10 @@ function handleAction(action, param, el, e) {
     }
 
     case 'timer-plus': {
-      patchState({ timerSec: getState().timerSec + 60 });
+      const ns = getState();
+      const newSec = ns.timerSec + 60;
+      const newInit = Math.max(ns.timerInitialSec || 0, newSec);
+      patchState({ timerSec: newSec, timerInitialSec: newInit });
       break;
     }
 
@@ -1682,10 +1792,10 @@ function handleAction(action, param, el, e) {
       stopTimer();
       const ns = getState();
       if (ns.speakingTeam === 'A') {
-        patchState({ speakingTeam:'B', timerSec: ns.settings.teamBTime, timerRunning:false, teamADone:true });
+        patchState({ speakingTeam:'B', timerSec: ns.settings.teamBTime, timerInitialSec: ns.settings.teamBTime, timerRunning:false, teamADone:true });
       } else {
         // Switch back to Team A
-        patchState({ speakingTeam:'A', timerSec: ns.settings.teamATime, timerRunning:false, teamADone:false });
+        patchState({ speakingTeam:'A', timerSec: ns.settings.teamATime, timerInitialSec: ns.settings.teamATime, timerRunning:false, teamADone:false });
       }
       break;
     }
@@ -1798,6 +1908,15 @@ function handleAction(action, param, el, e) {
       const on = SFX.toggle();
       if (on) SFX.chime();
       render();
+      break;
+    }
+
+    case 'toggle-fullscreen': {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(()=>{});
+      } else {
+        document.exitFullscreen().catch(()=>{});
+      }
       break;
     }
 
@@ -1974,6 +2093,10 @@ function connectSSE(roomCode) {
       } catch(ex) {}
     }, 2000);
   };
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(() => {});
 }
 
 init();
