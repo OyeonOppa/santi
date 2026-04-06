@@ -82,6 +82,18 @@ const server = http.createServer((req, res) => {
         const state = JSON.parse(body);
         const roomCode = state.roomCode || getRoomFromUrl(req.url);
         if (!roomCode) { res.writeHead(400); res.end('Missing roomCode'); return; }
+        // Merge: never shrink arrays that are append-only (emotions, players)
+        const prev = rooms.get(roomCode);
+        if (prev) {
+          if (Array.isArray(prev.emotions) && Array.isArray(state.emotions) &&
+              prev.emotions.length > state.emotions.length) {
+            state.emotions = prev.emotions;
+          }
+          if (Array.isArray(prev.players) && Array.isArray(state.players) &&
+              prev.players.length > state.players.length) {
+            state.players = prev.players;
+          }
+        }
         rooms.set(roomCode, state);
         broadcast(roomCode, state);
         res.writeHead(200); res.end('OK');
