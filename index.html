@@ -2507,10 +2507,12 @@ function connectSSE(roomCode) {
     try {
       const serverState = JSON.parse(e.data);
       if (!serverState || !serverState.roomCode) return;
-      // Ignore SSE that bounced back from our own recent save (within 1 sec)
-      if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000) return;
       const prev = getState();
       const prevCount = prev?.players?.length ?? 0;
+      // Bounce-guard: ignore own timer bounces — but always pass through if emotions/players changed
+      const emotionsChanged = (serverState.emotions?.length ?? 0) !== (prev?.emotions?.length ?? 0);
+      const playersChanged  = (serverState.players?.length  ?? 0) !== prevCount;
+      if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000 && !emotionsChanged && !playersChanged) return;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
       if (serverState.players?.length > prevCount) SFX.join();
       render();
