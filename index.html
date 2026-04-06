@@ -61,6 +61,8 @@ h1,h2,h3,.font-headline{font-family:'Manrope','Sarabun',sans-serif}
 .live-dot{animation:pulseRing 2s ease-in-out infinite}
 .fade-in{animation:fadeIn .4s ease-out forwards}
 .slide-up{animation:slideUp .5s ease-out forwards}
+@keyframes floatReaction{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-60px) scale(1.5)}100%{opacity:0;transform:translateY(-120px) scale(1.2)}}
+.reaction-float{animation:floatReaction 2s ease-out forwards;pointer-events:none;position:absolute;font-size:2.2rem;z-index:20;user-select:none}
 .timer-bar{transition:width 1s linear}
 .card-hover{transition:transform .2s ease,box-shadow .2s ease}
 .card-hover:hover{transform:scale(1.03)}
@@ -432,6 +434,12 @@ const WAVE_COLORS = [
 
 const DEMO_NAMES = ['นรินทร์ธร','กิตติพงษ์','มลฤดี','ศักดิ์ชัย','วรรณิศา','ประวิทย์','อภิชาติ','พรทิพย์','ชัยวุฒิ','จิราพร','ธนพล','รุ่งโรจน์'];
 const AVATARS = ['🧑','👩','👨','🧕','👩‍💼','👨‍💼','🧑‍🏫','👩‍🔬','👨‍🎓','🧑‍💻','👩‍🍳','👨‍🎨'];
+const VOTE_OPTIONS = [
+  { id:'understand', emoji:'💡', text:'เข้าใจมุมมองอีกฝ่ายมากขึ้น' },
+  { id:'need',       emoji:'🤝', text:'เห็นความต้องการที่มีร่วมกัน' },
+  { id:'heard',      emoji:'❤️', text:'รู้สึกว่าตัวเองถูกรับฟัง' },
+  { id:'solution',   emoji:'🌱', text:'มองเห็นทางออกใหม่' },
+];
 
 /* ============================================================
    STATE  —  localStorage (same-device) + Server API (cross-device)
@@ -446,6 +454,7 @@ let _showPin      = false; // PIN gate modal
 let _pinBuffer    = '';    // digits typed so far
 let _pinVerified  = false; // session unlock (survives re-renders, resets on reload)
 let _prevPhase    = null;  // for confetti trigger detection
+let _lastReactionCount = 0; // for spawning new reaction floats on stage
 
 /* ============================================================
    SOUND EFFECTS — Web Audio API, no external files needed
@@ -623,6 +632,8 @@ function defaultState() {
     teamADone: false,
     teamBDone: false,
     emotions: [],
+    reactions: [],
+    votes: {},
     settings: { teamATime: 180, teamBTime: 180 }
   };
 }
@@ -740,6 +751,23 @@ function updateTimerUI(state) {
     bar.style.width = pct + '%';
     if (pct < 25) { bar.className = bar.className.replace(/from-\S+/g,'from-tertiary').replace(/to-\S+/g,'to-tertiary-container'); }
   }
+  // Spawn floating reactions for any new ones received from mobile
+  const reactions = state.reactions || [];
+  const newOnes = reactions.slice(_lastReactionCount);
+  _lastReactionCount = reactions.length;
+  newOnes.forEach(r => spawnReaction(r.emoji));
+}
+
+function spawnReaction(emoji) {
+  const container = document.getElementById('empathy-wave-area');
+  if (!container) return;
+  const el = document.createElement('div');
+  el.className = 'reaction-float';
+  el.textContent = emoji;
+  el.style.left = (8 + Math.random() * 84) + '%';
+  el.style.bottom = (10 + Math.random() * 30) + '%';
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 2200);
 }
 
 /* ============================================================
@@ -1270,7 +1298,7 @@ function renderDiscussion(state) {
       <!-- Right: Empathy Wave -->
       <div class="lg:col-span-7 flex flex-col gap-5">
         <!-- Empathy Wave (main focus) -->
-        <section class="bg-surface-container rounded-3xl p-7 relative overflow-hidden flex-1" style="min-height:280px">
+        <section id="empathy-wave-area" class="bg-surface-container rounded-3xl p-7 relative overflow-hidden flex-1" style="min-height:280px">
           <div class="flex items-center justify-between mb-5">
             <div>
               <h2 class="font-bold text-on-surface text-lg">คลื่นความรู้สึก (Empathy Wave)</h2>
@@ -1395,6 +1423,33 @@ function renderSummary(state) {
           </div>
         </div>
       </section>` : ''}
+
+      <!-- Vote Results -->
+      ${Object.values(state.votes||{}).flat().length > 0 ? (() => {
+        const votes = state.votes || {};
+        const totalVotes = Object.values(votes).flat().length;
+        return `
+      <section class="bg-surface-container-low rounded-3xl p-6">
+        <h3 class="font-bold text-lg mb-5 flex items-center gap-2">${fillIcon('how_to_vote','text-primary')} ผลโหวต · สิ่งที่ได้จากการเสวนา
+          <span class="ml-auto text-sm font-normal text-on-surface-variant">${totalVotes} โหวต จาก ${state.players.length} คน</span>
+        </h3>
+        <div class="space-y-4">
+          ${VOTE_OPTIONS.map(opt => {
+            const count = (votes[opt.id]||[]).length;
+            const pct = Math.round(count/totalVotes*100);
+            return `<div>
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-sm font-medium flex items-center gap-2"><span class="text-lg">${opt.emoji}</span>${opt.text}</span>
+                <span class="text-sm font-bold text-primary tabular-nums">${count} (${pct}%)</span>
+              </div>
+              <div class="h-3 rounded-full bg-surface-container-highest overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-primary to-primary-container rounded-full transition-all" style="width:${pct}%"></div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </section>`;
+      })() : ''}
 
       <!-- Emotion wave -->
       <section class="bg-surface-container-lowest rounded-3xl p-6">
@@ -1663,6 +1718,14 @@ function renderMobileEmotions(state, player) {
       </div>
     </details>` : ''}
 
+    <!-- ── Live Reactions ── -->
+    <div class="bg-surface-container-low rounded-2xl px-4 py-3 mb-3 flex items-center gap-2">
+      <p class="text-xs text-on-surface-variant font-medium flex-1">React แบบ real-time</p>
+      ${['👍','❤️','💡','🤔'].map(e =>
+        `<button data-action="send-reaction:${encodeURIComponent(e)}" class="text-2xl w-12 h-12 rounded-full bg-surface-container hover:bg-surface-container-high active:scale-90 transition-transform flex items-center justify-center">${e}</button>`
+      ).join('')}
+    </div>
+
     <!-- ── Emotion section ── -->
     <div class="bg-surface-container-low rounded-3xl p-5 mb-3">
       <label class="block text-base font-bold text-primary mb-3">ส่งความรู้สึกตอนนี้</label>
@@ -1686,16 +1749,44 @@ function renderMobileEmotions(state, player) {
 }
 
 function renderMobileSummary(state, player) {
+  const votes = state.votes || {};
+  const myVoteId = VOTE_OPTIONS.find(o => (votes[o.id]||[]).includes(player.id))?.id || null;
+  const totalVotes = Object.values(votes).flat().length;
+
   return `
   ${mobileTopBar('สรุปผล')}
-  <div class="min-h-screen bg-background pt-14 pb-20 flex flex-col items-center justify-center px-6 text-center">
-    ${fillIcon('spa','text-6xl text-primary mb-4 block')}
-    <h1 class="text-3xl font-extrabold text-primary mb-3">ขอบคุณ!</h1>
-    <p class="text-on-surface-variant mb-2">ขอบคุณที่ร่วมสร้างพื้นที่แห่งความเข้าใจ</p>
-    <p class="font-bold text-on-surface mb-8">${player.name} · ทีม ${player.teamId}</p>
-    <div class="bg-surface-container-low rounded-3xl p-6 w-full max-w-xs">
-      <p class="text-3xl font-black text-primary">${state.emotions.filter(e=>e.pid===player.id).length}</p>
-      <p class="text-sm text-on-surface-variant mt-1">ความรู้สึกที่คุณส่ง</p>
+  <div class="min-h-screen bg-background pt-14 pb-24 px-4">
+    <div class="text-center pt-6 mb-6">
+      ${fillIcon('spa','text-5xl text-primary mb-3 block')}
+      <h1 class="text-2xl font-extrabold text-primary mb-1">ขอบคุณ!</h1>
+      <p class="text-sm text-on-surface-variant">${player.name} · ทีม ${player.teamId}</p>
+    </div>
+
+    <!-- Vote section -->
+    <div class="bg-surface-container-low rounded-3xl p-5 mb-4">
+      <p class="text-sm font-bold text-on-surface mb-1">คุณได้อะไรจากการเสวนาครั้งนี้?</p>
+      <p class="text-xs text-on-surface-variant mb-4">${myVoteId ? `คุณโหวตแล้ว · รวม ${totalVotes} โหวต` : 'เลือก 1 ข้อที่ตรงใจคุณที่สุด'}</p>
+      <div class="space-y-2.5">
+        ${VOTE_OPTIONS.map(opt => {
+          const count = (votes[opt.id]||[]).length;
+          const voted = opt.id === myVoteId;
+          const disabled = !!myVoteId && !voted;
+          const pct = totalVotes ? Math.round(count/totalVotes*100) : 0;
+          return `<button data-action="${myVoteId ? '' : 'cast-vote:'+opt.id}"
+            class="w-full text-left rounded-2xl p-3.5 flex items-center gap-3 transition-all ${voted ? 'bg-primary text-on-primary' : disabled ? 'bg-surface-container text-on-surface-variant opacity-60' : 'bg-surface-container hover:bg-surface-container-high text-on-surface'} relative overflow-hidden">
+            ${myVoteId ? `<div class="absolute inset-0 bg-primary/10 rounded-2xl transition-all" style="width:${pct}%;opacity:${voted?0:1}"></div>` : ''}
+            <span class="text-xl relative z-10">${opt.emoji}</span>
+            <span class="font-medium text-sm flex-1 relative z-10">${opt.text}</span>
+            ${myVoteId ? `<span class="text-xs font-bold relative z-10 ${voted?'text-on-primary/80':'text-on-surface-variant'}">${count} โหวต</span>` : ''}
+          </button>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="bg-surface-container-low rounded-2xl p-4 text-center">
+      <p class="text-2xl font-black text-primary">${state.emotions.filter(e=>e.pid===player.id).length}</p>
+      <p class="text-xs text-on-surface-variant mt-0.5">ความรู้สึกที่คุณส่งระหว่างการเสวนา</p>
     </div>
   </div>`;
 }
@@ -2136,7 +2227,10 @@ function renderCustomCardForm(state) {
 function afterRender(mode, state) {
   if (mode === 'stage') {
     if (state.phase === 'lobby') generateQR(state.roomCode);
-    if (state.phase === 'discussion') updateTimerUI(state);
+    if (state.phase === 'discussion') {
+      _lastReactionCount = (state.reactions || []).length; // sync on fresh render
+      updateTimerUI(state);
+    }
     BGM.setPhase(state.phase);
   }
 }
@@ -2283,7 +2377,7 @@ function handleAction(action, param, el, e) {
     }
     case 'go-cards':    SFX.click(); patchState({ phase:'cards' }); break;
     case 'go-detail':   SFX.click(); stopTimer(); patchState({ phase:'detail', timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false }); break;
-    case 'new-round':   SFX.chime(); patchState({ phase:'category', catId:null, cardId:null, timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false, emotions:[] }); break;
+    case 'new-round':   SFX.chime(); patchState({ phase:'category', catId:null, cardId:null, timerRunning:false, timerSec: state.settings.teamATime, teamADone:false, teamBDone:false, emotions:[], reactions:[], votes:{} }); break;
 
     case 'select-cat': {
       patchState({ catId: param, cardId:null, phase:'cards' });
@@ -2297,7 +2391,7 @@ function handleAction(action, param, el, e) {
 
     case 'start-discussion': {
       SFX.chime();
-      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerInitialSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[] });
+      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerInitialSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[], reactions:[], votes:{} });
       break;
     }
 
@@ -2412,6 +2506,29 @@ function handleAction(action, param, el, e) {
       const emotion = { text, pid, id:Date.now()+'_'+Math.random().toString(36).slice(2) };
       patchState({ emotions:[...state.emotions, emotion] });
       if (input) input.value = '';
+      break;
+    }
+
+    case 'send-reaction': {
+      const emoji = decodeURIComponent(param);
+      const pid = getMobilePid();
+      if (!pid) break;
+      const reaction = { emoji, pid, id: Date.now()+'_'+pid };
+      patchState({ reactions: [...(state.reactions||[]), reaction] });
+      // Quick visual pulse on button
+      el.classList.add('scale-150');
+      setTimeout(() => el.classList.remove('scale-150'), 250);
+      break;
+    }
+
+    case 'cast-vote': {
+      const optId = param;
+      const pid = getMobilePid();
+      if (!pid) break;
+      const votes = state.votes || {};
+      // One vote per player
+      if (Object.values(votes).some(arr => arr.includes(pid))) break;
+      patchState({ votes: { ...votes, [optId]: [...(votes[optId]||[]), pid] } });
       break;
     }
 
@@ -2681,10 +2798,12 @@ function connectSSE(roomCode) {
       if (!serverState || !serverState.roomCode) return;
       const prev = getState();
       const prevCount = prev?.players?.length ?? 0;
-      // Bounce-guard: ignore own timer bounces — but always pass through if emotions/players changed
-      const emotionsChanged = (serverState.emotions?.length ?? 0) !== (prev?.emotions?.length ?? 0);
-      const playersChanged  = (serverState.players?.length  ?? 0) !== prevCount;
-      if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000 && !emotionsChanged && !playersChanged) return;
+      // Bounce-guard: ignore own timer bounces — but always pass through cross-client updates
+      const emotionsChanged  = (serverState.emotions?.length  ?? 0) !== (prev?.emotions?.length  ?? 0);
+      const playersChanged   = (serverState.players?.length   ?? 0) !== prevCount;
+      const reactionsChanged = (serverState.reactions?.length ?? 0) !== (prev?.reactions?.length ?? 0);
+      const votesChanged     = JSON.stringify(serverState.votes||{}) !== JSON.stringify(prev?.votes||{});
+      if (getMode() !== 'mobile' && Date.now() - _lastSaveTs < 1000 && !emotionsChanged && !playersChanged && !reactionsChanged && !votesChanged) return;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(serverState));
       if (serverState.players?.length > prevCount) SFX.join();
       render();

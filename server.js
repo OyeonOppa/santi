@@ -93,6 +93,10 @@ const server = http.createServer((req, res) => {
               prev.players.length > state.players.length) {
             state.players = prev.players;
           }
+          if (Array.isArray(prev.reactions) && Array.isArray(state.reactions) &&
+              prev.reactions.length > state.reactions.length) {
+            state.reactions = prev.reactions;
+          }
         }
         rooms.set(roomCode, state);
         broadcast(roomCode, state);
