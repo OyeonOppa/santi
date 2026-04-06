@@ -1587,35 +1587,72 @@ function renderMobileEmotions(state, player) {
   const card = state.cardId ? getCard(state.catId, state.cardId) : null;
   const speakingTeam = state.speakingTeam;
   const myTurn = speakingTeam === player.teamId;
+  const timerInit = state.timerInitialSec || (speakingTeam==='A' ? state.settings.teamATime : state.settings.teamBTime) || 180;
+  const timerSec  = state.timerSec || 0;
+  const pct = Math.min(100, Math.round((timerSec / timerInit) * 100));
+  const warn = timerSec <= 30 && timerSec > 0;
+  const tcol = speakingTeam==='A' ? 'text-primary' : 'text-tertiary';
+  const bcol = speakingTeam==='A' ? 'bg-primary' : 'bg-tertiary';
+  const roleName = card ? (isA ? card.teamARoleName : card.teamBRoleName) : (isA ? 'ทีม A' : 'ทีม B');
+  const roleSub  = card ? (isA ? (card.teamARoleSub||'') : (card.teamBRoleSub||'')) : '';
 
   return `
-  ${mobileTopBar('Phase 2: Dialogue', 'emotions')}
-  <div class="min-h-screen bg-background pt-14 pb-28 px-5">
-    <div class="pt-8 pb-4">
-      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">PHASE 2 · DIALOGUE</p>
-      <h1 class="text-3xl font-extrabold text-on-surface font-headline">ส่งความรู้สึก</h1>
-      <p class="text-on-surface-variant mt-1">ร่วมสร้างคลื่นความรู้สึกในการสนทนา</p>
+  ${mobileTopBar('การเสวนา')}
+  <div class="min-h-screen bg-background pt-14 pb-28 px-4">
+
+    <!-- ── Timer ── -->
+    <div class="mt-4 mb-3 bg-surface-container-low rounded-3xl px-5 pt-4 pb-3">
+      <div class="flex items-center justify-between mb-2">
+        <p id="mob-timer-team" class="text-sm font-bold ${tcol} flex items-center gap-1.5">
+          ${icon('mic','text-base')} ทีม ${speakingTeam} กำลังพูด
+        </p>
+        <span id="mob-timer-sec" class="text-3xl font-extrabold tabular-nums font-headline ${warn?'text-error':tcol}">
+          ${formatTime(timerSec)}
+        </span>
+      </div>
+      <div class="w-full h-2.5 bg-surface-container rounded-full overflow-hidden">
+        <div id="mob-timer-bar" class="h-full rounded-full transition-all duration-1000 ${warn?'bg-error':bcol}" style="width:${pct}%"></div>
+      </div>
     </div>
-    ${myTurn ? `
-    <div class="bg-primary/10 rounded-2xl p-4 mb-5 flex items-center gap-3">
-      ${icon('mic','text-primary text-2xl')}
-      <div>
-        <p class="font-bold text-primary text-sm">ทีมของคุณกำลังพูด!</p>
-        <p class="text-xs text-on-surface-variant">ส่งสัญญาณอารมณ์ให้ทีมตรงข้ามเห็น</p>
+
+    <!-- ── Turn banner ── -->
+    <div id="mob-turn-banner" class="${myTurn ? 'bg-primary/10 border border-primary/20' : 'bg-secondary-container/40'} rounded-2xl p-4 mb-3 flex items-center gap-3">
+      ${myTurn ? `
+        ${icon('mic','text-primary text-2xl flex-shrink-0')}
+        <div>
+          <p class="font-bold text-primary text-sm">ถึงคิวทีมคุณแล้ว!</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">แสดงความคิดเห็นตามบทบาท <strong>${roleName}</strong></p>
+        </div>` : `
+        ${icon('hearing','text-on-secondary-container text-2xl flex-shrink-0')}
+        <div>
+          <p class="font-bold text-on-secondary-container text-sm">ฟังอย่างตั้งใจ</p>
+          <p class="text-xs text-on-surface-variant mt-0.5">ทีม ${speakingTeam} กำลังแสดงมุมมอง</p>
+        </div>`}
+    </div>
+
+    <!-- ── Card info (collapsible) ── -->
+    ${card ? `
+    <details class="bg-surface-container-low rounded-2xl mb-3 overflow-hidden">
+      <summary class="px-4 py-3 cursor-pointer select-none flex items-center gap-2 list-none">
+        ${icon('description','text-sm text-on-surface-variant')}
+        <span class="text-sm font-bold text-on-surface flex-1 truncate">${card.title}</span>
+        ${icon('expand_more','text-sm text-on-surface-variant')}
+      </summary>
+      <div class="px-4 pb-4 border-t border-outline-variant/20 pt-3">
+        <p class="text-sm text-on-surface leading-relaxed mb-3">${card.shortDesc || ''}</p>
+        <div class="flex items-start gap-2 bg-primary/5 rounded-xl px-3 py-2.5">
+          ${icon('badge','text-primary text-sm flex-shrink-0 mt-0.5')}
+          <p class="text-xs text-on-surface">บทบาทคุณ: <strong class="text-primary">${roleName}</strong>${roleSub ? `<br><span class="text-on-surface-variant">${roleSub}</span>` : ''}</p>
+        </div>
       </div>
-    </div>` : `
-    <div class="bg-secondary-container/50 rounded-2xl p-4 mb-5 flex items-center gap-3">
-      ${icon('hearing','text-on-secondary-container text-2xl')}
-      <div>
-        <p class="font-bold text-on-secondary-container text-sm">ฟังอย่างตั้งใจ</p>
-        <p class="text-xs text-on-surface-variant">ส่งความรู้สึกขณะฟังทีม ${speakingTeam} พูด</p>
-      </div>
-    </div>`}
-    <div class="bg-surface-container-low rounded-3xl p-6 mb-5">
-      <label class="block text-lg font-bold text-primary mb-4">คุณกำลังรู้สึกอย่างไร?</label>
-      <div class="flex flex-wrap gap-2 mb-5">
+    </details>` : ''}
+
+    <!-- ── Emotion section ── -->
+    <div class="bg-surface-container-low rounded-3xl p-5 mb-3">
+      <label class="block text-base font-bold text-primary mb-3">ส่งความรู้สึกตอนนี้</label>
+      <div class="flex flex-wrap gap-2 mb-4">
         ${QUICK_EMOTIONS.map(e=>`
-          <button data-action="send-emotion:${encodeURIComponent(e.text)}" class="${e.cls} px-5 py-2.5 rounded-full text-sm font-semibold hover:scale-105 active:scale-95 transition-transform">${e.text}</button>
+          <button data-action="send-emotion:${encodeURIComponent(e.text)}" class="${e.cls} px-4 py-2 rounded-full text-sm font-semibold hover:scale-105 active:scale-95 transition-transform">${e.text}</button>
         `).join('')}
       </div>
       <div class="relative">
@@ -1625,12 +1662,15 @@ function renderMobileEmotions(state, player) {
         </button>
       </div>
     </div>
+
+    <!-- ── Sent log ── -->
+    ${state.emotions.filter(e=>e.pid===player.id).length > 0 ? `
     <div class="text-center">
-      <p class="text-xs text-on-surface-variant mb-3">ความรู้สึกที่คุณส่งแล้ว: <span class="font-bold text-on-surface">${state.emotions.filter(e=>e.pid===player.id).length}</span> ครั้ง</p>
+      <p class="text-xs text-on-surface-variant mb-2">ส่งแล้ว ${state.emotions.filter(e=>e.pid===player.id).length} ครั้ง</p>
       <div class="flex flex-wrap gap-2 justify-center">
         ${state.emotions.filter(e=>e.pid===player.id).slice(-5).map(e=>`<span class="bg-surface-container text-on-surface-variant text-xs px-3 py-1 rounded-full">${e.text}</span>`).join('')}
       </div>
-    </div>
+    </div>` : ''}
   </div>
   ${bottomNav('discussion')}`;
 }
@@ -1874,8 +1914,13 @@ function render() {
   if (!app) return;
 
   if (mode === 'mobile') {
-    app.innerHTML = renderMobile(state);
-    afterRender(mode, state);
+    // During discussion, only update timer elements — no full re-render every second
+    if (state.phase === 'discussion' && document.getElementById('mob-timer-sec')) {
+      updateMobileTimerUI(state);
+    } else {
+      app.innerHTML = renderMobile(state);
+      afterRender(mode, state);
+    }
   } else if (_showSettings) {
     // Modal is open — patch only changed values, skip stage re-render
     const existing = document.getElementById('settings-modal');
@@ -1994,6 +2039,29 @@ function afterRender(mode, state) {
     if (state.phase === 'lobby') generateQR(state.roomCode);
     if (state.phase === 'discussion') updateTimerUI(state);
     BGM.setPhase(state.phase);
+  }
+}
+
+// Surgical mobile timer update — avoids full re-render every second
+function updateMobileTimerUI(state) {
+  const secEl = document.getElementById('mob-timer-sec');
+  if (!secEl) return;
+  const timerInit = state.timerInitialSec || (state.speakingTeam==='A' ? state.settings.teamATime : state.settings.teamBTime) || 180;
+  const pct  = Math.min(100, Math.round(((state.timerSec||0) / timerInit) * 100));
+  const warn = (state.timerSec||0) <= 30 && (state.timerSec||0) > 0;
+  const tcol = state.speakingTeam==='A' ? 'text-primary' : 'text-tertiary';
+  const bcol = state.speakingTeam==='A' ? 'bg-primary'   : 'bg-tertiary';
+
+  secEl.textContent = formatTime(state.timerSec||0);
+  secEl.className   = `text-3xl font-extrabold tabular-nums font-headline ${warn?'text-error':tcol}`;
+
+  const bar = document.getElementById('mob-timer-bar');
+  if (bar) { bar.style.width = pct+'%'; bar.className = `h-full rounded-full transition-all duration-1000 ${warn?'bg-error':bcol}`; }
+
+  const team = document.getElementById('mob-timer-team');
+  if (team) {
+    team.innerHTML  = `<span class="material-symbols-outlined text-base">mic</span> ทีม ${state.speakingTeam} กำลังพูด`;
+    team.className  = `text-sm font-bold ${tcol} flex items-center gap-1.5`;
   }
 }
 
