@@ -90,6 +90,7 @@ const server = http.createServer((req, res) => {
             state.emotions = prev.emotions;
           }
           if (Array.isArray(prev.players) && Array.isArray(state.players) &&
+              state.players.length > 0 &&
               prev.players.length > state.players.length) {
             state.players = prev.players;
           }
