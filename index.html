@@ -1582,6 +1582,17 @@ function renderMobileWaitingGame(state, player) {
   </div>`;
 }
 
+function renderMobileEmotionLog(emotions, pid) {
+  const mine = emotions.filter(e => e.pid === pid);
+  if (!mine.length) return '';
+  return `<div class="text-center mt-1">
+    <p class="text-xs text-on-surface-variant mb-2">ส่งแล้ว ${mine.length} ครั้ง</p>
+    <div class="flex flex-wrap gap-2 justify-center">
+      ${mine.slice(-5).map(e=>`<span class="bg-surface-container text-on-surface-variant text-xs px-3 py-1 rounded-full">${e.text}</span>`).join('')}
+    </div>
+  </div>`;
+}
+
 function renderMobileEmotions(state, player) {
   const isA = player.teamId === 'A';
   const card = state.cardId ? getCard(state.catId, state.cardId) : null;
@@ -1664,13 +1675,7 @@ function renderMobileEmotions(state, player) {
     </div>
 
     <!-- ── Sent log ── -->
-    ${state.emotions.filter(e=>e.pid===player.id).length > 0 ? `
-    <div class="text-center">
-      <p class="text-xs text-on-surface-variant mb-2">ส่งแล้ว ${state.emotions.filter(e=>e.pid===player.id).length} ครั้ง</p>
-      <div class="flex flex-wrap gap-2 justify-center">
-        ${state.emotions.filter(e=>e.pid===player.id).slice(-5).map(e=>`<span class="bg-surface-container text-on-surface-variant text-xs px-3 py-1 rounded-full">${e.text}</span>`).join('')}
-      </div>
-    </div>` : ''}
+    <div id="mob-emotion-log">${renderMobileEmotionLog(state.emotions, player.id)}</div>
   </div>
   ${bottomNav('discussion')}`;
 }
@@ -2060,9 +2065,12 @@ function updateMobileTimerUI(state) {
 
   const team = document.getElementById('mob-timer-team');
   if (team) {
-    team.innerHTML  = `<span class="material-symbols-outlined text-base">mic</span> ทีม ${state.speakingTeam} กำลังพูด`;
-    team.className  = `text-sm font-bold ${tcol} flex items-center gap-1.5`;
+    team.innerHTML = `<span class="material-symbols-outlined text-base">mic</span> ทีม ${state.speakingTeam} กำลังพูด`;
+    team.className = `text-sm font-bold ${tcol} flex items-center gap-1.5`;
   }
+
+  const log = document.getElementById('mob-emotion-log');
+  if (log) log.innerHTML = renderMobileEmotionLog(state.emotions, getMobilePid());
 }
 
 function getMobileURL(roomCode) {
