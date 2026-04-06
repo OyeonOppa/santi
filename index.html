@@ -50,7 +50,8 @@ tailwind.config = {
 <style>
 .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
 .icon-fill{font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24}
-body{font-family:'Be Vietnam Pro','Sarabun',sans-serif;-webkit-font-smoothing:antialiased}
+body{font-family:'Be Vietnam Pro','Sarabun',sans-serif;-webkit-font-smoothing:antialiased;touch-action:manipulation}
+button,a,[data-action]{touch-action:manipulation;-webkit-tap-highlight-color:transparent;user-select:none}
 h1,h2,h3,.font-headline{font-family:'Manrope','Sarabun',sans-serif}
 @keyframes floatIn{from{opacity:0;transform:translateY(16px) scale(.85)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes pulseRing{0%,100%{opacity:1}50%{opacity:.4}}
@@ -1663,7 +1664,7 @@ function renderMobileEmotions(state, player) {
       <label class="block text-base font-bold text-primary mb-3">ส่งความรู้สึกตอนนี้</label>
       <div class="flex flex-wrap gap-2 mb-4">
         ${QUICK_EMOTIONS.map(e=>`
-          <button data-action="send-emotion:${encodeURIComponent(e.text)}" class="${e.cls} px-4 py-2 rounded-full text-sm font-semibold hover:scale-105 active:scale-95 transition-transform">${e.text}</button>
+          <button data-action="send-emotion:${encodeURIComponent(e.text)}" class="${e.cls} px-4 py-2 rounded-full text-sm font-semibold active:scale-95 transition-transform">${e.text}</button>
         `).join('')}
       </div>
       <div class="relative">
