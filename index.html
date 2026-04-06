@@ -2070,8 +2070,31 @@ function updateMobileTimerUI(state) {
     team.className = `text-sm font-bold ${tcol} flex items-center gap-1.5`;
   }
 
+  const pid    = getMobilePid();
+  const player = state.players.find(p => p.id === pid);
+  const myTurn = player && state.speakingTeam === player.teamId;
+  const card   = state.cardId ? getCard(state.catId, state.cardId) : null;
+  const isA    = player?.teamId === 'A';
+  const roleName = card ? (isA ? card.teamARoleName : card.teamBRoleName) : (isA ? 'ทีม A' : 'ทีม B');
+
+  const banner = document.getElementById('mob-turn-banner');
+  if (banner) {
+    banner.className = `${myTurn ? 'bg-primary/10 border border-primary/20' : 'bg-secondary-container/40'} rounded-2xl p-4 mb-3 flex items-center gap-3`;
+    banner.innerHTML = myTurn ? `
+      <span class="material-symbols-outlined text-primary text-2xl flex-shrink-0">mic</span>
+      <div>
+        <p class="font-bold text-primary text-sm">ถึงคิวทีมคุณแล้ว!</p>
+        <p class="text-xs text-on-surface-variant mt-0.5">แสดงความคิดเห็นตามบทบาท <strong>${roleName}</strong></p>
+      </div>` : `
+      <span class="material-symbols-outlined text-on-secondary-container text-2xl flex-shrink-0">hearing</span>
+      <div>
+        <p class="font-bold text-on-secondary-container text-sm">ฟังอย่างตั้งใจ</p>
+        <p class="text-xs text-on-surface-variant mt-0.5">ทีม ${state.speakingTeam} กำลังแสดงมุมมอง</p>
+      </div>`;
+  }
+
   const log = document.getElementById('mob-emotion-log');
-  if (log) log.innerHTML = renderMobileEmotionLog(state.emotions, getMobilePid());
+  if (log) log.innerHTML = renderMobileEmotionLog(state.emotions, pid);
 }
 
 function getMobileURL(roomCode) {
