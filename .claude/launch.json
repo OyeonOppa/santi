@@ -2,15 +2,15 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Santi Harmony – Static Server",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", ".", "--listen", "3000", "--no-clipboard"],
+      "name": "Santi Harmony – Game Server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
       "port": 3000
     },
     {
-      "name": "Santi Harmony – Live Reload (live-server)",
+      "name": "Santi Harmony – Static Server",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["live-server", ".", "--port=3001", "--no-browser"],
+      "runtimeArgs": ["serve", ".", "--listen", "3001", "--no-clipboard"],
       "port": 3001
     }
   ]

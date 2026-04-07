@@ -68,6 +68,14 @@ h1,h2,h3,.font-headline{font-family:'Manrope','Sarabun',sans-serif}
 .card-hover:hover{transform:scale(1.03)}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:#bec8c9;border-radius:2px}
 .glass{background:rgba(251,249,249,.85);backdrop-filter:blur(12px)}
+@media print{
+  nav,#app>*:not(main),[data-action],button{display:none!important}
+  body{background:white!important}
+  main{max-width:100%!important;padding:1rem!important}
+  .glass{background:white!important;backdrop-filter:none!important}
+  section{break-inside:avoid}
+  .bg-gradient-to-br,.bg-gradient-to-r{background:white!important}
+}
 </style>
 </head>
 <body class="bg-background text-on-background min-h-screen">
@@ -1494,6 +1502,9 @@ function renderSummary(state) {
       <button data-action="reset-game" class="bg-surface-container hover:bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold transition-all flex items-center gap-3">
         ${icon('refresh')} เริ่มเซสชันใหม่
       </button>
+      <button data-action="export-pdf" class="bg-surface-container hover:bg-surface-container-high text-on-surface px-8 py-4 rounded-full font-bold transition-all flex items-center gap-3">
+        ${icon('picture_as_pdf')} บันทึกเป็น PDF
+      </button>
     </div>
   </main>`;
 }
@@ -2445,6 +2456,11 @@ function handleAction(action, param, el, e) {
       // Clear player session only in mobile
       if (getMode() === 'mobile') sessionStorage.removeItem('sh_pid');
       render();
+      break;
+    }
+
+    case 'export-pdf': {
+      window.print();
       break;
     }
 

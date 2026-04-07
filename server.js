@@ -15,6 +15,58 @@ const rooms = new Map();
 // Per-room SSE clients: Map<roomCode, Set<{res, id}>>
 const roomClients = new Map();
 
+// ── Persistence (file-based JSON) ─────────────────────────────
+const ROOMS_FILE      = path.join(__dirname, 'rooms.json');
+const ROOMS_TMP       = path.join(__dirname, 'rooms.json.tmp');
+const SAVE_DEBOUNCE   = 500;           // ms — coalesce rapid writes
+const ROOM_TTL        = 6 * 60 * 60 * 1000; // 6 hours in ms
+const CLEANUP_INTERVAL = 30 * 60 * 1000;    // run cleanup every 30 min
+let   _saveTimer      = null;
+
+function loadRooms() {
+  try {
+    const raw = fs.readFileSync(ROOMS_FILE, 'utf8');
+    const obj = JSON.parse(raw);
+    for (const [code, state] of Object.entries(obj)) rooms.set(code, state);
+    console.log(`[persist] Loaded ${rooms.size} room(s) from rooms.json`);
+  } catch (e) {
+    if (e.code !== 'ENOENT') console.warn('[persist] Could not load rooms.json:', e.message);
+    // ENOENT = first run, no file yet — normal
+  }
+}
+
+function scheduleRoomsSave() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(() => {
+    const obj = {};
+    for (const [code, state] of rooms.entries()) obj[code] = state;
+    const json = JSON.stringify(obj);
+    fs.writeFile(ROOMS_TMP, json, 'utf8', (err) => {
+      if (err) { console.warn('[persist] Write failed:', err.message); return; }
+      fs.rename(ROOMS_TMP, ROOMS_FILE, (err2) => {
+        if (err2) console.warn('[persist] Rename failed:', err2.message);
+      });
+    });
+  }, SAVE_DEBOUNCE);
+}
+
+function expireRooms() {
+  const now = Date.now();
+  let expired = 0;
+  for (const [code, state] of rooms.entries()) {
+    const age = now - (state._lastActivity || 0);
+    if (age > ROOM_TTL) {
+      rooms.delete(code);
+      roomClients.delete(code);
+      expired++;
+    }
+  }
+  if (expired > 0) {
+    console.log(`[expiry] Removed ${expired} inactive room(s). Active: ${rooms.size}`);
+    scheduleRoomsSave();
+  }
+}
+
 function getClients(roomCode) {
   if (!roomClients.has(roomCode)) roomClients.set(roomCode, new Set());
   return roomClients.get(roomCode);
@@ -99,7 +151,9 @@ const server = http.createServer((req, res) => {
             state.reactions = prev.reactions;
           }
         }
+        state._lastActivity = Date.now();
         rooms.set(roomCode, state);
+        scheduleRoomsSave();
         broadcast(roomCode, state);
         res.writeHead(200); res.end('OK');
       } catch(e) {
@@ -142,7 +196,8 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/api/rooms' && req.method === 'GET') {
     const list = [];
     for (const [code, state] of rooms.entries()) {
-      list.push({ room: code, players: state.players?.length || 0, phase: state.phase });
+      const idleMin = state._lastActivity ? Math.round((Date.now() - state._lastActivity) / 60000) : null;
+      list.push({ room: code, players: state.players?.length || 0, phase: state.phase, idleMin });
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(list));
@@ -163,6 +218,7 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 3000;
 const LOCAL_IP = getLocalIP();
 
+loadRooms();
 server.listen(PORT, '0.0.0.0', () => {
   console.log('');
   console.log('🎮  SANTI Server (Multi-Room)');
@@ -174,6 +230,9 @@ server.listen(PORT, '0.0.0.0', () => {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   console.log(`🌐  Local IP: ${LOCAL_IP}:${PORT}`);
   console.log('');
+
+  // ── Room expiry (clean up inactive rooms every 30 min) ────
+  setInterval(expireRooms, CLEANUP_INTERVAL);
 
   // ── Keep-alive self-ping (Railway idle sleep prevention) ──
   // Railway sleeps process after ~15 min of no traffic on free tier.
