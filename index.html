@@ -2228,7 +2228,6 @@ function afterRender(mode, state) {
   if (mode === 'stage') {
     if (state.phase === 'lobby') generateQR(state.roomCode);
     if (state.phase === 'discussion') {
-      _lastReactionCount = (state.reactions || []).length; // sync on fresh render
       updateTimerUI(state);
     }
     BGM.setPhase(state.phase);
