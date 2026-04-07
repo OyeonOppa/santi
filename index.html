@@ -639,7 +639,7 @@ function defaultState() {
     emotions: [],
     reactions: [],
     votes: {},
-    settings: { teamATime: 180, teamBTime: 180 }
+    settings: { teamATime: 180, teamBTime: 180, prepTime: 120 }
   };
 }
 
@@ -725,7 +725,10 @@ function startTimer() {
       localStorage.removeItem('sh_timer_tab');
       SFX.alarm();
       const ns = getState();
-      if (ns.speakingTeam === 'A') {
+      if (ns.phase === 'prep') {
+        // Prep timer ended — hold for facilitator to click "เริ่มการเสวนา"
+        saveState({ ...ns, timerSec: 0, timerRunning: false });
+      } else if (ns.speakingTeam === 'A') {
         // Hold after Team A — wait for facilitator to manually switch to Team B
         saveState({ ...ns, timerSec: 0, timerRunning: false, teamADone: true });
       } else {
@@ -1173,6 +1176,69 @@ function renderCardDetail(state) {
   </main>`;
 }
 
+/* --- PREP --- */
+function renderPrep(state) {
+  const card = getCard(state.catId, state.cardId);
+  const prepDone = state.timerSec <= 0 && !state.timerRunning;
+  return `
+  ${stageNav(state)}
+  <main class="max-w-6xl mx-auto px-6 py-10 pb-24">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <span class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest mb-4">
+        ${icon('groups_3','text-sm')} เฟสเตรียมทีม
+      </span>
+      <h1 class="font-headline font-bold text-3xl text-on-surface mb-2">เตรียมความพร้อมก่อนเสวนา</h1>
+      <p class="text-on-surface-variant">แต่ละทีมอ่านบทบาทและวางแผนร่วมกัน — ทีมตรงข้ามไม่เห็นการสนทนาของคุณ</p>
+    </div>
+    <!-- Timer -->
+    <div class="flex justify-center mb-8">
+      <div class="bg-surface-container rounded-3xl px-10 py-6 text-center shadow-sm">
+        <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-1">เวลาเตรียมทีม</p>
+        <div id="timer-num" class="font-headline font-black text-6xl tabular-nums ${prepDone ? 'text-error' : 'text-primary'} leading-none mb-3">
+          ${formatTime(state.timerSec)}
+        </div>
+        <div class="w-64 h-2 rounded-full bg-surface-container-highest overflow-hidden mx-auto mb-4">
+          <div id="timer-bar" class="h-full rounded-full bg-gradient-to-r from-secondary to-secondary-container timer-bar" style="width:${Math.max(0,(state.timerSec/(state.settings.prepTime||120))*100)}%"></div>
+        </div>
+        <button data-action="toggle-timer" class="px-6 py-2.5 rounded-full font-bold text-sm transition-all ${state.timerRunning ? 'bg-error/10 text-error hover:bg-error/20' : 'bg-primary/10 text-primary hover:bg-primary/20'} flex items-center gap-2 mx-auto">
+          ${icon(state.timerRunning ? 'pause' : 'play_arrow','text-sm')} ${state.timerRunning ? 'หยุดชั่วคราว' : (prepDone ? 'หมดเวลา' : 'เริ่มนับถอยหลัง')}
+        </button>
+      </div>
+    </div>
+    <!-- Team roles -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="bg-primary/5 border border-primary/15 rounded-3xl p-7">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">${icon(card?.teamARoleIcon||'person','text-primary')}</div>
+          <div>
+            <p class="text-xs font-bold text-primary uppercase tracking-widest">ทีม A</p>
+            <p class="font-bold text-on-surface">${card?.teamARoleName||'ทีม A'}</p>
+          </div>
+        </div>
+        <p class="text-sm text-on-surface-variant leading-relaxed">${card?.teamARoleSub||''}</p>
+      </div>
+      <div class="bg-tertiary-fixed/30 border border-tertiary/15 rounded-3xl p-7">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full bg-tertiary/15 flex items-center justify-center">${icon(card?.teamBRoleIcon||'person','text-tertiary')}</div>
+          <div>
+            <p class="text-xs font-bold text-tertiary uppercase tracking-widest">ทีม B</p>
+            <p class="font-bold text-on-surface">${card?.teamBRoleName||'ทีม B'}</p>
+          </div>
+        </div>
+        <p class="text-sm text-on-surface-variant leading-relaxed">${card?.teamBRoleSub||''}</p>
+      </div>
+    </div>
+    <!-- Action -->
+    <div class="text-center">
+      <button data-action="begin-discussion" class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-10 py-4 rounded-full font-bold text-lg shadow-lg hover:scale-[1.02] active:scale-95 transition-all inline-flex items-center gap-3">
+        ${icon('play_circle','text-2xl')} เริ่มการเสวนา
+      </button>
+      ${prepDone ? '' : `<p class="text-xs text-on-surface-variant mt-3">กดได้เลยถ้าทุกทีมพร้อมแล้ว</p>`}
+    </div>
+  </main>`;
+}
+
 /* --- DISCUSSION --- */
 function renderDiscussion(state) {
   const card = getCard(state.catId, state.cardId);
@@ -1518,6 +1584,7 @@ function renderMobile(state) {
     case 'lobby': return renderMobileWaiting(state, player);
     case 'teams': return renderMobileTeamRole(state, player);
     case 'category': case 'cards': case 'detail': return renderMobileWaitingGame(state, player);
+    case 'prep': return renderMobilePrep(state, player);
     case 'discussion': return renderMobileEmotions(state, player);
     case 'summary': return renderMobileSummary(state, player);
     default: return renderMobileWaiting(state, player);
@@ -1637,6 +1704,53 @@ function renderMobileTeamRole(state, player) {
     </div>
   </div>
   ${bottomNav('teams')}`;
+}
+
+function renderMobilePrep(state, player) {
+  const isA = player.teamId === 'A';
+  const card = getCard(state.catId, state.cardId);
+  const roleName  = card ? (isA ? card.teamARoleName  : card.teamBRoleName)  : (isA ? 'ทีม A' : 'ทีม B');
+  const roleSub   = card ? (isA ? card.teamARoleSub   : card.teamBRoleSub)   : '';
+  const roleIcon  = card ? (isA ? card.teamARoleIcon  : card.teamBRoleIcon)  : 'person';
+  const noteKey   = `sh_prep_note_${player.id}`;
+  const savedNote = sessionStorage.getItem(noteKey) || '';
+  const colorCls  = isA ? 'bg-primary/10 text-primary border-primary/20' : 'bg-tertiary/10 text-tertiary border-tertiary/20';
+  const teamLabel = isA ? 'ทีม A' : 'ทีม B';
+  return `
+  ${mobileTopBar('เตรียมทีม')}
+  <div class="min-h-screen bg-background pt-16 pb-6 px-5 flex flex-col gap-5">
+    <!-- Role card -->
+    <div class="bg-surface-container rounded-3xl p-6 border ${colorCls}">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-10 h-10 rounded-full ${isA?'bg-primary/15':'bg-tertiary/15'} flex items-center justify-center">
+          <span class="material-symbols-outlined ${isA?'text-primary':'text-tertiary'}">${roleIcon}</span>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-widest ${isA?'text-primary':'text-tertiary'}">${teamLabel} — บทบาทของคุณ</p>
+          <p class="font-bold text-on-surface">${roleName}</p>
+        </div>
+      </div>
+      <p class="text-sm text-on-surface-variant leading-relaxed">${roleSub}</p>
+    </div>
+    <!-- Note area (local only) -->
+    <div class="bg-surface-container-low rounded-3xl p-5 flex-1 flex flex-col">
+      <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-3">${icon('edit_note','text-sm align-middle')} จดโน้ตประเด็นที่จะพูด</p>
+      <textarea
+        id="prep-note"
+        rows="6"
+        maxlength="500"
+        placeholder="จุดยืนของทีม, ประเด็นหลัก, ข้อมูลสนับสนุน..."
+        oninput="sessionStorage.setItem('${noteKey}',this.value)"
+        class="flex-1 w-full bg-surface-container-lowest rounded-2xl px-4 py-3 text-on-surface text-sm border-none focus:ring-2 focus:ring-primary/30 transition-all resize-none"
+      >${savedNote}</textarea>
+      <p class="text-xs text-on-surface-variant/50 mt-2">โน้ตนี้เห็นเฉพาะคุณ — ไม่แชร์ให้ทีมอื่น</p>
+    </div>
+    <!-- Waiting indicator -->
+    <div class="flex items-center justify-center gap-2 text-on-surface-variant text-sm py-2">
+      <span class="w-2 h-2 bg-primary rounded-full animate-ping flex-shrink-0"></span>
+      รอวิทยากรเริ่มการเสวนา
+    </div>
+  </div>`;
 }
 
 function renderMobileWaitingGame(state, player) {
@@ -1890,6 +2004,20 @@ function renderSettings(state) {
                 <button data-action="set-time:B:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
               </div>
             </div>
+            <div class="bg-surface-container-lowest rounded-2xl p-5 flex items-center justify-between">
+              <div class="flex items-center gap-4">
+                <div class="w-11 h-11 rounded-full bg-secondary-container flex items-center justify-center">${icon('groups_3','text-secondary')}</div>
+                <div>
+                  <p class="font-bold text-on-surface">เตรียมทีม (Prep)</p>
+                  <p class="text-sm text-on-surface-variant">เวลาให้แต่ละทีมซักซ้อมก่อนเสวนา</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <button data-action="set-time:prep:-1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('remove','text-sm text-on-surface-variant')}</button>
+                <span id="set-timer-prep" class="text-2xl font-extrabold text-primary tabular-nums w-16 text-center">${formatTime(state.settings.prepTime||120)}</span>
+                <button data-action="set-time:prep:1" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center hover:bg-surface-container-high transition-colors">${icon('add','text-sm text-on-surface-variant')}</button>
+              </div>
+            </div>
           </div>
         </section>
         <!-- Room Management -->
@@ -2000,6 +2128,7 @@ function patchSettingsModal(state) {
 
   const ta = q('set-timer-a'); if (ta) ta.textContent = formatTime(state.settings.teamATime);
   const tb = q('set-timer-b'); if (tb) tb.textContent = formatTime(state.settings.teamBTime);
+  const tp = q('set-timer-prep'); if (tp) tp.textContent = formatTime(state.settings.prepTime||120);
 
   const rc = m.querySelector('#room-code-input');
   if (rc && document.activeElement !== rc) rc.value = state.roomCode;
@@ -2042,7 +2171,7 @@ function patchSettingsModal(state) {
         </div>`).join('');
 
   const ph = q('set-phase-list');
-  if (ph) ph.innerHTML = ['lobby','teams','category','cards','detail','discussion','summary'].map(p => `
+  if (ph) ph.innerHTML = ['lobby','teams','category','cards','detail','prep','discussion','summary'].map(p => `
     <div class="flex items-center gap-2 ${state.phase===p?'text-primary font-bold':'text-on-surface-variant'}">
       <div class="w-2 h-2 rounded-full ${state.phase===p?'bg-primary':'bg-surface-container-highest'} flex-shrink-0"></div>
       <span class="text-sm capitalize">${p}</span>
@@ -2101,6 +2230,7 @@ function renderStage(state) {
     case 'cards':       return renderCards(state);
     case 'custom-card': return renderCustomCardForm(state);
     case 'detail':      return renderCardDetail(state);
+    case 'prep':        return renderPrep(state);
     case 'discussion':  return renderDiscussion(state);
     case 'summary':     return renderSummary(state);
     default:            return renderLobby(state);
@@ -2187,7 +2317,7 @@ function renderCustomCardForm(state) {
 function afterRender(mode, state) {
   if (mode === 'stage') {
     if (state.phase === 'lobby') generateQR(state.roomCode);
-    if (state.phase === 'discussion') {
+    if (state.phase === 'discussion' || state.phase === 'prep') {
       updateTimerUI(state);
     }
     BGM.setPhase(state.phase);
@@ -2271,7 +2401,7 @@ document.addEventListener('click', (e) => {
   if (!el) return;
   // Play click SFX for most actions (chime/alarm actions play their own sound)
   const raw = el.dataset.action;
-  if (!['go-category','start-discussion','go-summary','toggle-sfx'].includes(raw.split(':')[0])) {
+  if (!['go-category','start-discussion','begin-discussion','go-summary','toggle-sfx'].includes(raw.split(':')[0])) {
     SFX.click();
   }
   const [action, ...rest] = raw.split(':');
@@ -2349,8 +2479,19 @@ function handleAction(action, param, el, e) {
     }
 
     case 'start-discussion': {
+      // Now goes to PREP phase first
       SFX.chime();
-      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerInitialSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false, emotions:[], reactions:[], votes:{} });
+      const pt = state.settings.prepTime || 120;
+      patchState({ phase:'prep', timerSec: pt, timerInitialSec: pt, timerRunning: true, teamADone:false, teamBDone:false, emotions:[], reactions:[], votes:{} });
+      startTimer();
+      break;
+    }
+
+    case 'begin-discussion': {
+      // Facilitator manually starts discussion from PREP
+      SFX.chime();
+      stopTimer();
+      patchState({ phase:'discussion', speakingTeam:'A', timerSec: state.settings.teamATime, timerInitialSec: state.settings.teamATime, timerRunning:false, teamADone:false, teamBDone:false });
       break;
     }
 
@@ -2499,8 +2640,8 @@ function handleAction(action, param, el, e) {
     case 'set-time': {
       const [team, deltaStr] = param.split(':');
       const delta = parseInt(deltaStr) * 60;
-      const key = team==='A' ? 'teamATime' : 'teamBTime';
-      const cur = state.settings[key];
+      const key = team==='A' ? 'teamATime' : team==='B' ? 'teamBTime' : 'prepTime';
+      const cur = state.settings[key] || 120;
       const next = Math.max(30, cur + delta);
       patchState({ settings:{...state.settings, [key]:next} });
       break;
